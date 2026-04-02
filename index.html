@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dolce far niente</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.css">
+
+<style>
+  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+  :root { --black:#111; --white:#f8f6f2; --gray:#888; --accent:#c8b89a; }
+  body { font-family:'Jost',sans-serif; font-weight:300; background:var(--white); color:var(--black); letter-spacing:.05em; }
+
+  /* ── NAV ── */
+  nav {
+    position:fixed; top:0; left:0; right:0; z-index:200;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:0 2.5rem; height:58px;
+    background:rgba(248,246,242,0.95); backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(0,0,0,0.06);
+  }
+  .logo {
+    font-family:'Cormorant Garamond',serif;
+    font-size:1.25rem; font-weight:300; font-style:italic;
+    letter-spacing:.08em; text-decoration:none; color:var(--black);
+    cursor:pointer; white-space:nowrap; flex-shrink:0;
+  }
+  .nav-links { display:flex; gap:0; list-style:none; align-items:center; height:100%; }
+  .nav-item { position:relative; height:100%; display:flex; align-items:center; }
+  .nav-item > a {
+    display:flex; align-items:center; height:100%; padding:0 1.2rem;
+    font-size:.66rem; font-weight:300; letter-spacing:.22em; text-transform:uppercase;
+    text-decoration:none; color:var(--black); transition:color .2s; cursor:pointer; white-space:nowrap;
+  }
+  .nav-item > a:hover, .nav-item > a.active { color:var(--accent); }
+
+  /* DROPDOWN */
+  .dropdown {
+    display:none; position:absolute; top:100%; left:50%; transform:translateX(-50%);
+    background:rgba(248,246,242,0.98); backdrop-filter:blur(10px);
+    border:1px solid rgba(0,0,0,0.08); border-radius:2px;
+    min-width:180px; padding:.4rem 0; z-index:400;
+    box-shadow:0 4px 20px rgba(0,0,0,0.07);
+  }
+  .dropdown.open { display:block; }
+  .dropdown a {
+    display:block; padding:.55rem 1.3rem;
+    font-size:.62rem; letter-spacing:.18em; text-transform:uppercase;
+    text-decoration:none; color:var(--black); white-space:nowrap; cursor:pointer;
+    transition:color .15s, background .15s;
+  }
+  .dropdown a:hover { color:var(--accent); background:rgba(200,184,154,0.07); }
+
+  /* ── HERO SLIDESHOW ── */
+  .hero { height:100vh; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+  .slides { position:absolute; inset:0; }
+  .slide { position:absolute; inset:0; opacity:0; transition:opacity 1.5s ease; }
+  .slide.active { opacity:1; }
+  .slide img { width:100%; height:100%; object-fit:cover; display:block; }
+  .hero::after { content:''; position:absolute; inset:0; background:rgba(0,0,0,0.3); z-index:1; }
+  .slide-dots { position:absolute; bottom:2rem; left:50%; transform:translateX(-50%); z-index:3; display:flex; gap:8px; }
+  .dot { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,0.3); cursor:pointer; border:none; transition:background .3s; }
+  .dot.active { background:rgba(255,255,255,0.88); }
+
+  /* ── SECTIONS ── */
+  section { display:none; animation:fadeIn .4s ease; }
+  section.active { display:block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ── HOME GRID ── */
+  .home-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:3px; padding:3px; margin-top:3px; }
+  .home-grid .routine-card { grid-column:span 2; }
+
+  /* ── PHOTO CARD ── */
+  .photo-card {
+    position:relative; overflow:hidden; cursor:pointer;
+    background:#2a2a2a; display:block; text-decoration:none; aspect-ratio:4/5;
+  }
+  .photo-card.routine-card { aspect-ratio:21/9; }
+  .photo-card img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .65s ease, filter .4s ease; }
+  .photo-card .ph {
+    position:absolute; inset:0;
+    width:100%; height:100%; display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:.4rem;
+    font-size:.62rem; letter-spacing:.22em; text-transform:uppercase;
+    color:rgba(255,255,255,0.35); transition:transform .65s ease;
+    pointer-events:none;
+  }
+  .photo-card .ph strong {
+    font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:300;
+    font-size:clamp(1.2rem,3vw,2rem); color:rgba(255,255,255,0.6);
+    letter-spacing:.06em; text-transform:none;
+  }
+  .photo-card:hover img { transform:scale(1.04); filter:brightness(.8); }
+  .photo-card:hover .ph { transform:scale(1.04); }
+  .overlay {
+    position:absolute; bottom:0; left:0; right:0;
+    padding:2rem 1.2rem 1.2rem;
+    background:linear-gradient(transparent,rgba(0,0,0,0.5));
+    opacity:0; transition:opacity .3s; pointer-events:none;
+  }
+  .photo-card:hover .overlay { opacity:1; }
+  .overlay p { color:#fff; font-size:.63rem; letter-spacing:.18em; text-transform:uppercase; }
+
+  .ph-italy   { background:#2d2520; }
+  .ph-miyako  { background:#1e2830; }
+  .ph-hok     { background:#202628; }
+  .ph-oki     { background:#1a2622; }
+  .ph-routine { background:#252220; }
+
+  /* ── GALLERY PAGES ── */
+  .gallery-header { padding:5.5rem 3rem 2rem; border-bottom:1px solid rgba(0,0,0,0.07); }
+  .gallery-header h2 { font-family:'Cormorant Garamond',serif; font-size:2.4rem; font-weight:300; font-style:italic; }
+
+  .sub-tabs { display:flex; gap:2rem; padding:1rem 3rem 0; border-bottom:1px solid rgba(0,0,0,0.05); flex-wrap:wrap; }
+  .sub-tabs button {
+    background:none; border:none; border-bottom:2px solid transparent;
+    padding:.5rem 0; font-family:'Jost',sans-serif; font-size:.62rem; font-weight:300;
+    letter-spacing:.2em; text-transform:uppercase; color:var(--gray);
+    cursor:pointer; transition:color .2s, border-color .2s; margin-bottom:-1px;
+  }
+  .sub-tabs button.active, .sub-tabs button:hover { color:var(--black); border-bottom-color:var(--black); }
+
+  /* Gallery grid */
+  .gallery-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:3px; padding:3px; }
+  .gallery-grid a.photo-card { aspect-ratio:3/2; }
+
+  .sub-content { display:none; }
+  .sub-content.active { display:block; }
+
+  .btn {
+    display:inline-block; padding:.7rem 2rem; font-family:'Jost',sans-serif;
+    font-size:.68rem; font-weight:300; letter-spacing:.22em; text-transform:uppercase;
+    border:1px solid var(--black); background:none; color:var(--black); cursor:pointer; transition:all .22s;
+  }
+  .btn:hover { background:var(--black); color:var(--white); }
+
+  /* ── ABOUT ── */
+  .about-section {
+    min-height:100vh; padding:7rem 3rem 4rem;
+    display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:center;
+  }
+  .about-img {
+    aspect-ratio:3/4; background:#2d2d2d; border-radius:2px;
+    display:flex; align-items:center; justify-content:center;
+    color:rgba(255,255,255,0.2); font-size:.7rem; letter-spacing:.2em; text-transform:uppercase; overflow:hidden;
+  }
+  .about-text h2 { font-family:'Cormorant Garamond',serif; font-size:2.8rem; font-weight:300; font-style:italic; margin-bottom:1.4rem; line-height:1.15; }
+  .about-text p { font-size:.88rem; line-height:1.9; color:#555; margin-bottom:1.3rem; }
+
+  /* ── FOOTER ── */
+  footer { padding:2rem 3rem; border-top:1px solid rgba(0,0,0,0.07); display:flex; justify-content:center; }
+  footer p { font-size:.66rem; letter-spacing:.12em; color:var(--gray); }
+
+  /* ── PhotoSwipe ── */
+  .pswp__bg { background:#0e0e0e; }
+  .pswp { --pswp-root-z-index: 500; }
+  .pswp__custom-caption {
+    position:absolute; bottom:0; left:0; right:0;
+    padding:.75rem 1.5rem;
+    background:linear-gradient(transparent,rgba(0,0,0,0.55));
+    color:rgba(255,255,255,0.88);
+    font-family:'Jost',sans-serif; font-size:.78rem; font-weight:300;
+    letter-spacing:.08em; text-align:center; pointer-events:none;
+  }
+
+  /* ── MOBILE ── */
+  @media(max-width:768px) {
+    nav { padding:0 1rem; }
+    .nav-item > a { padding:0 .6rem; font-size:.56rem; }
+    .home-grid { grid-template-columns:1fr; }
+    .home-grid .routine-card { grid-column:span 1; aspect-ratio:4/3; }
+    .gallery-grid { grid-template-columns:repeat(2,1fr); }
+    .gallery-header { padding:4.5rem 1.2rem 1.5rem; }
+    .sub-tabs { padding:.8rem 1.2rem 0; gap:1rem; }
+    .about-section { grid-template-columns:1fr; padding:5.5rem 1.5rem 3rem; gap:2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<nav>
+  <a class="logo" onclick="showSection('home')">Dolce far niente</a>
+  <ul class="nav-links">
+    <li class="nav-item">
+      <a onclick="showSection('home')" id="nav-home" class="active">Home</a>
+    </li>
+    <li class="nav-item" id="item-italy">
+      <a onclick="showSection('italy')" id="nav-italy">Italy</a>
+      <div class="dropdown" id="dd-italy">
+        <a onclick="showGallery('italy','rome')">Rome</a>
+        <a onclick="showGallery('italy','vatican')">Vatican</a>
+        <a onclick="showGallery('italy','firenze')">Firenze</a>
+        <a onclick="showGallery('italy','napoli')">Napoli</a>
+      </div>
+    </li>
+    <li class="nav-item" id="item-japan">
+      <a onclick="showSection('japan')" id="nav-japan">Japan</a>
+      <div class="dropdown" id="dd-japan">
+        <a onclick="showGallery('japan','miyako')">Miyako 宮古島</a>
+        <a onclick="showGallery('japan','hokkaido')">Hokkaido 北海道</a>
+        <a onclick="showGallery('japan','okinawa')">Okinawa 沖繩</a>
+      </div>
+    </li>
+    <li class="nav-item">
+      <a onclick="showSection('routine')" id="nav-routine">Routine</a>
+    </li>
+    <li class="nav-item">
+      <a onclick="showSection('about')" id="nav-about">About</a>
+    </li>
+  </ul>
+</nav>
+
+<!-- ══ HOME ══ -->
+<section id="home" class="active">
+  <div class="hero">
+    <div class="slides">
+      <!-- Hero slides: 5 specified photos -->
+      <div class="slide active">
+        <img src="images/Japan/Okinawa/GR011957.JPG" alt="Okinawa">
+      </div>
+      <div class="slide">
+        <img src="images/Italy/Rome/DSC09929.JPG" alt="Rome">
+      </div>
+      <div class="slide">
+        <img src="images/Routine/img1664474865535.jpg" alt="Routine">
+      </div>
+      <div class="slide">
+        <img src="images/Japan/Hokkaido/GR010670.JPG" alt="Hokkaido">
+      </div>
+      <div class="slide">
+        <img src="images/Italy/Firenze/DSC00436.JPG" alt="Firenze">
+      </div>
+    </div>
+    <div class="slide-dots" id="dots"></div>
+  </div>
+
+  <!-- Home grid: 4 destination cards + Routine -->
+  <div class="home-grid">
+    <a class="photo-card ph-italy" onclick="showGallery('italy','rome')" style="cursor:pointer;">
+      <img src="images/Italy/Rome/DSC09959.JPG" alt="Italy">
+      <div class="ph"><strong>Italy</strong><span>Rome · Vatican · Firenze · Napoli</span></div>
+      <div class="overlay"><p>Italy</p></div>
+    </a>
+    <a class="photo-card ph-miyako" onclick="showGallery('japan','miyako')" style="cursor:pointer;">
+      <img src="images/Japan/Miyako/GR013070.JPG" alt="Miyako">
+      <div class="ph"><strong>Miyako</strong><span>宮古島</span></div>
+      <div class="overlay"><p>Miyako · Japan</p></div>
+    </a>
+    <a class="photo-card ph-hok" onclick="showGallery('japan','hokkaido')" style="cursor:pointer;">
+      <img src="images/Japan/Hokkaido/20240908_094407.JPG" alt="Hokkaido">
+      <div class="ph"><strong>Hokkaido</strong><span>北海道</span></div>
+      <div class="overlay"><p>Hokkaido · Japan</p></div>
+    </a>
+    <a class="photo-card ph-oki" onclick="showGallery('japan','okinawa')" style="cursor:pointer;">
+      <img src="images/Japan/Okinawa/GR012034.JPG" alt="Okinawa">
+      <div class="ph"><strong>Okinawa</strong><span>沖繩</span></div>
+      <div class="overlay"><p>Okinawa · Japan</p></div>
+    </a>
+    <a class="photo-card routine-card ph-routine" onclick="showSection('routine')" style="cursor:pointer;">
+      <div class="ph"><strong>Routine</strong><span>日常</span></div>
+      <div class="overlay"><p>Routine</p></div>
+    </a>
+  </div>
+  <footer><p>© 2025 · All rights reserved</p></footer>
+</section>
+
+<!-- ══ ITALY ══ -->
+<section id="italy">
+  <div class="gallery-header"><h2>Italy</h2></div>
+  <div class="sub-tabs">
+    <button class="active" onclick="switchTab('italy','rome',this)">Rome</button>
+    <button onclick="switchTab('italy','vatican',this)">Vatican</button>
+    <button onclick="switchTab('italy','firenze',this)">Firenze</button>
+    <button onclick="switchTab('italy','napoli',this)">Napoli</button>
+  </div>
+  <div id="italy-rome"    class="sub-content active"><div class="gallery-grid pswp-gallery" id="gallery-italy-rome"></div></div>
+  <div id="italy-vatican" class="sub-content"><div class="gallery-grid pswp-gallery" id="gallery-italy-vatican"></div></div>
+  <div id="italy-firenze" class="sub-content"><div class="gallery-grid pswp-gallery" id="gallery-italy-firenze"></div></div>
+  <div id="italy-napoli"  class="sub-content"><div class="gallery-grid pswp-gallery" id="gallery-italy-napoli"></div></div>
+  <footer><p>© 2025 · All rights reserved</p></footer>
+</section>
+
+<!-- ══ JAPAN ══ -->
+<section id="japan">
+  <div class="gallery-header"><h2>Japan</h2></div>
+  <div class="sub-tabs">
+    <button class="active" onclick="switchTab('japan','miyako',this)">Miyako 宮古島</button>
+    <button onclick="switchTab('japan','hokkaido',this)">Hokkaido 北海道</button>
+    <button onclick="switchTab('japan','okinawa',this)">Okinawa 沖繩</button>
+  </div>
+  <div id="japan-miyako"   class="sub-content active"><div class="gallery-grid pswp-gallery" id="gallery-japan-miyako"></div></div>
+  <div id="japan-hokkaido" class="sub-content"><div class="gallery-grid pswp-gallery" id="gallery-japan-hokkaido"></div></div>
+  <div id="japan-okinawa"  class="sub-content"><div class="gallery-grid pswp-gallery" id="gallery-japan-okinawa"></div></div>
+  <footer><p>© 2025 · All rights reserved</p></footer>
+</section>
+
+<!-- ══ ROUTINE ══ -->
+<section id="routine">
+  <div class="gallery-header"><h2>Routine</h2></div>
+  <div class="gallery-grid pswp-gallery" id="gallery-routine"></div>
+  <footer><p>© 2025 · All rights reserved</p></footer>
+</section>
+
+<!-- ══ ABOUT ══ -->
+<section id="about">
+  <div class="about-section">
+    <div class="about-img">
+      <!-- <img src="images/me.jpg" style="width:100%;height:100%;object-fit:cover;"> -->
+      Your Photo Here
+    </div>
+    <div class="about-text">
+      <h2>Hello,<br>I'm [Your Name]</h2>
+      <p>我是一位熱愛攝影的創作者，用鏡頭記錄日常中那些短暫而珍貴的瞬間。</p>
+      <p>旅拍足跡遍及義大利、日本各地。</p>
+      <p style="font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gray);">
+        Instagram &nbsp;/&nbsp; Email
+      </p><br>
+      <button class="btn">聯絡我</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PhotoSwipe 5 ══ -->
+<script type="module">
+  import PhotoSwipeLightbox from 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.esm.js';
+  import PhotoSwipe        from 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.esm.js';
+
+  /* Map gallery IDs → photos.json keys + colour class */
+  const GALLERY_MAP = [
+    { id: 'gallery-italy-rome',     keys: ['italy','rome'],     cls: 'ph-italy'   },
+    { id: 'gallery-italy-vatican',  keys: ['italy','vatican'],  cls: 'ph-italy'   },
+    { id: 'gallery-italy-firenze',  keys: ['italy','firenze'],  cls: 'ph-italy'   },
+    { id: 'gallery-italy-napoli',   keys: ['italy','napoli'],   cls: 'ph-italy'   },
+    { id: 'gallery-japan-miyako',   keys: ['japan','miyako'],   cls: 'ph-miyako'  },
+    { id: 'gallery-japan-hokkaido', keys: ['japan','hokkaido'], cls: 'ph-hok'     },
+    { id: 'gallery-japan-okinawa',  keys: ['japan','okinawa'],  cls: 'ph-oki'     },
+    { id: 'gallery-routine',        keys: ['routine'],          cls: 'ph-routine' },
+  ];
+
+  function buildCard(photo, cls) {
+    const a = document.createElement('a');
+    a.className = `photo-card ${cls}`;
+    a.href = photo.src;
+    a.setAttribute('data-pswp-width',  photo.width);
+    a.setAttribute('data-pswp-height', photo.height);
+    if (photo.caption) a.setAttribute('data-caption', photo.caption);
+
+    const img = document.createElement('img');
+    img.src = photo.src;
+    img.alt = photo.caption || '';
+    img.loading = 'lazy';
+    img.onerror = () => img.remove();
+
+    const ph = document.createElement('div');
+    ph.className = 'ph';
+
+    a.appendChild(img);
+    a.appendChild(ph);
+
+    if (photo.caption) {
+      const ov = document.createElement('div');
+      ov.className = 'overlay';
+      ov.innerHTML = `<p>${photo.caption}</p>`;
+      a.appendChild(ov);
+    }
+    return a;
+  }
+
+  async function loadAndRender() {
+    let data = null;
+    try {
+      const res = await fetch('photos.json?t=' + Date.now());
+      if (!res.ok) throw new Error('not found');
+      data = await res.json();
+    } catch(e) {
+      console.warn('photos.json not loaded:', e.message);
+    }
+
+    if (data) {
+      GALLERY_MAP.forEach(({ id, keys, cls }) => {
+        const grid = document.getElementById(id);
+        if (!grid) return;
+        /* Resolve nested key path: ['italy','rome'] or ['routine'] */
+        const photos = keys.length === 2
+          ? data[keys[0]]?.[keys[1]]
+          : data[keys[0]];
+        if (!photos?.length) return;
+        grid.innerHTML = '';
+        photos.forEach(p => grid.appendChild(buildCard(p, cls)));
+      });
+    }
+
+    /* ── Single PhotoSwipe instance ── */
+    const lightbox = new PhotoSwipeLightbox({
+      gallery: '.pswp-gallery',
+      children: 'a.photo-card',
+      pswpModule: PhotoSwipe,
+      showHideAnimationType: 'fade',
+      bgOpacity: 0.92,
+      spacing: 0.1,
+      loop: true,
+      allowPanToNext: true,
+      clickToCloseNonZoomable: true,
+      closeOnVerticalDrag: true,
+      pinchToClose: true,
+      tapAction: 'toggle-controls',
+      doubleTapAction: 'zoom',
+      arrowKeys: true,
+      padding: { top: 20, bottom: 60, left: 60, right: 60 },
+    });
+
+    /* Auto-detect real dimensions if width/height are 0 */
+    lightbox.on('change', () => {
+      const pswp  = lightbox.pswp;
+      const slide = pswp?.currSlide;
+      const el    = slide?.data?.element;
+      if (!slide || !el) return;
+      const src = el.getAttribute('href') || '';
+      if (!src || (slide.data.w > 0 && slide.data.h > 0)) return;
+      const probe = new Image();
+      probe.onload = () => {
+        slide.data.w = probe.naturalWidth;
+        slide.data.h = probe.naturalHeight;
+        pswp?.updateSize?.(true);
+      };
+      probe.src = src;
+    });
+
+    /* Caption */
+    lightbox.on('uiRegister', () => {
+      lightbox.pswp.ui.registerElement({
+        name: 'custom-caption',
+        order: 9,
+        isButton: false,
+        appendTo: 'root',
+        html: '',
+        onInit: (el, pswp) => {
+          pswp.on('change', () => {
+            const cap = pswp.currSlide?.data?.element?.getAttribute('data-caption') || '';
+            el.innerHTML = cap ? `<div class="pswp__custom-caption">${cap}</div>` : '';
+          });
+        }
+      });
+    });
+
+    lightbox.init();
+    window._pswpLightbox = lightbox;
+  }
+
+  loadAndRender();
+</script>
+
+<!-- ══ UI Logic (section switching, slideshow, dropdowns) ══ -->
+<script>
+  /* ── SECTION SWITCHING ── */
+  function showSection(id) {
+    closeAllDropdowns();
+    document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item > a').forEach(a => a.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    const el = document.getElementById('nav-' + id);
+    if (el) el.classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function showGallery(sec, tab) {
+    showSection(sec);
+    const btns = document.querySelectorAll('#' + sec + ' .sub-tabs button');
+    btns.forEach(b => b.classList.remove('active'));
+    btns.forEach(b => {
+      if (b.getAttribute('onclick')?.includes("'" + tab + "'")) b.classList.add('active');
+    });
+    document.querySelectorAll('#' + sec + ' .sub-content').forEach(c => c.classList.remove('active'));
+    const t = document.getElementById(sec + '-' + tab);
+    if (t) t.classList.add('active');
+  }
+
+  function switchTab(sec, tab, btn) {
+    document.querySelectorAll('#' + sec + ' .sub-tabs button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('#' + sec + ' .sub-content').forEach(c => c.classList.remove('active'));
+    const t = document.getElementById(sec + '-' + tab);
+    if (t) t.classList.add('active');
+  }
+
+  /* ── DROPDOWNS ── */
+  function closeAllDropdowns() {
+    document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
+  }
+
+  ['italy','japan'].forEach(id => {
+    const item = document.getElementById('item-' + id);
+    const dd   = document.getElementById('dd-' + id);
+    if (!item || !dd) return;
+    let leaveTimer;
+    item.addEventListener('mouseenter', () => { clearTimeout(leaveTimer); closeAllDropdowns(); dd.classList.add('open'); });
+    item.addEventListener('mouseleave', () => { leaveTimer = setTimeout(() => dd.classList.remove('open'), 120); });
+    dd.addEventListener('mouseenter',   () => clearTimeout(leaveTimer));
+    dd.addEventListener('mouseleave',   () => { leaveTimer = setTimeout(() => dd.classList.remove('open'), 120); });
+  });
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.nav-item')) closeAllDropdowns();
+  });
+
+  /* ── SLIDESHOW ── */
+  const slides = document.querySelectorAll('.slide');
+  const dotsEl = document.getElementById('dots');
+  let cur = 0, timer;
+
+  slides.forEach((_, i) => {
+    const d = document.createElement('button');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  });
+
+  function goTo(n) {
+    slides[cur].classList.remove('active');
+    dotsEl.children[cur].classList.remove('active');
+    cur = (n + slides.length) % slides.length;
+    slides[cur].classList.add('active');
+    dotsEl.children[cur].classList.add('active');
+    clearInterval(timer);
+    timer = setInterval(() => goTo(cur + 1), 4500);
+  }
+  timer = setInterval(() => goTo(cur + 1), 4500);
+</script>
+</body>
+</html>

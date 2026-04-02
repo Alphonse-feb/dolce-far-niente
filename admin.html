@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scan Folders — Dolce far niente</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+:root { --bg:#f8f6f2; --surface:#fff; --black:#111; --gray:#888; --border:rgba(0,0,0,0.09); --accent:#c8b89a; --success:#2e7d52; --danger:#c0392b; }
+body { font-family:'Jost',sans-serif; font-weight:300; background:var(--bg); color:var(--black); min-height:100vh; padding:2.5rem 2rem 4rem; max-width:860px; margin:0 auto; }
+
+h1 { font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:300; font-size:2rem; letter-spacing:.04em; margin-bottom:.3rem; }
+.subtitle { font-size:.68rem; letter-spacing:.18em; text-transform:uppercase; color:var(--gray); margin-bottom:2.5rem; }
+
+.card { background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:1.6rem 1.8rem; margin-bottom:1.2rem; }
+.card-title { font-size:.68rem; letter-spacing:.2em; text-transform:uppercase; color:var(--gray); margin-bottom:1.2rem; display:flex; align-items:center; gap:.6rem; }
+.step-badge { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; background:var(--accent); color:#fff; font-size:.62rem; flex-shrink:0; }
+
+/* category selector */
+.cat-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(160px,1fr)); gap:.5rem; margin-bottom:1.2rem; }
+.cat-btn {
+  padding:.55rem .8rem; border:1px solid var(--border); border-radius:2px;
+  background:none; font-family:'Jost',sans-serif; font-size:.72rem; font-weight:300;
+  letter-spacing:.08em; color:var(--black); cursor:pointer; text-align:left;
+  transition:all .15s;
+}
+.cat-btn:hover { border-color:var(--accent); }
+.cat-btn.selected { background:var(--accent); border-color:var(--accent); color:#fff; }
+
+/* file drop zone */
+.drop-zone {
+  border:1.5px dashed var(--accent); border-radius:3px; padding:1.8rem;
+  text-align:center; cursor:pointer; transition:background .2s; position:relative;
+  margin-bottom:1rem;
+}
+.drop-zone:hover, .drop-zone.drag-active { background:rgba(200,184,154,0.07); }
+.drop-zone input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+.drop-zone .icon { font-size:1.5rem; opacity:.35; margin-bottom:.5rem; }
+.drop-zone p { font-size:.85rem; color:var(--black); margin-bottom:.2rem; }
+.drop-zone small { font-size:.68rem; color:var(--gray); }
+
+/* file list preview */
+.file-preview { max-height:220px; overflow-y:auto; border:1px solid var(--border); border-radius:2px; margin-bottom:1rem; }
+.file-row { display:flex; align-items:center; gap:10px; padding:.45rem .8rem; font-size:.72rem; border-bottom:1px solid rgba(0,0,0,0.04); }
+.file-row:last-child { border-bottom:none; }
+.file-row .fname { flex:1; color:var(--black); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.file-row .fsize { color:var(--gray); flex-shrink:0; font-size:.65rem; }
+.file-count { font-size:.72rem; color:var(--gray); margin-bottom:.8rem; }
+
+/* queue */
+.queue-item {
+  display:flex; align-items:center; gap:12px; padding:.65rem .9rem;
+  background:var(--bg); border-radius:2px; margin-bottom:.4rem; font-size:.75rem;
+}
+.queue-item .badge {
+  padding:.2rem .6rem; border-radius:2px; font-size:.6rem; letter-spacing:.1em;
+  text-transform:uppercase; background:rgba(200,184,154,0.25); color:#6b5a3e; flex-shrink:0;
+}
+.queue-item .qname { flex:1; color:var(--black); }
+.queue-item .qcount { color:var(--gray); flex-shrink:0; }
+.queue-item .qdel { background:none; border:none; color:var(--gray); cursor:pointer; font-size:1rem; padding:0 .2rem; }
+.queue-item .qdel:hover { color:var(--danger); }
+
+/* buttons */
+.btn-row { display:flex; gap:.8rem; flex-wrap:wrap; align-items:center; margin-top:1rem; }
+.btn {
+  padding:.55rem 1.5rem; font-family:'Jost',sans-serif; font-size:.65rem; font-weight:300;
+  letter-spacing:.2em; text-transform:uppercase; border-radius:2px; cursor:pointer; transition:all .2s;
+}
+.btn-primary { background:var(--black); color:#fff; border:1px solid var(--black); }
+.btn-primary:hover { background:#333; }
+.btn-accent  { background:var(--accent); color:#fff; border:1px solid var(--accent); }
+.btn-accent:hover  { background:#b8a48a; }
+.btn-outline { background:none; color:var(--black); border:1px solid var(--border); }
+.btn-outline:hover { border-color:var(--black); }
+.btn:disabled { opacity:.35; cursor:not-allowed; }
+
+/* json output */
+textarea { width:100%; height:160px; padding:.8rem; border:1px solid var(--border); border-radius:2px; font-family:'Courier New',monospace; font-size:.7rem; line-height:1.6; background:#fafaf8; resize:vertical; outline:none; margin-top:1rem; }
+
+.note { font-size:.72rem; line-height:1.9; color:var(--gray); margin-top:1rem; padding:1rem 1.2rem; background:#fffdf8; border-left:3px solid var(--accent); border-radius:2px; }
+.note strong { color:var(--black); }
+.note code { background:#f0ede8; padding:.1rem .35rem; border-radius:2px; font-size:.68rem; }
+
+.msg-ok   { color:var(--success); font-size:.72rem; }
+.msg-warn { color:var(--danger);  font-size:.72rem; }
+</style>
+</head>
+<body>
+
+<h1>Scan Folders</h1>
+<p class="subtitle">Generate photos.json — one folder at a time</p>
+
+<!-- STEP 1: pick category -->
+<div class="card">
+  <div class="card-title"><span class="step-badge">1</span> 選擇分類 — 這批照片屬於哪裡？</div>
+  <div class="cat-grid" id="cat-grid">
+    <!-- Italy -->
+    <button class="cat-btn" data-sec="italy"   data-tab="rome"    onclick="selectCat(this)">Italy · Rome</button>
+    <button class="cat-btn" data-sec="italy"   data-tab="vatican" onclick="selectCat(this)">Italy · Vatican</button>
+    <button class="cat-btn" data-sec="italy"   data-tab="firenze" onclick="selectCat(this)">Italy · Firenze</button>
+    <button class="cat-btn" data-sec="italy"   data-tab="napoli"  onclick="selectCat(this)">Italy · Napoli</button>
+    <!-- Japan -->
+    <button class="cat-btn" data-sec="japan"   data-tab="miyako"   onclick="selectCat(this)">Japan · Miyako</button>
+    <button class="cat-btn" data-sec="japan"   data-tab="hokkaido" onclick="selectCat(this)">Japan · Hokkaido</button>
+    <button class="cat-btn" data-sec="japan"   data-tab="okinawa"  onclick="selectCat(this)">Japan · Okinawa</button>
+    <!-- Routine -->
+    <button class="cat-btn" data-sec="routine" data-tab=""         onclick="selectCat(this)">Routine</button>
+  </div>
+  <p id="cat-msg" class="msg-warn" style="display:none;">請先選擇分類</p>
+</div>
+
+<!-- STEP 2: pick files -->
+<div class="card">
+  <div class="card-title"><span class="step-badge">2</span> 選擇這個分類的照片檔案</div>
+  <div class="drop-zone" id="drop-zone">
+    <input type="file" id="file-input" accept=".jpg,.JPG,.jpeg,.JPEG,.png,.PNG,.webp,.WEBP" multiple>
+    <div class="icon">🖼</div>
+    <p>點擊選取照片 或 拖曳進來</p>
+    <small>可一次多選，支援 JPG · PNG · WebP</small>
+  </div>
+  <div id="file-count" class="file-count" style="display:none;"></div>
+  <div id="file-preview" class="file-preview" style="display:none;"></div>
+
+  <div class="btn-row">
+    <button class="btn btn-accent" id="add-btn" onclick="addToQueue()" disabled>加入佇列 ＋</button>
+    <span id="add-msg" style="font-size:.7rem;color:var(--gray);"></span>
+  </div>
+</div>
+
+<!-- STEP 3: queue -->
+<div class="card" id="queue-card" style="display:none;">
+  <div class="card-title"><span class="step-badge">3</span> 待處理佇列 — 可繼續加入其他分類</div>
+  <div id="queue-list"></div>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="generateJSON()">Generate photos.json</button>
+    <button class="btn btn-outline" onclick="resetAll()">全部清除</button>
+  </div>
+</div>
+
+<!-- STEP 4: download -->
+<div class="card" id="output-card" style="display:none;">
+  <div class="card-title"><span class="step-badge">4</span> 下載 photos.json</div>
+  <textarea id="json-out" readonly></textarea>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="downloadJSON()">Download photos.json</button>
+    <button class="btn btn-outline" onclick="copyJSON()">Copy</button>
+    <span id="dl-ok" style="display:none;" class="msg-ok">✓ 下載完成</span>
+  </div>
+  <div class="note">
+    <strong>接下來：</strong><br>
+    1. 把下載的 <code>photos.json</code> 取代網站資料夾內的舊檔案<br>
+    2. 打開 <code>admin.html</code> → 拖曳排序照片 + 加 description<br>
+    3. 再次 Download photos.json，取代舊檔<br>
+    4. GitHub Desktop → <strong>Commit</strong> → <strong>Push</strong> → 上線 ✓
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+let selectedSec = '';
+let selectedTab = '';
+let selectedFiles = [];
+
+// queue: [{ sec, tab, label, files: [{src, caption}] }]
+let queue = [];
+
+const FOLDER_PREFIX = 'images/';
+
+// ── STEP 1: select category ──
+function selectCat(btn) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedSec = btn.dataset.sec;
+  selectedTab = btn.dataset.tab;
+  document.getElementById('cat-msg').style.display = 'none';
+  tryEnableAdd();
+}
+
+// ── STEP 2: file input ──
+document.getElementById('file-input').addEventListener('change', function(e) {
+  selectedFiles = Array.from(e.target.files).filter(f => /\.(jpe?g|png|webp)$/i.test(f.name));
+  renderFilePreview();
+  tryEnableAdd();
+});
+
+// drag & drop
+const dz = document.getElementById('drop-zone');
+dz.addEventListener('dragover',  e => { e.preventDefault(); dz.classList.add('drag-active'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('drag-active'));
+dz.addEventListener('drop', e => {
+  e.preventDefault(); dz.classList.remove('drag-active');
+  selectedFiles = Array.from(e.dataTransfer.files).filter(f => /\.(jpe?g|png|webp)$/i.test(f.name));
+  renderFilePreview();
+  tryEnableAdd();
+});
+
+function renderFilePreview() {
+  const countEl   = document.getElementById('file-count');
+  const previewEl = document.getElementById('file-preview');
+  if (!selectedFiles.length) {
+    countEl.style.display = 'none';
+    previewEl.style.display = 'none';
+    return;
+  }
+  // sort by filename (camera order)
+  selectedFiles.sort((a,b) => a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1);
+
+  countEl.style.display = 'block';
+  countEl.textContent = `${selectedFiles.length} 張照片已選取，將按檔名排序`;
+
+  previewEl.style.display = 'block';
+  previewEl.innerHTML = selectedFiles.map(f =>
+    `<div class="file-row">
+      <span class="fname">${f.name}</span>
+      <span class="fsize">${(f.size/1024).toFixed(0)} KB</span>
+    </div>`
+  ).join('');
+}
+
+function tryEnableAdd() {
+  document.getElementById('add-btn').disabled = !(selectedSec && selectedFiles.length);
+}
+
+// ── STEP 3: add to queue ──
+function addToQueue() {
+  if (!selectedSec || !selectedFiles.length) return;
+
+  // check for duplicate category in queue
+  const existing = queue.findIndex(q => q.sec === selectedSec && q.tab === selectedTab);
+  if (existing >= 0) {
+    // merge — append new files, deduplicate by name
+    const existingNames = new Set(queue[existing].files.map(f => f.name));
+    selectedFiles.forEach(f => {
+      if (!existingNames.has(f.name)) {
+        queue[existing].files.push(f);
+        existingNames.add(f.name);
+      }
+    });
+    queue[existing].files.sort((a,b) => a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1);
+  } else {
+    const sorted = [...selectedFiles].sort((a,b) => a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1);
+    const label  = selectedTab
+      ? selectedSec.charAt(0).toUpperCase()+selectedSec.slice(1) + ' · ' + selectedTab.charAt(0).toUpperCase()+selectedTab.slice(1)
+      : 'Routine';
+    queue.push({ sec: selectedSec, tab: selectedTab, label, files: sorted });
+  }
+
+  renderQueue();
+
+  // reset file input & selection for next folder
+  selectedFiles = [];
+  document.getElementById('file-input').value = '';
+  document.getElementById('file-count').style.display = 'none';
+  document.getElementById('file-preview').style.display = 'none';
+  document.getElementById('add-btn').disabled = true;
+  document.getElementById('add-msg').textContent = '✓ 已加入 — 可繼續選下一個分類';
+  setTimeout(() => document.getElementById('add-msg').textContent = '', 3000);
+}
+
+function renderQueue() {
+  const card = document.getElementById('queue-card');
+  const list = document.getElementById('queue-list');
+  card.style.display = 'block';
+
+  list.innerHTML = queue.map((q, i) =>
+    `<div class="queue-item">
+      <span class="badge">${q.label}</span>
+      <span class="qname">${q.files.length} 張照片</span>
+      <span class="qcount">${q.files.map(f=>f.name).slice(0,3).join(', ')}${q.files.length>3?'…':''}</span>
+      <button class="qdel" onclick="removeQueue(${i})" title="移除">×</button>
+    </div>`
+  ).join('');
+}
+
+function removeQueue(i) {
+  queue.splice(i, 1);
+  if (queue.length === 0) document.getElementById('queue-card').style.display = 'none';
+  else renderQueue();
+}
+
+function resetAll() {
+  queue = [];
+  selectedFiles = [];
+  selectedSec = '';
+  selectedTab = '';
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('file-input').value = '';
+  document.getElementById('file-count').style.display = 'none';
+  document.getElementById('file-preview').style.display = 'none';
+  document.getElementById('add-btn').disabled = true;
+  document.getElementById('queue-card').style.display = 'none';
+  document.getElementById('output-card').style.display = 'none';
+}
+
+// ── STEP 4: generate JSON ──
+function generateJSON() {
+  if (!queue.length) return;
+
+  // load existing photos.json if available (try localStorage cache)
+  let data = loadCachedData();
+
+  queue.forEach(({ sec, tab, files }) => {
+    const entries = files.map(f => {
+      // Build path: images/Italy/Firenze/DSC00239.JPG
+      // We use the webkitRelativePath if available, otherwise just filename
+      let src;
+      if (f.webkitRelativePath && f.webkitRelativePath.includes('/')) {
+        // Use as-is, but normalise the root to start with "images/"
+        const parts = f.webkitRelativePath.split('/');
+        // parts[0] might be the folder the user selected — keep structure
+        src = 'images/' + parts.join('/');
+      } else {
+        // Only filename available — build path from category
+        const folderMap = {
+          'italy/rome':    'Italy/Rome',
+          'italy/vatican': 'Italy/Vatican',
+          'italy/firenze': 'Italy/Firenze',
+          'italy/napoli':  'Italy/Napoli',
+          'japan/miyako':   'Japan/Miyako',
+          'japan/hokkaido': 'Japan/Hokkaido',
+          'japan/okinawa':  'Japan/Okinawa',
+          'routine/':       'Routine',
+        };
+        const key = sec + '/' + tab;
+        const folder = folderMap[key] || (sec + '/' + tab);
+        src = `images/${folder}/${f.name}`;
+      }
+      return { src, caption: '' };
+    });
+
+    if (sec === 'routine') {
+      data.routine = entries;
+    } else {
+      if (!data[sec]) data[sec] = {};
+      data[sec][tab] = entries;
+    }
+  });
+
+  const json = JSON.stringify(data, null, 2);
+  document.getElementById('json-out').value = json;
+  document.getElementById('output-card').style.display = 'block';
+  document.getElementById('output-card').scrollIntoView({ behavior:'smooth' });
+
+  // cache in localStorage so next session can merge
+  try { localStorage.setItem('photos_json_cache', json); } catch(e) {}
+}
+
+function loadCachedData() {
+  // Start with a clean structure, then overlay any cached data
+  const base = {
+    italy:   { rome:[], vatican:[], firenze:[], napoli:[] },
+    japan:   { miyako:[], hokkaido:[], okinawa:[] },
+    routine: []
+  };
+  try {
+    const cached = localStorage.getItem('photos_json_cache');
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      // deep merge
+      ['italy','japan'].forEach(sec => {
+        if (parsed[sec]) Object.assign(base[sec], parsed[sec]);
+      });
+      if (parsed.routine) base.routine = parsed.routine;
+    }
+  } catch(e) {}
+  return base;
+}
+
+function downloadJSON() {
+  const json = document.getElementById('json-out').value;
+  const blob = new Blob([json], { type:'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = 'photos.json'; a.click();
+  URL.revokeObjectURL(url);
+  const ok = document.getElementById('dl-ok');
+  ok.style.display = 'inline';
+  setTimeout(() => ok.style.display = 'none', 3000);
+}
+
+function copyJSON() {
+  const ta = document.getElementById('json-out');
+  ta.select(); document.execCommand('copy');
+}
+</script>
+</body>
+</html>

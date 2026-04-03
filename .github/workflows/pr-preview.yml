@@ -10,25 +10,28 @@ on:
       - synchronize
       - closed
 
-env:
-  PREVIEW_BRANCH: gh-pages
-
 permissions:
   contents: write
   pull-requests: write
+
+env:
+  PREVIEW_BRANCH: gh-pages
+  SOURCE_DIR: ./
+  UMBRELLA_DIR: pr-preview
 
 jobs:
   deploy-preview:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Deploy PR Preview
         uses: rossjrw/pr-preview-action@v1
         id: preview-step
         with:
-          source-dir: ./
+          source-dir: ${{ env.SOURCE_DIR }}
           preview-branch: ${{ env.PREVIEW_BRANCH }}
+          umbrella-dir: ${{ env.UMBRELLA_DIR }}
           comment: true

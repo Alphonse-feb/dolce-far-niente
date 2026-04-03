@@ -325,35 +325,39 @@ GALLERY_MAP.forEach(function(item) {
 import PhotoSwipeLightbox from 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.esm.js';
 import PhotoSwipe from 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.esm.js';
 
-const lightbox = new PhotoSwipeLightbox({
-  gallery: '.gallery-grid',
-  children: 'a.photo-card',
-  pswpModule: PhotoSwipe,
-  showHideAnimationType: 'fade',
-  bgOpacity: 0.95,
-  loop: true,
-  allowPanToNext: true,
-  pinchToClose: true,
-  closeOnVerticalDrag: true,
-  tapAction: 'toggle-controls',
-  doubleTapAction: 'zoom',
-  arrowKeys: true,
-  padding: { top:20, bottom:60, left:60, right:60 },
-});
-
-lightbox.on('uiRegister', () => {
-  lightbox.pswp.ui.registerElement({
-    name: 'custom-caption', order: 9, isButton: false, appendTo: 'root', html: '',
-    onInit: (el, pswp) => {
-      pswp.on('change', () => {
-        const cap = pswp.currSlide?.data?.element?.getAttribute('data-caption') || '';
-        el.innerHTML = cap ? '<div class="pswp__custom-caption">' + cap + '</div>' : '';
-      });
-    }
+/* 為每個 gallery-grid 建立獨立的 lightbox 實例，
+   避免 display:none 導致跨 gallery 索引錯亂 */
+document.querySelectorAll('.gallery-grid').forEach(grid => {
+  const lightbox = new PhotoSwipeLightbox({
+    gallery: '#' + grid.id,
+    children: 'a.photo-card',
+    pswpModule: PhotoSwipe,
+    showHideAnimationType: 'fade',
+    bgOpacity: 0.95,
+    loop: true,
+    allowPanToNext: true,
+    pinchToClose: true,
+    closeOnVerticalDrag: true,
+    tapAction: 'toggle-controls',
+    doubleTapAction: 'zoom',
+    arrowKeys: true,
+    padding: { top:20, bottom:60, left:60, right:60 },
   });
-});
 
-lightbox.init();
+  lightbox.on('uiRegister', () => {
+    lightbox.pswp.ui.registerElement({
+      name: 'custom-caption', order: 9, isButton: false, appendTo: 'root', html: '',
+      onInit: (el, pswp) => {
+        pswp.on('change', () => {
+          const cap = pswp.currSlide?.data?.element?.getAttribute('data-caption') || '';
+          el.innerHTML = cap ? '<div class="pswp__custom-caption">' + cap + '</div>' : '';
+        });
+      }
+    });
+  });
+
+  lightbox.init();
+});
 </script>
 
 <script>

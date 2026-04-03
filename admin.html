@@ -294,57 +294,91 @@ function resetAll() {
   document.getElementById('output-card').style.display = 'none';
 }
 
-// ── STEP 4: generate JSON ──
+// ── STEP 4: generate JSON (with thumb + real dimensions) ──
 function generateJSON() {
   if (!queue.length) return;
 
-  // load existing photos.json if available (try localStorage cache)
-  let data = loadCachedData();
+  const FOLDER_MAP = {
+    'italy/rome':     'Italy/Rome',
+    'italy/vatican':  'Italy/Vatican',
+    'italy/firenze':  'Italy/Firenze',
+    'italy/napoli':   'Italy/Napoli',
+    'japan/miyako':   'Japan/Miyako',
+    'japan/hokkaido': 'Japan/Hokkaido',
+    'japan/okinawa':  'Japan/Okinawa',
+    'routine/':       'Routine',
+  };
 
-  queue.forEach(({ sec, tab, files }) => {
-    const entries = files.map(f => {
-      // Build path: images/Italy/Firenze/DSC00239.JPG
-      // We use the webkitRelativePath if available, otherwise just filename
-      let src;
-      if (f.webkitRelativePath && f.webkitRelativePath.includes('/')) {
-        // Use as-is, but normalise the root to start with "images/"
-        const parts = f.webkitRelativePath.split('/');
-        // parts[0] might be the folder the user selected — keep structure
-        src = 'images/' + parts.join('/');
-      } else {
-        // Only filename available — build path from category
-        const folderMap = {
-          'italy/rome':    'Italy/Rome',
-          'italy/vatican': 'Italy/Vatican',
-          'italy/firenze': 'Italy/Firenze',
-          'italy/napoli':  'Italy/Napoli',
-          'japan/miyako':   'Japan/Miyako',
-          'japan/hokkaido': 'Japan/Hokkaido',
-          'japan/okinawa':  'Japan/Okinawa',
-          'routine/':       'Routine',
-        };
-        const key = sec + '/' + tab;
-        const folder = folderMap[key] || (sec + '/' + tab);
-        src = `images/${folder}/${f.name}`;
-      }
-      return { src, caption: '' };
-    });
-
-    if (sec === 'routine') {
-      data.routine = entries;
-    } else {
-      if (!data[sec]) data[sec] = {};
-      data[sec][tab] = entries;
+  // Build src path from file
+  function buildSrc(f, sec, tab) {
+    if (f.webkitRelativePath && f.webkitRelativePath.includes('/')) {
+      const parts = f.webkitRelativePath.split('/');
+      return 'images/' + parts.join('/');
     }
+    const key = sec + '/' + tab;
+    const folder = FOLDER_MAP[key] || (sec + '/' + tab);
+    return `images/${folder}/${f.name}`;
+  }
+
+  // thumb path = same folder + /thumbs/ + filename
+  function buildThumb(src) {
+    const slash = src.lastIndexOf('/');
+    return src.slice(0, slash) + '/thumbs/' + src.slice(slash + 1);
+  }
+
+  // Read real pixel dimensions from a File via a temporary object URL
+  function getDimensions(file) {
+    return new Promise(resolve => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload  = () => { resolve({ w: img.naturalWidth, h: img.naturalHeight }); URL.revokeObjectURL(url); };
+      img.onerror = () => { resolve({ w: 0, h: 0 }); URL.revokeObjectURL(url); };
+      img.src = url;
+    });
+  }
+
+  // Collect all files with their sec/tab
+  const tasks = [];
+  queue.forEach(({ sec, tab, files }) => {
+    files.forEach(f => tasks.push({ f, sec, tab }));
   });
 
-  const json = JSON.stringify(data, null, 2);
-  document.getElementById('json-out').value = json;
-  document.getElementById('output-card').style.display = 'block';
-  document.getElementById('output-card').scrollIntoView({ behavior:'smooth' });
+  // Show progress
+  const btn = document.querySelector('[onclick="generateJSON()"]');
+  if (btn) { btn.disabled = true; btn.textContent = '讀取尺寸中…'; }
 
-  // cache in localStorage so next session can merge
-  try { localStorage.setItem('photos_json_cache', json); } catch(e) {}
+  Promise.all(tasks.map(({ f, sec, tab }) =>
+    getDimensions(f).then(({ w, h }) => ({ f, sec, tab, w, h }))
+  )).then(results => {
+    let data = loadCachedData();
+
+    // Group back by sec/tab
+    const grouped = {};
+    results.forEach(({ f, sec, tab, w, h }) => {
+      const key = sec + '|' + tab;
+      if (!grouped[key]) grouped[key] = { sec, tab, entries: [] };
+      const src   = buildSrc(f, sec, tab);
+      const thumb = buildThumb(src);
+      grouped[key].entries.push({ src, width: w, height: h, caption: '', thumb });
+    });
+
+    Object.values(grouped).forEach(({ sec, tab, entries }) => {
+      if (sec === 'routine') {
+        data.routine = entries;
+      } else {
+        if (!data[sec]) data[sec] = {};
+        data[sec][tab] = entries;
+      }
+    });
+
+    const json = JSON.stringify(data, null, 2);
+    document.getElementById('json-out').value = json;
+    document.getElementById('output-card').style.display = 'block';
+    document.getElementById('output-card').scrollIntoView({ behavior:'smooth' });
+    try { localStorage.setItem('photos_json_cache', json); } catch(e) {}
+
+    if (btn) { btn.disabled = false; btn.textContent = 'Generate photos.json'; }
+  });
 }
 
 function loadCachedData() {

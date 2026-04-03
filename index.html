@@ -4,197 +4,140 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dolce far niente</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.css">
-
 <style>
-  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-  :root { --black:#111; --white:#f8f6f2; --gray:#888; --accent:#c8b89a; }
-  body { font-family:'Jost',sans-serif; font-weight:300; background:var(--white); color:var(--black); letter-spacing:.05em; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--black:#111;--white:#f8f6f2;--gray:#888;--accent:#c8b89a}
+body{font-family:'Jost',sans-serif;font-weight:300;background:var(--white);color:var(--black);letter-spacing:.05em}
 
-  /* ── NAV ── */
-  nav {
-    position:fixed; top:0; left:0; right:0; z-index:200;
-    display:flex; justify-content:space-between; align-items:center;
-    padding:0 2.5rem; height:58px;
-    background:rgba(248,246,242,0.95); backdrop-filter:blur(10px);
-    border-bottom:1px solid rgba(0,0,0,0.06);
-  }
-  .logo {
-    font-family:'Cormorant Garamond',serif;
-    font-size:1.25rem; font-weight:300; font-style:italic;
-    letter-spacing:.08em; text-decoration:none; color:var(--black);
-    cursor:pointer; white-space:nowrap; flex-shrink:0;
-  }
-  .nav-links { display:flex; gap:0; list-style:none; align-items:center; height:100%; }
-  .nav-item { position:relative; height:100%; display:flex; align-items:center; }
-  .nav-item > a {
-    display:flex; align-items:center; height:100%; padding:0 1.2rem;
-    font-size:.66rem; font-weight:300; letter-spacing:.22em; text-transform:uppercase;
-    text-decoration:none; color:var(--black); transition:color .2s; cursor:pointer; white-space:nowrap;
-  }
-  .nav-item > a:hover, .nav-item > a.active { color:var(--accent); }
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;justify-content:space-between;align-items:center;padding:0 2.5rem;height:58px;background:rgba(248,246,242,0.96);backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,0,0,0.06)}
+.logo{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:300;font-style:italic;letter-spacing:.08em;text-decoration:none;color:var(--black);cursor:pointer;white-space:nowrap;flex-shrink:0}
+.nav-links{display:flex;list-style:none;align-items:center;height:100%}
+.nav-item{position:relative;height:100%;display:flex;align-items:center}
+.nav-item>a{display:flex;align-items:center;height:100%;padding:0 1.2rem;font-size:.66rem;font-weight:300;letter-spacing:.22em;text-transform:uppercase;text-decoration:none;color:var(--black);transition:color .2s;cursor:pointer;white-space:nowrap}
+.nav-item>a:hover,.nav-item>a.active{color:var(--accent)}
+.dropdown{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);background:rgba(248,246,242,0.98);backdrop-filter:blur(10px);border:1px solid rgba(0,0,0,0.08);border-radius:2px;min-width:180px;padding:.4rem 0;z-index:400;box-shadow:0 4px 20px rgba(0,0,0,0.07)}
+.dropdown.open{display:block}
+.dropdown a{display:block;padding:.55rem 1.3rem;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;color:var(--black);white-space:nowrap;cursor:pointer;transition:color .15s,background .15s}
+.dropdown a:hover{color:var(--accent);background:rgba(200,184,154,0.07)}
 
-  /* DROPDOWN */
-  .dropdown {
-    display:none; position:absolute; top:100%; left:50%; transform:translateX(-50%);
-    background:rgba(248,246,242,0.98); backdrop-filter:blur(10px);
-    border:1px solid rgba(0,0,0,0.08); border-radius:2px;
-    min-width:180px; padding:.4rem 0; z-index:400;
-    box-shadow:0 4px 20px rgba(0,0,0,0.07);
-  }
-  .dropdown.open { display:block; }
-  .dropdown a {
-    display:block; padding:.55rem 1.3rem;
-    font-size:.62rem; letter-spacing:.18em; text-transform:uppercase;
-    text-decoration:none; color:var(--black); white-space:nowrap; cursor:pointer;
-    transition:color .15s, background .15s;
-  }
-  .dropdown a:hover { color:var(--accent); background:rgba(200,184,154,0.07); }
+/* HERO */
+.hero{height:100vh;position:relative;overflow:hidden}
+.slides{position:absolute;inset:0}
+.slide{position:absolute;inset:0;opacity:0;transition:opacity 1.5s ease}
+.slide.active{opacity:1}
+.slide img{width:100%;height:100%;object-fit:cover;display:block}
+.hero::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,0.28);z-index:1}
+.slide-dots{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:3;display:flex;gap:8px}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.3);cursor:pointer;border:none;transition:background .3s}
+.dot.active{background:rgba(255,255,255,0.88)}
 
-  /* ── HERO SLIDESHOW ── */
-  .hero { height:100vh; position:relative; overflow:hidden; }
-  .slides { position:absolute; inset:0; }
-  .slide { position:absolute; inset:0; opacity:0; transition:opacity 1.5s ease; }
-  .slide.active { opacity:1; }
-  /* Hero images: use <img> with fetchpriority for first slide, lazy for rest */
-  .slide img { width:100%; height:100%; object-fit:cover; display:block; }
-  .hero::after { content:''; position:absolute; inset:0; background:rgba(0,0,0,0.3); z-index:1; }
-  .slide-dots { position:absolute; bottom:2rem; left:50%; transform:translateX(-50%); z-index:3; display:flex; gap:8px; }
-  .dot { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,0.3); cursor:pointer; border:none; transition:background .3s; }
-  .dot.active { background:rgba(255,255,255,0.88); }
+/* SECTIONS */
+section{display:none;animation:fadeIn .35s ease}
+section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 
-  /* ── SECTIONS ── */
-  section { display:none; animation:fadeIn .4s ease; }
-  section.active { display:block; }
-  @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+/* ── HOME DESTINATION GRID (booooooom style) ──
+   White background, generous padding, image above text,
+   2×2 layout, consistent square-ish thumbnails            */
+.dest-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:3.5rem 4rem;
+  padding:5rem 8vw 5rem;
+  background:var(--white);
+}
+.dest-item{
+  display:block;
+  text-decoration:none;
+  cursor:pointer;
+}
+/* thumbnail wrapper — fixed aspect, no overflow text */
+.dest-thumb{
+  display:block;
+  aspect-ratio:4/3;
+  overflow:hidden;
+  background:#e8e5e0;
+  margin-bottom:1.1rem;
+}
+.dest-thumb img{
+  width:100%;height:100%;
+  object-fit:cover;display:block;
+  transition:transform .6s ease, filter .4s ease;
+}
+.dest-item:hover .dest-thumb img{transform:scale(1.04);filter:brightness(.92)}
 
-  /* ── HOME GRID ── */
-  .home-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:3px; padding:3px; margin-top:3px; }
-  .home-grid .routine-card { grid-column:span 2; }
+/* text below image */
+.dest-meta{padding:0 .1rem}
+.dest-title{
+  font-family:'Jost',sans-serif;
+  font-size:.7rem;
+  font-weight:300;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--black);       /* same as nav links */
+  display:block;
+  margin-bottom:.3rem;
+  line-height:1.4;
+}
+.dest-sub{
+  font-family:'Jost',sans-serif;
+  font-size:.62rem;
+  font-weight:300;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--gray);
+  display:block;
+}
+.dest-item:hover .dest-title{color:var(--accent)}
 
-  /* ── PHOTO CARD ── */
-  .photo-card {
-    position:relative; overflow:hidden; cursor:pointer;
-    background:#2a2a2a; display:block; text-decoration:none; aspect-ratio:4/5;
-  }
-  .photo-card.routine-card { aspect-ratio:21/9; }
+/* GALLERY CARDS */
+.photo-card{position:relative;overflow:hidden;cursor:pointer;background:#222;display:block;text-decoration:none;aspect-ratio:4/5}
+.gallery-grid a.photo-card{aspect-ratio:3/2}
+.photo-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform .65s ease,filter .4s ease}
+.photo-card:hover img{transform:scale(1.04);filter:brightness(.78)}
+.photo-card .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.35rem;pointer-events:none}
+.photo-card .ph .label-main{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:clamp(1.2rem,3vw,2rem);color:rgba(255,255,255,0.6);letter-spacing:.06em;text-transform:none}
+.photo-card .ph .label-sub{font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,0.35)}
+.overlay{position:absolute;bottom:0;left:0;right:0;padding:2rem 1.2rem 1.2rem;background:linear-gradient(transparent,rgba(0,0,0,0.5));opacity:0;transition:opacity .3s;pointer-events:none}
+.photo-card:hover .overlay{opacity:1}
+.overlay p{color:#fff;font-size:.63rem;letter-spacing:.18em;text-transform:uppercase}
+.ph-italy{background:#2d2520}.ph-miyako{background:#1e2830}.ph-hok{background:#202628}.ph-oki{background:#1a2622}.ph-routine{background:#252220}
 
-  /*
-   * FIX 1 — SPEED: thumbnail images use CSS background-image (lazy via IntersectionObserver).
-   * The <a> holds data-src; JS sets background-image only when card enters viewport.
-   * Full-res src is stored in href (for PhotoSwipe), NOT loaded until clicked.
-   */
-  .photo-card .thumb {
-    position:absolute; inset:0;
-    background-size:cover; background-position:center;
-    transition:transform .65s ease, filter .4s ease;
-  }
-  .photo-card:hover .thumb { transform:scale(1.04); filter:brightness(.8); }
+/* GALLERY PAGE */
+.gallery-header{padding:5.5rem 3rem 2rem;border-bottom:1px solid rgba(0,0,0,0.07)}
+.gallery-header h2{font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:300;font-style:italic}
+.sub-tabs{display:flex;gap:2rem;padding:1rem 3rem 0;border-bottom:1px solid rgba(0,0,0,0.05);flex-wrap:wrap}
+.sub-tabs button{background:none;border:none;border-bottom:2px solid transparent;padding:.5rem 0;font-family:'Jost',sans-serif;font-size:.62rem;font-weight:300;letter-spacing:.2em;text-transform:uppercase;color:var(--gray);cursor:pointer;transition:color .2s,border-color .2s;margin-bottom:-1px}
+.sub-tabs button.active,.sub-tabs button:hover{color:var(--black);border-bottom-color:var(--black)}
+.gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:3px}
+.sub-content{display:none}.sub-content.active{display:block}
 
-  /* Home grid cards use real <img> (small set, above fold) */
-  .photo-card.home-card img {
-    position:absolute; inset:0; width:100%; height:100%;
-    object-fit:cover; display:block;
-    transition:transform .65s ease, filter .4s ease;
-  }
-  .photo-card.home-card:hover img { transform:scale(1.04); filter:brightness(.8); }
+footer{padding:2rem 3rem;border-top:1px solid rgba(0,0,0,0.07);display:flex;justify-content:center}
+footer p{font-size:.66rem;letter-spacing:.12em;color:var(--gray)}
 
-  .photo-card .ph {
-    position:absolute; inset:0;
-    display:flex; align-items:center; justify-content:center;
-    flex-direction:column; gap:.4rem;
-    font-size:.62rem; letter-spacing:.22em; text-transform:uppercase;
-    color:rgba(255,255,255,0.35); pointer-events:none;
-    transition:transform .65s ease;
-  }
-  .photo-card .ph strong {
-    font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:300;
-    font-size:clamp(1.2rem,3vw,2rem); color:rgba(255,255,255,0.6);
-    letter-spacing:.06em; text-transform:none;
-  }
-  .photo-card:hover .ph { transform:scale(1.04); }
-  .overlay {
-    position:absolute; bottom:0; left:0; right:0;
-    padding:2rem 1.2rem 1.2rem;
-    background:linear-gradient(transparent,rgba(0,0,0,0.5));
-    opacity:0; transition:opacity .3s; pointer-events:none;
-  }
-  .photo-card:hover .overlay { opacity:1; }
-  .overlay p { color:#fff; font-size:.63rem; letter-spacing:.18em; text-transform:uppercase; }
+.pswp__bg{background:#0c0c0c}
+.pswp{--pswp-root-z-index:500}
+.pswp__custom-caption{position:absolute;bottom:0;left:0;right:0;padding:.75rem 1.5rem;background:linear-gradient(transparent,rgba(0,0,0,0.6));color:rgba(255,255,255,0.9);font-family:'Jost',sans-serif;font-size:.78rem;font-weight:300;letter-spacing:.08em;text-align:center;pointer-events:none}
 
-  /* Loading shimmer for unloaded thumbs */
-  .thumb.loading {
-    background-color:#2a2a2a;
-    background-image:linear-gradient(90deg,#2a2a2a 25%,#333 50%,#2a2a2a 75%);
-    background-size:200% 100%;
-    animation:shimmer 1.4s infinite;
-  }
-  @keyframes shimmer { to { background-position:-200% 0; } }
-
-  .ph-italy   { background:#2d2520; }
-  .ph-miyako  { background:#1e2830; }
-  .ph-hok     { background:#202628; }
-  .ph-oki     { background:#1a2622; }
-  .ph-routine { background:#252220; }
-
-  /* ── GALLERY PAGES ── */
-  .gallery-header { padding:5.5rem 3rem 2rem; border-bottom:1px solid rgba(0,0,0,0.07); }
-  .gallery-header h2 { font-family:'Cormorant Garamond',serif; font-size:2.4rem; font-weight:300; font-style:italic; }
-
-  .sub-tabs { display:flex; gap:2rem; padding:1rem 3rem 0; border-bottom:1px solid rgba(0,0,0,0.05); flex-wrap:wrap; }
-  .sub-tabs button {
-    background:none; border:none; border-bottom:2px solid transparent;
-    padding:.5rem 0; font-family:'Jost',sans-serif; font-size:.62rem; font-weight:300;
-    letter-spacing:.2em; text-transform:uppercase; color:var(--gray);
-    cursor:pointer; transition:color .2s, border-color .2s; margin-bottom:-1px;
-  }
-  .sub-tabs button.active, .sub-tabs button:hover { color:var(--black); border-bottom-color:var(--black); }
-
-  .gallery-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:3px; padding:3px; }
-  .gallery-grid a.photo-card { aspect-ratio:3/2; }
-
-  .sub-content { display:none; }
-  .sub-content.active { display:block; }
-
-  /* ── FOOTER ── */
-  footer { padding:2rem 3rem; border-top:1px solid rgba(0,0,0,0.07); display:flex; justify-content:center; }
-  footer p { font-size:.66rem; letter-spacing:.12em; color:var(--gray); }
-
-  /* ── PhotoSwipe ── */
-  .pswp__bg { background:#0e0e0e; }
-  .pswp { --pswp-root-z-index:500; }
-  .pswp__custom-caption {
-    position:absolute; bottom:0; left:0; right:0;
-    padding:.75rem 1.5rem;
-    background:linear-gradient(transparent,rgba(0,0,0,0.55));
-    color:rgba(255,255,255,0.88);
-    font-family:'Jost',sans-serif; font-size:.78rem; font-weight:300;
-    letter-spacing:.08em; text-align:center; pointer-events:none;
-  }
-
-  /* ── MOBILE ── */
-  @media(max-width:768px) {
-    nav { padding:0 1rem; }
-    .nav-item > a { padding:0 .6rem; font-size:.56rem; }
-    .home-grid { grid-template-columns:1fr; }
-    .home-grid .routine-card { grid-column:span 1; aspect-ratio:4/3; }
-    .gallery-grid { grid-template-columns:repeat(2,1fr); }
-    .gallery-header { padding:4.5rem 1.2rem 1.5rem; }
-    .sub-tabs { padding:.8rem 1.2rem 0; gap:1rem; }
-  }
+@media(max-width:768px){
+  nav{padding:0 1rem}
+  .nav-item>a{padding:0 .7rem;font-size:.58rem}
+  .dest-grid{grid-template-columns:1fr;gap:2.5rem;padding:3rem 6vw}
+  .gallery-grid{grid-template-columns:repeat(2,1fr)}
+  .gallery-header{padding:4.5rem 1.2rem 1.5rem}
+  .sub-tabs{padding:.8rem 1.2rem 0;gap:1rem}
+}
 </style>
 </head>
 <body>
 
-<!-- ══ NAV ══ -->
 <nav>
   <a class="logo" onclick="showSection('home')">Dolce far niente</a>
   <ul class="nav-links">
-    <li class="nav-item">
-      <a onclick="showSection('home')" id="nav-home" class="active">Home</a>
-    </li>
+    <li class="nav-item"><a onclick="showSection('home')" id="nav-home" class="active">Home</a></li>
     <li class="nav-item" id="item-italy">
       <a onclick="showSection('italy')" id="nav-italy">Italy</a>
       <div class="dropdown" id="dd-italy">
@@ -212,69 +155,80 @@
         <a onclick="showGallery('japan','okinawa')">Okinawa 沖繩</a>
       </div>
     </li>
-    <li class="nav-item">
-      <a onclick="showSection('routine')" id="nav-routine">Routine</a>
-    </li>
+    <li class="nav-item"><a onclick="showSection('routine')" id="nav-routine">Routine</a></li>
   </ul>
 </nav>
 
-<!-- ══ HOME ══ -->
+<!-- HOME -->
 <section id="home" class="active">
+  <!-- Hero slideshow — unchanged -->
   <div class="hero">
     <div class="slides">
-      <!-- Slide 1: fetchpriority=high so it loads immediately -->
-      <div class="slide active">
-        <img src="images/Japan/Okinawa/GR011957.JPG" fetchpriority="high" decoding="async" alt="">
-      </div>
-      <div class="slide">
-        <img src="images/Italy/Rome/DSC09929.JPG" loading="lazy" decoding="async" alt="">
-      </div>
-      <div class="slide">
-        <img src="images/Routine/img1664474865535.jpg" loading="lazy" decoding="async" alt="">
-      </div>
-      <div class="slide">
-        <img src="images/Japan/Hokkaido/GR010670.JPG" loading="lazy" decoding="async" alt="">
-      </div>
-      <div class="slide">
-        <img src="images/Italy/Firenze/DSC00436.JPG" loading="lazy" decoding="async" alt="">
-      </div>
+      <div class="slide active"><img src="images/Japan/Okinawa/GR011957.JPG" fetchpriority="high" alt=""></div>
+      <div class="slide"><img src="images/Italy/Rome/DSC09929.JPG" loading="lazy" alt=""></div>
+      <div class="slide"><img src="images/Routine/img1664474865535.jpg" loading="lazy" alt=""></div>
+      <div class="slide"><img src="images/Japan/Hokkaido/GR010670.JPG" loading="lazy" alt=""></div>
+      <div class="slide"><img src="images/Italy/Firenze/DSC00436.JPG" loading="lazy" alt=""></div>
     </div>
     <div class="slide-dots" id="dots"></div>
   </div>
 
-  <!-- Home grid: 5 cards (4 destinations + Routine) — FIX 3: Routine = GR011201 -->
-  <div class="home-grid">
-    <a class="photo-card home-card ph-italy" onclick="showGallery('italy','rome')" style="cursor:pointer;">
-      <img src="images/Italy/Rome/DSC09959.JPG" loading="eager" decoding="async" alt="Italy">
-      <div class="ph"><strong>Italy</strong><span>Rome · Vatican · Firenze · Napoli</span></div>
-      <div class="overlay"><p>Italy</p></div>
+  <!-- Destination grid — booooooom style: 2×2, image + text below -->
+  <div class="dest-grid">
+
+    <!-- ITALY -->
+    <a class="dest-item" onclick="showGallery('italy','rome')">
+      <span class="dest-thumb">
+        <img src="images/Italy/Rome/thumbs/DSC09959.JPG" loading="lazy" decoding="async"
+             alt="Italy" onerror="this.src='images/Italy/Rome/DSC09959.JPG'">
+      </span>
+      <div class="dest-meta">
+        <span class="dest-title">Italy</span>
+        <span class="dest-sub">Rome · Vatican · Firenze · Napoli</span>
+      </div>
     </a>
-    <a class="photo-card home-card ph-miyako" onclick="showGallery('japan','miyako')" style="cursor:pointer;">
-      <img src="images/Japan/Miyako/GR013070.JPG" loading="eager" decoding="async" alt="Miyako">
-      <div class="ph"><strong>Miyako</strong><span>宮古島</span></div>
-      <div class="overlay"><p>Miyako · Japan</p></div>
+
+    <!-- MIYAKO -->
+    <a class="dest-item" onclick="showGallery('japan','miyako')">
+      <span class="dest-thumb">
+        <img src="images/Japan/Miyako/thumbs/GR013070.JPG" loading="lazy" decoding="async"
+             alt="Miyako 宮古島" onerror="this.src='images/Japan/Miyako/GR013070.JPG'">
+      </span>
+      <div class="dest-meta">
+        <span class="dest-title">Miyako</span>
+        <span class="dest-sub">宮古島</span>
+      </div>
     </a>
-    <a class="photo-card home-card ph-hok" onclick="showGallery('japan','hokkaido')" style="cursor:pointer;">
-      <img src="images/Japan/Hokkaido/20240908_094407.JPG" loading="eager" decoding="async" alt="Hokkaido">
-      <div class="ph"><strong>Hokkaido</strong><span>北海道</span></div>
-      <div class="overlay"><p>Hokkaido · Japan</p></div>
+
+    <!-- HOKKAIDO -->
+    <a class="dest-item" onclick="showGallery('japan','hokkaido')">
+      <span class="dest-thumb">
+        <img src="images/Japan/Hokkaido/thumbs/20240908_094407.JPG" loading="lazy" decoding="async"
+             alt="Hokkaido 北海道" onerror="this.src='images/Japan/Hokkaido/20240908_094407.JPG'">
+      </span>
+      <div class="dest-meta">
+        <span class="dest-title">Hokkaido</span>
+        <span class="dest-sub">北海道</span>
+      </div>
     </a>
-    <a class="photo-card home-card ph-oki" onclick="showGallery('japan','okinawa')" style="cursor:pointer;">
-      <img src="images/Japan/Okinawa/GR012034.JPG" loading="eager" decoding="async" alt="Okinawa">
-      <div class="ph"><strong>Okinawa</strong><span>沖繩</span></div>
-      <div class="overlay"><p>Okinawa · Japan</p></div>
+
+    <!-- OKINAWA — unchanged from original -->
+    <a class="dest-item" onclick="showGallery('japan','okinawa')">
+      <span class="dest-thumb">
+        <img src="images/Japan/Okinawa/thumbs/GR012034.JPG" loading="lazy" decoding="async"
+             alt="Okinawa 沖繩" onerror="this.src='images/Japan/Okinawa/GR012034.JPG'">
+      </span>
+      <div class="dest-meta">
+        <span class="dest-title">Okinawa</span>
+        <span class="dest-sub">沖繩</span>
+      </div>
     </a>
-    <!-- FIX 3: Routine cover = GR011201.JPG -->
-    <a class="photo-card home-card routine-card ph-routine" onclick="showSection('routine')" style="cursor:pointer;">
-      <img src="images/Routine/GR011201.JPG" loading="eager" decoding="async" alt="Routine">
-      <div class="ph"><strong>Routine</strong><span>日常</span></div>
-      <div class="overlay"><p>Routine</p></div>
-    </a>
+
   </div>
   <footer><p>© 2025 · All rights reserved</p></footer>
 </section>
 
-<!-- ══ ITALY ══ -->
+<!-- ITALY -->
 <section id="italy">
   <div class="gallery-header"><h2>Italy</h2></div>
   <div class="sub-tabs">
@@ -283,14 +237,14 @@
     <button onclick="switchTab('italy','firenze',this)">Firenze</button>
     <button onclick="switchTab('italy','napoli',this)">Napoli</button>
   </div>
-  <div id="italy-rome"    class="sub-content active"><div class="gallery-grid pswp-gallery" id="gallery-italy-rome"></div></div>
-  <div id="italy-vatican" class="sub-content"><div class="gallery-grid pswp-gallery" id="gallery-italy-vatican"></div></div>
-  <div id="italy-firenze" class="sub-content"><div class="gallery-grid pswp-gallery" id="gallery-italy-firenze"></div></div>
-  <div id="italy-napoli"  class="sub-content"><div class="gallery-grid pswp-gallery" id="gallery-italy-napoli"></div></div>
+  <div id="italy-rome"    class="sub-content active"><div class="gallery-grid" id="gallery-italy-rome"></div></div>
+  <div id="italy-vatican" class="sub-content"><div class="gallery-grid" id="gallery-italy-vatican"></div></div>
+  <div id="italy-firenze" class="sub-content"><div class="gallery-grid" id="gallery-italy-firenze"></div></div>
+  <div id="italy-napoli"  class="sub-content"><div class="gallery-grid" id="gallery-italy-napoli"></div></div>
   <footer><p>© 2025 · All rights reserved</p></footer>
 </section>
 
-<!-- ══ JAPAN ══ -->
+<!-- JAPAN -->
 <section id="japan">
   <div class="gallery-header"><h2>Japan</h2></div>
   <div class="sub-tabs">
@@ -298,250 +252,172 @@
     <button onclick="switchTab('japan','hokkaido',this)">Hokkaido 北海道</button>
     <button onclick="switchTab('japan','okinawa',this)">Okinawa 沖繩</button>
   </div>
-  <div id="japan-miyako"   class="sub-content active"><div class="gallery-grid pswp-gallery" id="gallery-japan-miyako"></div></div>
-  <div id="japan-hokkaido" class="sub-content"><div class="gallery-grid pswp-gallery" id="gallery-japan-hokkaido"></div></div>
-  <div id="japan-okinawa"  class="sub-content"><div class="gallery-grid pswp-gallery" id="gallery-japan-okinawa"></div></div>
+  <div id="japan-miyako"   class="sub-content active"><div class="gallery-grid" id="gallery-japan-miyako"></div></div>
+  <div id="japan-hokkaido" class="sub-content"><div class="gallery-grid" id="gallery-japan-hokkaido"></div></div>
+  <div id="japan-okinawa"  class="sub-content"><div class="gallery-grid" id="gallery-japan-okinawa"></div></div>
   <footer><p>© 2025 · All rights reserved</p></footer>
 </section>
 
-<!-- ══ ROUTINE ══ -->
+<!-- ROUTINE -->
 <section id="routine">
   <div class="gallery-header"><h2>Routine</h2></div>
-  <div class="gallery-grid pswp-gallery" id="gallery-routine"></div>
+  <div class="gallery-grid" id="gallery-routine"></div>
   <footer><p>© 2025 · All rights reserved</p></footer>
 </section>
 
-<!-- ══ PhotoSwipe 5 ══ -->
 <script type="module">
-  import PhotoSwipeLightbox from 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.esm.js';
-  import PhotoSwipe        from 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.esm.js';
+import PhotoSwipeLightbox from 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.esm.js';
+import PhotoSwipe from 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.esm.js';
 
-  const GALLERY_MAP = [
-    { id:'gallery-italy-rome',     keys:['italy','rome'],     cls:'ph-italy'   },
-    { id:'gallery-italy-vatican',  keys:['italy','vatican'],  cls:'ph-italy'   },
-    { id:'gallery-italy-firenze',  keys:['italy','firenze'],  cls:'ph-italy'   },
-    { id:'gallery-italy-napoli',   keys:['italy','napoli'],   cls:'ph-italy'   },
-    { id:'gallery-japan-miyako',   keys:['japan','miyako'],   cls:'ph-miyako'  },
-    { id:'gallery-japan-hokkaido', keys:['japan','hokkaido'], cls:'ph-hok'     },
-    { id:'gallery-japan-okinawa',  keys:['japan','okinawa'],  cls:'ph-oki'     },
-    { id:'gallery-routine',        keys:['routine'],          cls:'ph-routine' },
-  ];
+const PHOTOS = {"italy":{"rome":[{"src":"images/Italy/Rome/DSC00181.JPG","width":6000,"height":3376,"caption":"Colosseum","thumb":"images/Italy/Rome/thumbs/DSC00181.JPG"},{"src":"images/Italy/Rome/DSC00125.JPG","width":6000,"height":3376,"caption":"Foro Romano (Palatine Hill view)","thumb":"images/Italy/Rome/thumbs/DSC00125.JPG"},{"src":"images/Italy/Rome/DSC00123.JPG","width":6000,"height":3376,"caption":"Foro Romano","thumb":"images/Italy/Rome/thumbs/DSC00123.JPG"},{"src":"images/Italy/Rome/DSC00174.JPG","width":6000,"height":3376,"caption":"Foro Romano","thumb":"images/Italy/Rome/thumbs/DSC00174.JPG"},{"src":"images/Italy/Rome/DSC00145.JPG","width":3376,"height":6000,"caption":"Tempio di Antonino e Faustina","thumb":"images/Italy/Rome/thumbs/DSC00145.JPG"},{"src":"images/Italy/Rome/DSC00146.JPG","width":6000,"height":3376,"caption":"Tempio di Antonino e Faustina","thumb":"images/Italy/Rome/thumbs/DSC00146.JPG"},{"src":"images/Italy/Rome/DSC00194.JPG","width":6000,"height":3376,"caption":"Colosseum","thumb":"images/Italy/Rome/thumbs/DSC00194.JPG"},{"src":"images/Italy/Rome/DSC00186.JPG","width":6000,"height":3376,"caption":"Colosseum","thumb":"images/Italy/Rome/thumbs/DSC00186.JPG"},{"src":"images/Italy/Rome/DSC00135.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC00135.JPG"},{"src":"images/Italy/Rome/DSC00183.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC00183.JPG"},{"src":"images/Italy/Rome/DSC00114.JPG","width":6000,"height":3376,"caption":"Arch of Titus (Menorah)","thumb":"images/Italy/Rome/thumbs/DSC00114.JPG"},{"src":"images/Italy/Rome/DSC09572.JPG","width":6000,"height":3376,"caption":"Aqua Claudia","thumb":"images/Italy/Rome/thumbs/DSC09572.JPG"},{"src":"images/Italy/Rome/DSC09941.JPG","width":6000,"height":3376,"caption":"Pantheon","thumb":"images/Italy/Rome/thumbs/DSC09941.JPG"},{"src":"images/Italy/Rome/DSC09479.JPG","width":6000,"height":3376,"caption":"Pantheon","thumb":"images/Italy/Rome/thumbs/DSC09479.JPG"},{"src":"images/Italy/Rome/DSC09475.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09475.JPG"},{"src":"images/Italy/Rome/DSC00047.JPG","width":6000,"height":3376,"caption":"EUR - Palazzo della Civiltà Italiana","thumb":"images/Italy/Rome/thumbs/DSC00047.JPG"},{"src":"images/Italy/Rome/DSC00051.JPG","width":6000,"height":3376,"caption":"EUR","thumb":"images/Italy/Rome/thumbs/DSC00051.JPG"},{"src":"images/Italy/Rome/DSC00056.JPG","width":6000,"height":3376,"caption":"EUR","thumb":"images/Italy/Rome/thumbs/DSC00056.JPG"},{"src":"images/Italy/Rome/DSC00199.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC00199.JPG"},{"src":"images/Italy/Rome/DSC00200.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC00200.JPG"},{"src":"images/Italy/Rome/DSC09408.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09408.JPG"},{"src":"images/Italy/Rome/DSC09458.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09458.JPG"},{"src":"images/Italy/Rome/DSC09465.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09465.JPG"},{"src":"images/Italy/Rome/DSC09470.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09470.JPG"},{"src":"images/Italy/Rome/DSC09525.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09525.JPG"},{"src":"images/Italy/Rome/DSC09595.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09595.JPG"},{"src":"images/Italy/Rome/DSC09599.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09599.JPG"},{"src":"images/Italy/Rome/DSC09741.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09741.JPG"},{"src":"images/Italy/Rome/DSC09749.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09749.JPG"},{"src":"images/Italy/Rome/DSC09890.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09890.JPG"},{"src":"images/Italy/Rome/DSC09892.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09892.JPG"},{"src":"images/Italy/Rome/DSC09929.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09929.JPG"},{"src":"images/Italy/Rome/DSC09933.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09933.JPG"},{"src":"images/Italy/Rome/DSC09942.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09942.JPG"},{"src":"images/Italy/Rome/DSC09954.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09954.JPG"},{"src":"images/Italy/Rome/DSC09957.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09957.JPG"},{"src":"images/Italy/Rome/DSC09959.JPG","width":6000,"height":3376,"caption":"Pantheon","thumb":"images/Italy/Rome/thumbs/DSC09959.JPG"},{"src":"images/Italy/Rome/DSC09966.JPG","width":3376,"height":6000,"caption":"Pantheon","thumb":"images/Italy/Rome/thumbs/DSC09966.JPG"},{"src":"images/Italy/Rome/DSC09967.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09967.JPG"},{"src":"images/Italy/Rome/DSC09986.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09986.JPG"}],"vatican":[{"src":"images/Italy/Vatican/DSC09603.JPG","width":6000,"height":3376,"caption":"Vatican Museums","thumb":"images/Italy/Vatican/thumbs/DSC09603.JPG"},{"src":"images/Italy/Vatican/DSC09653.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09653.JPG"},{"src":"images/Italy/Vatican/DSC09668.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09668.JPG"},{"src":"images/Italy/Vatican/DSC09679.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09679.JPG"},{"src":"images/Italy/Vatican/DSC09704.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09704.JPG"},{"src":"images/Italy/Vatican/DSC09710.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09710.JPG"},{"src":"images/Italy/Vatican/DSC09713.JPG","width":6000,"height":3376,"caption":"Angelic Landscape (Salvador Dalí)","thumb":"images/Italy/Vatican/thumbs/DSC09713.JPG"},{"src":"images/Italy/Vatican/DSC09714.JPG","width":3376,"height":6000,"caption":"Study for \"Christ of Saint John of the Cross\"","thumb":"images/Italy/Vatican/thumbs/DSC09714.JPG"},{"src":"images/Italy/Vatican/DSC09750.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09750.JPG"},{"src":"images/Italy/Vatican/DSC09752.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09752.JPG"},{"src":"images/Italy/Vatican/DSC09763.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09763.JPG"},{"src":"images/Italy/Vatican/DSC09778.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09778.JPG"},{"src":"images/Italy/Vatican/DSC09810.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09810.JPG"},{"src":"images/Italy/Vatican/DSC09815.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09815.JPG"},{"src":"images/Italy/Vatican/DSC09840.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09840.JPG"},{"src":"images/Italy/Vatican/DSC09841.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09841.JPG"},{"src":"images/Italy/Vatican/DSC09846.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09846.JPG"},{"src":"images/Italy/Vatican/DSC09877.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09877.JPG"}],"firenze":[{"src":"images/Italy/Firenze/DSC00239.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00239.JPG"},{"src":"images/Italy/Firenze/DSC00245.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00245.JPG"},{"src":"images/Italy/Firenze/DSC00252.JPG","width":6000,"height":3376,"caption":"Basilica di Santa Maria Novella","thumb":"images/Italy/Firenze/thumbs/DSC00252.JPG"},{"src":"images/Italy/Firenze/DSC00283.JPG","width":6000,"height":3376,"caption":"Battistero di San Giovanni","thumb":"images/Italy/Firenze/thumbs/DSC00283.JPG"},{"src":"images/Italy/Firenze/DSC00294.JPG","width":6000,"height":3376,"caption":"Campanile di Giotto","thumb":"images/Italy/Firenze/thumbs/DSC00294.JPG"},{"src":"images/Italy/Firenze/DSC00301.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00301.JPG"},{"src":"images/Italy/Firenze/DSC00303.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00303.JPG"},{"src":"images/Italy/Firenze/DSC00304.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00304.JPG"},{"src":"images/Italy/Firenze/DSC00305.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00305.JPG"},{"src":"images/Italy/Firenze/DSC00328.JPG","width":6000,"height":3376,"caption":"Brunelleschi","thumb":"images/Italy/Firenze/thumbs/DSC00328.JPG"},{"src":"images/Italy/Firenze/DSC00337.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00337.JPG"},{"src":"images/Italy/Firenze/DSC00338.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00338.JPG"},{"src":"images/Italy/Firenze/DSC00368.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00368.JPG"},{"src":"images/Italy/Firenze/DSC00373.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00373.JPG"},{"src":"images/Italy/Firenze/DSC00374.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00374.JPG"},{"src":"images/Italy/Firenze/DSC00390.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00390.JPG"},{"src":"images/Italy/Firenze/DSC00395.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00395.JPG"},{"src":"images/Italy/Firenze/DSC00436.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00436.JPG"},{"src":"images/Italy/Firenze/DSC00571.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00571.JPG"},{"src":"images/Italy/Firenze/DSC00581.JPG","width":3376,"height":6000,"caption":"Cattedrale di Santa Maria del Fiore","thumb":"images/Italy/Firenze/thumbs/DSC00581.JPG"},{"src":"images/Italy/Firenze/DSC00590.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00590.JPG"},{"src":"images/Italy/Firenze/DSC00594.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00594.JPG"}],"napoli":[{"src":"images/Italy/Napoli/DSC00636.JPG","width":6000,"height":3376,"caption":"Pompeii - Temple of Jupiter","thumb":"images/Italy/Napoli/thumbs/DSC00636.JPG"},{"src":"images/Italy/Napoli/DSC00646.JPG","width":3376,"height":6000,"caption":"Pompeii - Stone Flour Mill","thumb":"images/Italy/Napoli/thumbs/DSC00646.JPG"},{"src":"images/Italy/Napoli/DSC00647.JPG","width":3376,"height":6000,"caption":"Pompeii - Bread Oven","thumb":"images/Italy/Napoli/thumbs/DSC00647.JPG"},{"src":"images/Italy/Napoli/DSC00655.JPG","width":6000,"height":3376,"caption":"Pompeii - Villa of the Mysteries - Frescoes","thumb":"images/Italy/Napoli/thumbs/DSC00655.JPG"},{"src":"images/Italy/Napoli/DSC00656.JPG","width":6000,"height":3376,"caption":"Pompeii - Villa of the Mysteries - Frescoes","thumb":"images/Italy/Napoli/thumbs/DSC00656.JPG"},{"src":"images/Italy/Napoli/DSC00658.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Napoli/thumbs/DSC00658.JPG"},{"src":"images/Italy/Napoli/DSC00679.JPG","width":6000,"height":3376,"caption":"House of the Vettii - Ixion","thumb":"images/Italy/Napoli/thumbs/DSC00679.JPG"},{"src":"images/Italy/Napoli/DSC00723.JPG","width":6000,"height":3376,"caption":"Amphitheatre of Pompeii","thumb":"images/Italy/Napoli/thumbs/DSC00723.JPG"},{"src":"images/Italy/Napoli/DSC00731.JPG","width":6000,"height":3376,"caption":"Pompeii - Teatro Grande","thumb":"images/Italy/Napoli/thumbs/DSC00731.JPG"},{"src":"images/Italy/Napoli/DSC00801.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Napoli/thumbs/DSC00801.JPG"},{"src":"images/Italy/Napoli/DSC00817.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Italy/Napoli/thumbs/DSC00817.JPG"},{"src":"images/Italy/Napoli/DSC00828.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Napoli/thumbs/DSC00828.JPG"},{"src":"images/Italy/Napoli/DSC00859.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Napoli/thumbs/DSC00859.JPG"},{"src":"images/Italy/Napoli/DSC00863.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Napoli/thumbs/DSC00863.JPG"},{"src":"images/Italy/Napoli/DSC00943.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Napoli/thumbs/DSC00943.JPG"},{"src":"images/Italy/Napoli/DSC00946.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Napoli/thumbs/DSC00946.JPG"},{"src":"images/Italy/Napoli/DSC00948.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Napoli/thumbs/DSC00948.JPG"},{"src":"images/Italy/Napoli/DSC00961.JPG","width":6000,"height":3376,"caption":"Certosa di San Martino","thumb":"images/Italy/Napoli/thumbs/DSC00961.JPG"},{"src":"images/Italy/Napoli/DSC00981.JPG","width":6000,"height":3376,"caption":"Mount Vesuvius - Castel Sant'Elmo","thumb":"images/Italy/Napoli/thumbs/DSC00981.JPG"},{"src":"images/Italy/Napoli/DSC00984.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Napoli/thumbs/DSC00984.JPG"},{"src":"images/Italy/Napoli/DSC00986.JPG","width":6000,"height":3376,"caption":"Mount Vesuvius","thumb":"images/Italy/Napoli/thumbs/DSC00986.JPG"}]},"japan":{"miyako":[{"src":"images/Japan/Miyako/GR012821.JPG","width":3360,"height":2240,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR012821.JPG"},{"src":"images/Japan/Miyako/GR012831.JPG","width":3200,"height":4800,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR012831.JPG"},{"src":"images/Japan/Miyako/GR012901.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR012901.JPG"},{"src":"images/Japan/Miyako/GR012919.JPG","width":4800,"height":3200,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR012919.JPG"},{"src":"images/Japan/Miyako/GR012922.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR012922.JPG"},{"src":"images/Japan/Miyako/GR012927.JPG","width":4000,"height":6000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR012927.JPG"},{"src":"images/Japan/Miyako/GR012982.JPG","width":4000,"height":6000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR012982.JPG"},{"src":"images/Japan/Miyako/GR013001.JPG","width":3360,"height":2240,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013001.JPG"},{"src":"images/Japan/Miyako/GR013019.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013019.JPG"},{"src":"images/Japan/Miyako/GR013023.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013023.JPG"},{"src":"images/Japan/Miyako/GR013025.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013025.JPG"},{"src":"images/Japan/Miyako/GR013032.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013032.JPG"},{"src":"images/Japan/Miyako/GR013036.JPG","width":3360,"height":2240,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013036.JPG"},{"src":"images/Japan/Miyako/GR013046.JPG","width":4000,"height":6000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013046.JPG"},{"src":"images/Japan/Miyako/GR013065.JPG","width":3360,"height":2240,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013065.JPG"},{"src":"images/Japan/Miyako/GR013067.JPG","width":2240,"height":3360,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013067.JPG"},{"src":"images/Japan/Miyako/GR013070.JPG","width":3360,"height":2240,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013070.JPG"},{"src":"images/Japan/Miyako/GR013071.JPG","width":2240,"height":3360,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013071.JPG"},{"src":"images/Japan/Miyako/GR013075.JPG","width":2240,"height":3360,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013075.JPG"},{"src":"images/Japan/Miyako/GR013086.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013086.JPG"},{"src":"images/Japan/Miyako/GR013093.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013093.JPG"},{"src":"images/Japan/Miyako/GR013125.JPG","width":2240,"height":3360,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013125.JPG"},{"src":"images/Japan/Miyako/GR013128.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013128.JPG"},{"src":"images/Japan/Miyako/GR013133.JPG","width":4800,"height":3200,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013133.JPG"},{"src":"images/Japan/Miyako/GR013134.JPG","width":4800,"height":3200,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013134.JPG"},{"src":"images/Japan/Miyako/GR013142.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013142.JPG"},{"src":"images/Japan/Miyako/GR013143.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013143.JPG"},{"src":"images/Japan/Miyako/GR013144.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013144.JPG"},{"src":"images/Japan/Miyako/GR013157.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013157.JPG"},{"src":"images/Japan/Miyako/GR013162.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013162.JPG"},{"src":"images/Japan/Miyako/GR013163.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013163.JPG"},{"src":"images/Japan/Miyako/GR013185.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013185.JPG"},{"src":"images/Japan/Miyako/GR013186.JPG","width":3360,"height":2240,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013186.JPG"},{"src":"images/Japan/Miyako/GR013248.JPG","width":3360,"height":2240,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013248.JPG"},{"src":"images/Japan/Miyako/GR013254.JPG","width":3360,"height":2240,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013254.JPG"},{"src":"images/Japan/Miyako/GR013257.JPG","width":4800,"height":3200,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013257.JPG"},{"src":"images/Japan/Miyako/GR013262.JPG","width":4800,"height":3200,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013262.JPG"},{"src":"images/Japan/Miyako/GR013272.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013272.JPG"}],"hokkaido":[{"src":"images/Japan/Hokkaido/20240908_094407.JPG","width":3264,"height":1840,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/20240908_094407.JPG"},{"src":"images/Japan/Hokkaido/GR010476.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR010476.JPG"},{"src":"images/Japan/Hokkaido/GR010542.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR010542.JPG"},{"src":"images/Japan/Hokkaido/GR010670.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR010670.JPG"},{"src":"images/Japan/Hokkaido/GR010815.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR010815.JPG"},{"src":"images/Japan/Hokkaido/GR010821.JPG","width":4000,"height":6000,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR010821.JPG"},{"src":"images/Japan/Hokkaido/GR010866.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR010866.JPG"},{"src":"images/Japan/Hokkaido/GR010878.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR010878.JPG"},{"src":"images/Japan/Hokkaido/GR010991.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR010991.JPG"},{"src":"images/Japan/Hokkaido/GR011065.JPG","width":3200,"height":4800,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR011065.JPG"},{"src":"images/Japan/Hokkaido/GR011120.JPG","width":4800,"height":3200,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR011120.JPG"},{"src":"images/Japan/Hokkaido/GR011122.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR011122.JPG"},{"src":"images/Japan/Hokkaido/GR011167.JPG","width":4800,"height":3200,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR011167.JPG"},{"src":"images/Japan/Hokkaido/GR012455.JPG","width":4800,"height":3200,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR012455.JPG"},{"src":"images/Japan/Hokkaido/GR012460.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR012460.JPG"},{"src":"images/Japan/Hokkaido/GR012490.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR012490.JPG"},{"src":"images/Japan/Hokkaido/GR012532.JPG","width":3360,"height":2240,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR012532.JPG"},{"src":"images/Japan/Hokkaido/photo_2024-09-18_01-01-23.jpg","width":1280,"height":720,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/photo_2024-09-18_01-01-23.jpg"},{"src":"images/Japan/Hokkaido/photo_2024-09-18_01-06-35.jpg","width":720,"height":1280,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/photo_2024-09-18_01-06-35.jpg"}],"okinawa":[{"src":"images/Japan/Okinawa/20240625_103053.JPG","width":4000,"height":2256,"caption":"","thumb":"images/Japan/Okinawa/thumbs/20240625_103053.JPG"},{"src":"images/Japan/Okinawa/20240625_114908.JPG","width":4000,"height":2256,"caption":"","thumb":"images/Japan/Okinawa/thumbs/20240625_114908.JPG"},{"src":"images/Japan/Okinawa/DSC01184.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Japan/Okinawa/thumbs/DSC01184.JPG"},{"src":"images/Japan/Okinawa/DSC01223.JPG","width":6000,"height":3376,"caption":"座喜味城跡","thumb":"images/Japan/Okinawa/thumbs/DSC01223.JPG"},{"src":"images/Japan/Okinawa/DSC01281.JPG","width":6000,"height":3376,"caption":"和平祈念公園 - 平和之丘","thumb":"images/Japan/Okinawa/thumbs/DSC01281.JPG"},{"src":"images/Japan/Okinawa/DSC01308.JPG","width":6000,"height":3376,"caption":"和平祈念公園 - 平和の礎","thumb":"images/Japan/Okinawa/thumbs/DSC01308.JPG"},{"src":"images/Japan/Okinawa/GR011947.JPG","width":3200,"height":4800,"caption":"","thumb":"images/Japan/Okinawa/thumbs/GR011947.JPG"},{"src":"images/Japan/Okinawa/GR011957.JPG","width":3360,"height":2240,"caption":"","thumb":"images/Japan/Okinawa/thumbs/GR011957.JPG"},{"src":"images/Japan/Okinawa/GR011962.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Okinawa/thumbs/GR011962.JPG"},{"src":"images/Japan/Okinawa/GR011974.JPG","width":3360,"height":2240,"caption":"","thumb":"images/Japan/Okinawa/thumbs/GR011974.JPG"},{"src":"images/Japan/Okinawa/GR012034.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Okinawa/thumbs/GR012034.JPG"},{"src":"images/Japan/Okinawa/GR012057.JPG","width":2240,"height":3360,"caption":"","thumb":"images/Japan/Okinawa/thumbs/GR012057.JPG"},{"src":"images/Japan/Okinawa/GR012071.JPG","width":3360,"height":2240,"caption":"沖繩美術館","thumb":"images/Japan/Okinawa/thumbs/GR012071.JPG"},{"src":"images/Japan/Okinawa/IMG_0142.JPG","width":4032,"height":3024,"caption":"慶良間","thumb":"images/Japan/Okinawa/thumbs/IMG_0142.JPG"},{"src":"images/Japan/Okinawa/IMG_0464.JPG","width":3876,"height":2376,"caption":"","thumb":"images/Japan/Okinawa/thumbs/IMG_0464.JPG"},{"src":"images/Japan/Okinawa/IMG_0478.JPG","width":4032,"height":3024,"caption":"","thumb":"images/Japan/Okinawa/thumbs/IMG_0478.JPG"}]},"routine":[{"src":"images/Routine/GR010464.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Routine/thumbs/GR010464.JPG"},{"src":"images/Routine/GR011201.JPG","width":3360,"height":2240,"caption":"","thumb":"images/Routine/thumbs/GR011201.JPG"},{"src":"images/Routine/GR011458.JPG","width":4800,"height":3200,"caption":"","thumb":"images/Routine/thumbs/GR011458.JPG"},{"src":"images/Routine/GR011467.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Routine/thumbs/GR011467.JPG"},{"src":"images/Routine/GR011489.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Routine/thumbs/GR011489.JPG"},{"src":"images/Routine/GR011596.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Routine/thumbs/GR011596.JPG"},{"src":"images/Routine/GR012090.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Routine/thumbs/GR012090.JPG"},{"src":"images/Routine/img1664474865535.jpg","width":4000,"height":3000,"caption":"","thumb":"images/Routine/thumbs/img1664474865535.jpg"},{"src":"images/Routine/IMG_5007.JPG","width":3024,"height":4032,"caption":"","thumb":"images/Routine/thumbs/IMG_5007.JPG"},{"src":"images/Routine/IMG_9466.JPG","width":4032,"height":3024,"caption":"","thumb":"images/Routine/thumbs/IMG_9466.JPG"},{"src":"images/Routine/IMG_9762.JPG","width":4032,"height":3024,"caption":"","thumb":"images/Routine/thumbs/IMG_9762.JPG"}]};
 
-  /*
-   * FIX 1 — SPEED: IntersectionObserver lazy-loads thumbnails.
-   * Each card stores its src in data-src. The thumb div uses CSS background-image
-   * (not <img src>) so the browser never requests the file until it's in viewport.
-   * The FULL original file is only fetched when the user clicks (PhotoSwipe href).
-   */
-  const thumbObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      const thumb = entry.target;
-      const src   = thumb.dataset.src;
-      if (!src) return;
-      thumb.style.backgroundImage = `url("${src}")`;
-      thumb.classList.remove('loading');
-      thumbObserver.unobserve(thumb);
-    });
-  }, { rootMargin: '200px' });
+const GALLERY_MAP = [
+  {id:'gallery-italy-rome',    keys:['italy','rome'],    cls:'ph-italy'},
+  {id:'gallery-italy-vatican', keys:['italy','vatican'], cls:'ph-italy'},
+  {id:'gallery-italy-firenze', keys:['italy','firenze'], cls:'ph-italy'},
+  {id:'gallery-italy-napoli',  keys:['italy','napoli'],  cls:'ph-italy'},
+  {id:'gallery-japan-miyako',  keys:['japan','miyako'],  cls:'ph-miyako'},
+  {id:'gallery-japan-hokkaido',keys:['japan','hokkaido'],cls:'ph-hok'},
+  {id:'gallery-japan-okinawa', keys:['japan','okinawa'], cls:'ph-oki'},
+  {id:'gallery-routine',       keys:['routine'],         cls:'ph-routine'},
+];
 
-  /*
-   * FIX 2 — PHOTOSWIPE: build cards with correct data-pswp-width/height from JSON.
-   * href = full-res src (PhotoSwipe opens this). Thumb div = lazy CSS background.
-   * data-pswp-width/height are always set from JSON so PhotoSwipe never gets 0×0.
-   */
-  function buildCard(photo, cls) {
-    const a = document.createElement('a');
-    a.className = `photo-card ${cls}`;
-    a.href = photo.src;                                    // full-res for PhotoSwipe
-    a.setAttribute('data-pswp-width',  photo.width);      // from JSON — always correct
-    a.setAttribute('data-pswp-height', photo.height);
-    if (photo.caption) a.setAttribute('data-caption', photo.caption);
+function buildCard(photo, cls) {
+  const a = document.createElement('a');
+  a.className = `photo-card ${cls}`;
+  a.href = photo.src;
+  a.dataset.pswpWidth  = photo.width;
+  a.dataset.pswpHeight = photo.height;
+  if (photo.caption) a.dataset.caption = photo.caption;
 
-    // Thumb: lazy CSS background, NOT <img src>
-    const thumb = document.createElement('div');
-    thumb.className = 'thumb loading';
-    thumb.dataset.src = photo.src;   // watched by IntersectionObserver
-    thumbObserver.observe(thumb);
+  const img = document.createElement('img');
+  img.src      = photo.thumb;
+  img.alt      = photo.caption || '';
+  img.loading  = 'lazy';
+  img.decoding = 'async';
+  img.onerror  = () => { img.src = photo.src; };
 
-    const ph = document.createElement('div');
-    ph.className = 'ph';
+  const ph = document.createElement('div');
+  ph.className = 'ph';
 
-    a.appendChild(thumb);
-    a.appendChild(ph);
-
-    if (photo.caption) {
-      const ov = document.createElement('div');
-      ov.className = 'overlay';
-      ov.innerHTML = `<p>${photo.caption}</p>`;
-      a.appendChild(ov);
-    }
-    return a;
+  a.appendChild(img);
+  a.appendChild(ph);
+  if (photo.caption) {
+    const ov = document.createElement('div');
+    ov.className = 'overlay';
+    ov.innerHTML = `<p>${photo.caption}</p>`;
+    a.appendChild(ov);
   }
+  return a;
+}
 
-  async function loadAndRender() {
-    let data = null;
-    try {
-      const res = await fetch('photos.json');
-      if (!res.ok) throw new Error(res.status);
-      data = await res.json();
-    } catch(e) {
-      console.warn('photos.json unavailable:', e.message);
-    }
+GALLERY_MAP.forEach(({ id, keys, cls }) => {
+  const grid = document.getElementById(id);
+  if (!grid) return;
+  const photos = keys.length === 2 ? PHOTOS[keys[0]]?.[keys[1]] : PHOTOS[keys[0]];
+  if (!photos?.length) return;
+  photos.forEach(p => grid.appendChild(buildCard(p, cls)));
+});
 
-    if (data) {
-      GALLERY_MAP.forEach(({ id, keys, cls }) => {
-        const grid = document.getElementById(id);
-        if (!grid) return;
-        const photos = keys.length === 2
-          ? data[keys[0]]?.[keys[1]]
-          : data[keys[0]];
-        if (!photos?.length) return;
-        grid.innerHTML = '';
-        photos.forEach(p => grid.appendChild(buildCard(p, cls)));
+const lightbox = new PhotoSwipeLightbox({ pswpModule: PhotoSwipe });
+
+lightbox.on('uiRegister', () => {
+  lightbox.pswp.ui.registerElement({
+    name: 'custom-caption', order: 9, isButton: false, appendTo: 'root', html: '',
+    onInit: (el, pswp) => {
+      pswp.on('change', () => {
+        const cap = pswp.currSlide?.data?.element?.dataset?.caption || '';
+        el.innerHTML = cap ? `<div class="pswp__custom-caption">${cap}</div>` : '';
       });
     }
+  });
+});
 
-    /* ── ONE PhotoSwipe instance ── */
-    const lightbox = new PhotoSwipeLightbox({
-      gallery: '.pswp-gallery',
-      children: 'a.photo-card',
-      pswpModule: PhotoSwipe,
+lightbox.init();
 
-      showHideAnimationType: 'fade',
-      bgOpacity: 0.95,
-      spacing: 0.08,
-      loop: true,
-      allowPanToNext: true,
-      clickToCloseNonZoomable: true,
-      closeOnVerticalDrag: true,
-      pinchToClose: true,
-      tapAction: 'toggle-controls',
-      doubleTapAction: 'zoom',
-      arrowKeys: true,
-      padding: { top:20, bottom:60, left:60, right:60 },
-    });
-
-    /*
-     * FIX 2 — PHOTOSWIPE dimensions:
-     * PhotoSwipe reads data-pswp-width/height from the <a> element.
-     * Because JSON has the real pixel sizes, we ensure they are passed correctly.
-     * We also add an addFilter so PhotoSwipe uses href as the image src.
-     */
-    lightbox.addFilter('itemData', (itemData, index) => {
-      const el = itemData.element;
-      if (!el) return itemData;
-      // Use href as the full-res image source
-      const src = el.getAttribute('href');
-      if (src) itemData.src = src;
-      // Use data-pswp-width/height (set from JSON)
-      const w = parseInt(el.getAttribute('data-pswp-width'),  10);
-      const h = parseInt(el.getAttribute('data-pswp-height'), 10);
-      if (w > 0) itemData.w = w;
-      if (h > 0) itemData.h = h;
-      return itemData;
-    });
-
-    /* Caption */
-    lightbox.on('uiRegister', () => {
-      lightbox.pswp.ui.registerElement({
-        name: 'custom-caption',
-        order: 9,
-        isButton: false,
-        appendTo: 'root',
-        html: '',
-        onInit: (el, pswp) => {
-          pswp.on('change', () => {
-            const cap = pswp.currSlide?.data?.element?.getAttribute('data-caption') || '';
-            el.innerHTML = cap ? `<div class="pswp__custom-caption">${cap}</div>` : '';
-          });
-        }
-      });
-    });
-
-    lightbox.init();
-    window._pswpLightbox = lightbox;
-  }
-
-  loadAndRender();
+document.addEventListener('click', e => {
+  const card = e.target.closest('a.photo-card[data-pswp-width]');
+  if (!card) return;
+  e.preventDefault();
+  const grid  = card.closest('.gallery-grid');
+  if (!grid) return;
+  const cards = Array.from(grid.querySelectorAll('a.photo-card[data-pswp-width]'));
+  const index = cards.indexOf(card);
+  if (index < 0) return;
+  const dataSource = cards.map(c => ({
+    src:     c.getAttribute('href'),
+    w:       parseInt(c.dataset.pswpWidth)  || 1600,
+    h:       parseInt(c.dataset.pswpHeight) || 1067,
+    element: c,
+  }));
+  lightbox.loadAndOpen(index, dataSource);
+});
 </script>
 
-<!-- ══ UI: section switching / slideshow / dropdowns ══ -->
 <script>
-  /* ── SECTION SWITCHING ── */
-  function showSection(id) {
-    closeAllDropdowns();
-    document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.nav-item > a').forEach(a => a.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    const el = document.getElementById('nav-' + id);
-    if (el) el.classList.add('active');
-    window.scrollTo(0, 0);
-  }
-
-  function showGallery(sec, tab) {
-    showSection(sec);
-    const btns = document.querySelectorAll('#' + sec + ' .sub-tabs button');
-    btns.forEach(b => b.classList.remove('active'));
-    btns.forEach(b => {
-      if (b.getAttribute('onclick')?.includes("'" + tab + "'")) b.classList.add('active');
-    });
-    document.querySelectorAll('#' + sec + ' .sub-content').forEach(c => c.classList.remove('active'));
-    const t = document.getElementById(sec + '-' + tab);
-    if (t) t.classList.add('active');
-  }
-
-  function switchTab(sec, tab, btn) {
-    document.querySelectorAll('#' + sec + ' .sub-tabs button').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.querySelectorAll('#' + sec + ' .sub-content').forEach(c => c.classList.remove('active'));
-    const t = document.getElementById(sec + '-' + tab);
-    if (t) t.classList.add('active');
-  }
-
-  /* ── DROPDOWNS ── */
-  function closeAllDropdowns() {
-    document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
-  }
-
-  ['italy','japan'].forEach(id => {
-    const item = document.getElementById('item-' + id);
-    const dd   = document.getElementById('dd-' + id);
-    if (!item || !dd) return;
-    let leaveTimer;
-    item.addEventListener('mouseenter', () => { clearTimeout(leaveTimer); closeAllDropdowns(); dd.classList.add('open'); });
-    item.addEventListener('mouseleave', () => { leaveTimer = setTimeout(() => dd.classList.remove('open'), 120); });
-    dd.addEventListener('mouseenter',   () => clearTimeout(leaveTimer));
-    dd.addEventListener('mouseleave',   () => { leaveTimer = setTimeout(() => dd.classList.remove('open'), 120); });
+function showSection(id) {
+  closeAllDropdowns();
+  document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item > a').forEach(a => a.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const nav = document.getElementById('nav-' + id);
+  if (nav) nav.classList.add('active');
+  window.scrollTo(0, 0);
+}
+function showGallery(sec, tab) {
+  showSection(sec);
+  document.querySelectorAll('#' + sec + ' .sub-tabs button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#' + sec + ' .sub-tabs button').forEach(b => {
+    if (b.getAttribute('onclick')?.includes("'" + tab + "'")) b.classList.add('active');
   });
+  document.querySelectorAll('#' + sec + ' .sub-content').forEach(c => c.classList.remove('active'));
+  const t = document.getElementById(sec + '-' + tab);
+  if (t) t.classList.add('active');
+}
+function switchTab(sec, tab, btn) {
+  document.querySelectorAll('#' + sec + ' .sub-tabs button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#' + sec + ' .sub-content').forEach(c => c.classList.remove('active'));
+  const t = document.getElementById(sec + '-' + tab);
+  if (t) t.classList.add('active');
+}
+function closeAllDropdowns() {
+  document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
+}
+['italy','japan'].forEach(id => {
+  const item = document.getElementById('item-' + id);
+  const dd   = document.getElementById('dd-'   + id);
+  if (!item || !dd) return;
+  let t;
+  item.addEventListener('mouseenter', () => { clearTimeout(t); closeAllDropdowns(); dd.classList.add('open'); });
+  item.addEventListener('mouseleave', () => { t = setTimeout(() => dd.classList.remove('open'), 120); });
+  dd.addEventListener('mouseenter',   () => clearTimeout(t));
+  dd.addEventListener('mouseleave',   () => { t = setTimeout(() => dd.classList.remove('open'), 120); });
+});
+document.addEventListener('click', e => {
+  if (!e.target.closest('.nav-item')) closeAllDropdowns();
+});
 
-  document.addEventListener('click', e => {
-    if (!e.target.closest('.nav-item')) closeAllDropdowns();
-  });
-
-  /* ── SLIDESHOW ── */
-  const slides = document.querySelectorAll('.slide');
-  const dotsEl = document.getElementById('dots');
-  let cur = 0, timer;
-
-  slides.forEach((_, i) => {
-    const d = document.createElement('button');
-    d.className = 'dot' + (i === 0 ? ' active' : '');
-    d.setAttribute('aria-label', 'Slide ' + (i+1));
-    d.onclick = () => goTo(i);
-    dotsEl.appendChild(d);
-  });
-
-  function goTo(n) {
-    slides[cur].classList.remove('active');
-    dotsEl.children[cur].classList.remove('active');
-    cur = (n + slides.length) % slides.length;
-    slides[cur].classList.add('active');
-    dotsEl.children[cur].classList.add('active');
-    clearInterval(timer);
-    timer = setInterval(() => goTo(cur + 1), 4500);
-  }
+const slides = document.querySelectorAll('.slide');
+const dotsEl = document.getElementById('dots');
+let cur = 0, timer;
+slides.forEach((_, i) => {
+  const d = document.createElement('button');
+  d.className = 'dot' + (i === 0 ? ' active' : '');
+  d.setAttribute('aria-label', 'Slide ' + (i+1));
+  d.onclick = () => goTo(i);
+  dotsEl.appendChild(d);
+});
+function goTo(n) {
+  slides[cur].classList.remove('active');
+  dotsEl.children[cur].classList.remove('active');
+  cur = (n + slides.length) % slides.length;
+  slides[cur].classList.add('active');
+  dotsEl.children[cur].classList.add('active');
+  clearInterval(timer);
   timer = setInterval(() => goTo(cur + 1), 4500);
+}
+timer = setInterval(() => goTo(cur + 1), 4500);
 </script>
 </body>
 </html>

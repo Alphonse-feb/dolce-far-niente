@@ -3,421 +3,421 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dolce far niente</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.css">
+<title>Scan Folders — Dolce far niente</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Jost:wght@300;400&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--black:#111;--white:#f8f6f2;--gray:#888;--accent:#c8b89a}
-body{font-family:'Jost',sans-serif;font-weight:300;background:var(--white);color:var(--black);letter-spacing:.05em}
+* { box-sizing:border-box; margin:0; padding:0; }
+:root { --bg:#f8f6f2; --surface:#fff; --black:#111; --gray:#888; --border:rgba(0,0,0,0.09); --accent:#c8b89a; --success:#2e7d52; --danger:#c0392b; }
+body { font-family:'Jost',sans-serif; font-weight:300; background:var(--bg); color:var(--black); min-height:100vh; padding:2.5rem 2rem 4rem; max-width:860px; margin:0 auto; }
 
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;justify-content:space-between;align-items:center;padding:0 2.5rem;height:58px;background:rgba(248,246,242,0.96);backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,0,0,0.06)}
-.logo{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:300;font-style:italic;letter-spacing:.08em;text-decoration:none;color:var(--black);cursor:pointer;white-space:nowrap;flex-shrink:0}
-.nav-links{display:flex;list-style:none;align-items:center;height:100%}
-.nav-item{position:relative;height:100%;display:flex;align-items:center}
-.nav-item>a{display:flex;align-items:center;height:100%;padding:0 1.2rem;font-size:.66rem;font-weight:300;letter-spacing:.22em;text-transform:uppercase;text-decoration:none;color:var(--black);transition:color .2s;cursor:pointer;white-space:nowrap}
-.nav-item>a:hover,.nav-item>a.active{color:var(--accent)}
-.dropdown{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);background:rgba(248,246,242,0.98);backdrop-filter:blur(10px);border:1px solid rgba(0,0,0,0.08);border-radius:2px;min-width:180px;padding:.4rem 0;z-index:400;box-shadow:0 4px 20px rgba(0,0,0,0.07)}
-.dropdown.open{display:block}
-.dropdown a{display:block;padding:.55rem 1.3rem;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;color:var(--black);white-space:nowrap;cursor:pointer;transition:color .15s,background .15s}
-.dropdown a:hover{color:var(--accent);background:rgba(200,184,154,0.07)}
+h1 { font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:300; font-size:2rem; letter-spacing:.04em; margin-bottom:.3rem; }
+.subtitle { font-size:.68rem; letter-spacing:.18em; text-transform:uppercase; color:var(--gray); margin-bottom:2.5rem; }
 
-/* HERO */
-.hero{height:100vh;position:relative;overflow:hidden}
-.slides{position:absolute;inset:0}
-.slide{position:absolute;inset:0;opacity:0;transition:opacity 1.5s ease}
-.slide.active{opacity:1}
-.slide img{width:100%;height:100%;object-fit:cover;display:block}
-.hero::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,0.28);z-index:1}
-.slide-dots{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:3;display:flex;gap:8px}
-.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.3);cursor:pointer;border:none;transition:background .3s}
-.dot.active{background:rgba(255,255,255,0.88)}
+.card { background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:1.6rem 1.8rem; margin-bottom:1.2rem; }
+.card-title { font-size:.68rem; letter-spacing:.2em; text-transform:uppercase; color:var(--gray); margin-bottom:1.2rem; display:flex; align-items:center; gap:.6rem; }
+.step-badge { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; background:var(--accent); color:#fff; font-size:.62rem; flex-shrink:0; }
 
-/* SECTIONS */
-section{display:none;animation:fadeIn .35s ease}
-section.active{display:block}
-@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-
-/* ── HOME DESTINATION GRID (booooooom style) ──
-   White background, generous padding, image above text,
-   2×2 layout, consistent square-ish thumbnails            */
-.dest-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:3.5rem 4rem;
-  padding:5rem 8vw 5rem;
-  background:var(--white);
+/* category selector */
+.cat-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(160px,1fr)); gap:.5rem; margin-bottom:1.2rem; }
+.cat-btn {
+  padding:.55rem .8rem; border:1px solid var(--border); border-radius:2px;
+  background:none; font-family:'Jost',sans-serif; font-size:.72rem; font-weight:300;
+  letter-spacing:.08em; color:var(--black); cursor:pointer; text-align:left;
+  transition:all .15s;
 }
-.dest-item{
-  display:block;
-  text-decoration:none;
-  cursor:pointer;
-}
-/* thumbnail wrapper — fixed aspect, no overflow text */
-.dest-thumb{
-  display:block;
-  aspect-ratio:4/3;
-  overflow:hidden;
-  background:#e8e5e0;
-  margin-bottom:1.1rem;
-}
-.dest-thumb img{
-  width:100%;height:100%;
-  object-fit:cover;display:block;
-  transition:transform .6s ease, filter .4s ease;
-}
-.dest-item:hover .dest-thumb img{transform:scale(1.04);filter:brightness(.92)}
+.cat-btn:hover { border-color:var(--accent); }
+.cat-btn.selected { background:var(--accent); border-color:var(--accent); color:#fff; }
 
-/* text below image */
-.dest-meta{padding:0 .1rem}
-.dest-title{
-  font-family:'Jost',sans-serif;
-  font-size:.7rem;
-  font-weight:300;
-  letter-spacing:.22em;
-  text-transform:uppercase;
-  color:var(--black);       /* same as nav links */
-  display:block;
-  margin-bottom:.3rem;
-  line-height:1.4;
+/* file drop zone */
+.drop-zone {
+  border:1.5px dashed var(--accent); border-radius:3px; padding:1.8rem;
+  text-align:center; cursor:pointer; transition:background .2s; position:relative;
+  margin-bottom:1rem;
 }
-.dest-sub{
-  font-family:'Jost',sans-serif;
-  font-size:.62rem;
-  font-weight:300;
-  letter-spacing:.18em;
-  text-transform:uppercase;
-  color:var(--gray);
-  display:block;
+.drop-zone:hover, .drop-zone.drag-active { background:rgba(200,184,154,0.07); }
+.drop-zone input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+.drop-zone .icon { font-size:1.5rem; opacity:.35; margin-bottom:.5rem; }
+.drop-zone p { font-size:.85rem; color:var(--black); margin-bottom:.2rem; }
+.drop-zone small { font-size:.68rem; color:var(--gray); }
+
+/* file list preview */
+.file-preview { max-height:220px; overflow-y:auto; border:1px solid var(--border); border-radius:2px; margin-bottom:1rem; }
+.file-row { display:flex; align-items:center; gap:10px; padding:.45rem .8rem; font-size:.72rem; border-bottom:1px solid rgba(0,0,0,0.04); }
+.file-row:last-child { border-bottom:none; }
+.file-row .fname { flex:1; color:var(--black); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.file-row .fsize { color:var(--gray); flex-shrink:0; font-size:.65rem; }
+.file-count { font-size:.72rem; color:var(--gray); margin-bottom:.8rem; }
+
+/* queue */
+.queue-item {
+  display:flex; align-items:center; gap:12px; padding:.65rem .9rem;
+  background:var(--bg); border-radius:2px; margin-bottom:.4rem; font-size:.75rem;
 }
-.dest-item:hover .dest-title{color:var(--accent)}
-
-/* GALLERY CARDS */
-.photo-card{position:relative;overflow:hidden;cursor:pointer;background:#222;display:block;text-decoration:none;aspect-ratio:4/5}
-.gallery-grid a.photo-card{aspect-ratio:3/2}
-.photo-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform .65s ease,filter .4s ease}
-.photo-card:hover img{transform:scale(1.04);filter:brightness(.78)}
-.photo-card .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.35rem;pointer-events:none}
-.photo-card .ph .label-main{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:clamp(1.2rem,3vw,2rem);color:rgba(255,255,255,0.6);letter-spacing:.06em;text-transform:none}
-.photo-card .ph .label-sub{font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,0.35)}
-.overlay{position:absolute;bottom:0;left:0;right:0;padding:2rem 1.2rem 1.2rem;background:linear-gradient(transparent,rgba(0,0,0,0.5));opacity:0;transition:opacity .3s;pointer-events:none}
-.photo-card:hover .overlay{opacity:1}
-.overlay p{color:#fff;font-size:.63rem;letter-spacing:.18em;text-transform:uppercase}
-.ph-italy{background:#2d2520}.ph-miyako{background:#1e2830}.ph-hok{background:#202628}.ph-oki{background:#1a2622}.ph-routine{background:#252220}
-
-/* GALLERY PAGE */
-.gallery-header{padding:5.5rem 3rem 2rem;border-bottom:1px solid rgba(0,0,0,0.07)}
-.gallery-header h2{font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:300;font-style:italic}
-.sub-tabs{display:flex;gap:2rem;padding:1rem 3rem 0;border-bottom:1px solid rgba(0,0,0,0.05);flex-wrap:wrap}
-.sub-tabs button{background:none;border:none;border-bottom:2px solid transparent;padding:.5rem 0;font-family:'Jost',sans-serif;font-size:.62rem;font-weight:300;letter-spacing:.2em;text-transform:uppercase;color:var(--gray);cursor:pointer;transition:color .2s,border-color .2s;margin-bottom:-1px}
-.sub-tabs button.active,.sub-tabs button:hover{color:var(--black);border-bottom-color:var(--black)}
-.gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:3px}
-.sub-content{display:none}.sub-content.active{display:block}
-
-footer{padding:2rem 3rem;border-top:1px solid rgba(0,0,0,0.07);display:flex;justify-content:center}
-footer p{font-size:.66rem;letter-spacing:.12em;color:var(--gray)}
-
-.pswp__bg{background:#0c0c0c}
-.pswp{--pswp-root-z-index:500}
-.pswp__custom-caption{position:absolute;bottom:0;left:0;right:0;padding:.75rem 1.5rem;background:linear-gradient(transparent,rgba(0,0,0,0.6));color:rgba(255,255,255,0.9);font-family:'Jost',sans-serif;font-size:.78rem;font-weight:300;letter-spacing:.08em;text-align:center;pointer-events:none}
-
-@media(max-width:768px){
-  nav{padding:0 1rem}
-  .nav-item>a{padding:0 .7rem;font-size:.58rem}
-  .dest-grid{grid-template-columns:1fr;gap:2.5rem;padding:3rem 6vw}
-  .gallery-grid{grid-template-columns:repeat(2,1fr)}
-  .gallery-header{padding:4.5rem 1.2rem 1.5rem}
-  .sub-tabs{padding:.8rem 1.2rem 0;gap:1rem}
+.queue-item .badge {
+  padding:.2rem .6rem; border-radius:2px; font-size:.6rem; letter-spacing:.1em;
+  text-transform:uppercase; background:rgba(200,184,154,0.25); color:#6b5a3e; flex-shrink:0;
 }
+.queue-item .qname { flex:1; color:var(--black); }
+.queue-item .qcount { color:var(--gray); flex-shrink:0; }
+.queue-item .qdel { background:none; border:none; color:var(--gray); cursor:pointer; font-size:1rem; padding:0 .2rem; }
+.queue-item .qdel:hover { color:var(--danger); }
+
+/* buttons */
+.btn-row { display:flex; gap:.8rem; flex-wrap:wrap; align-items:center; margin-top:1rem; }
+.btn {
+  padding:.55rem 1.5rem; font-family:'Jost',sans-serif; font-size:.65rem; font-weight:300;
+  letter-spacing:.2em; text-transform:uppercase; border-radius:2px; cursor:pointer; transition:all .2s;
+}
+.btn-primary { background:var(--black); color:#fff; border:1px solid var(--black); }
+.btn-primary:hover { background:#333; }
+.btn-accent  { background:var(--accent); color:#fff; border:1px solid var(--accent); }
+.btn-accent:hover  { background:#b8a48a; }
+.btn-outline { background:none; color:var(--black); border:1px solid var(--border); }
+.btn-outline:hover { border-color:var(--black); }
+.btn:disabled { opacity:.35; cursor:not-allowed; }
+
+/* json output */
+textarea { width:100%; height:160px; padding:.8rem; border:1px solid var(--border); border-radius:2px; font-family:'Courier New',monospace; font-size:.7rem; line-height:1.6; background:#fafaf8; resize:vertical; outline:none; margin-top:1rem; }
+
+.note { font-size:.72rem; line-height:1.9; color:var(--gray); margin-top:1rem; padding:1rem 1.2rem; background:#fffdf8; border-left:3px solid var(--accent); border-radius:2px; }
+.note strong { color:var(--black); }
+.note code { background:#f0ede8; padding:.1rem .35rem; border-radius:2px; font-size:.68rem; }
+
+.msg-ok   { color:var(--success); font-size:.72rem; }
+.msg-warn { color:var(--danger);  font-size:.72rem; }
 </style>
 </head>
 <body>
 
-<nav>
-  <a class="logo" onclick="showSection('home')">Dolce far niente</a>
-  <ul class="nav-links">
-    <li class="nav-item"><a onclick="showSection('home')" id="nav-home" class="active">Home</a></li>
-    <li class="nav-item" id="item-italy">
-      <a onclick="showSection('italy')" id="nav-italy">Italy</a>
-      <div class="dropdown" id="dd-italy">
-        <a onclick="showGallery('italy','rome')">Rome</a>
-        <a onclick="showGallery('italy','vatican')">Vatican</a>
-        <a onclick="showGallery('italy','firenze')">Firenze</a>
-        <a onclick="showGallery('italy','napoli')">Napoli</a>
-      </div>
-    </li>
-    <li class="nav-item" id="item-japan">
-      <a onclick="showSection('japan')" id="nav-japan">Japan</a>
-      <div class="dropdown" id="dd-japan">
-        <a onclick="showGallery('japan','miyako')">Miyako 宮古島</a>
-        <a onclick="showGallery('japan','hokkaido')">Hokkaido 北海道</a>
-        <a onclick="showGallery('japan','okinawa')">Okinawa 沖繩</a>
-      </div>
-    </li>
-    <li class="nav-item"><a onclick="showSection('routine')" id="nav-routine">Routine</a></li>
-  </ul>
-</nav>
+<h1>Scan Folders</h1>
+<p class="subtitle">Generate photos.json — one folder at a time</p>
 
-<!-- HOME -->
-<section id="home" class="active">
-  <!-- Hero slideshow — unchanged -->
-  <div class="hero">
-    <div class="slides">
-      <div class="slide active"><img src="images/Japan/Okinawa/GR011957.JPG" fetchpriority="high" alt=""></div>
-      <div class="slide"><img src="images/Italy/Rome/DSC09929.JPG" loading="lazy" alt=""></div>
-      <div class="slide"><img src="images/Routine/img1664474865535.jpg" loading="lazy" alt=""></div>
-      <div class="slide"><img src="images/Japan/Hokkaido/GR010670.JPG" loading="lazy" alt=""></div>
-      <div class="slide"><img src="images/Italy/Firenze/DSC00436.JPG" loading="lazy" alt=""></div>
-    </div>
-    <div class="slide-dots" id="dots"></div>
+<!-- STEP 1: pick category -->
+<div class="card">
+  <div class="card-title"><span class="step-badge">1</span> 選擇分類 — 這批照片屬於哪裡？</div>
+  <div class="cat-grid" id="cat-grid">
+    <!-- Italy -->
+    <button class="cat-btn" data-sec="italy"   data-tab="rome"    onclick="selectCat(this)">Italy · Rome</button>
+    <button class="cat-btn" data-sec="italy"   data-tab="vatican" onclick="selectCat(this)">Italy · Vatican</button>
+    <button class="cat-btn" data-sec="italy"   data-tab="firenze" onclick="selectCat(this)">Italy · Firenze</button>
+    <button class="cat-btn" data-sec="italy"   data-tab="napoli"  onclick="selectCat(this)">Italy · Napoli</button>
+    <!-- Japan -->
+    <button class="cat-btn" data-sec="japan"   data-tab="miyako"   onclick="selectCat(this)">Japan · Miyako</button>
+    <button class="cat-btn" data-sec="japan"   data-tab="hokkaido" onclick="selectCat(this)">Japan · Hokkaido</button>
+    <button class="cat-btn" data-sec="japan"   data-tab="okinawa"  onclick="selectCat(this)">Japan · Okinawa</button>
+    <!-- Routine -->
+    <button class="cat-btn" data-sec="routine" data-tab=""         onclick="selectCat(this)">Routine</button>
   </div>
+  <p id="cat-msg" class="msg-warn" style="display:none;">請先選擇分類</p>
+</div>
 
-  <!-- Destination grid — booooooom style: 2×2, image + text below -->
-  <div class="dest-grid">
-
-    <!-- ITALY -->
-    <a class="dest-item" onclick="showGallery('italy','rome')">
-      <span class="dest-thumb">
-        <img src="images/Italy/Rome/thumbs/DSC09959.JPG" loading="lazy" decoding="async"
-             alt="Italy" onerror="this.src='images/Italy/Rome/DSC09959.JPG'">
-      </span>
-      <div class="dest-meta">
-        <span class="dest-title">Italy</span>
-        <span class="dest-sub">Rome · Vatican · Firenze · Napoli</span>
-      </div>
-    </a>
-
-    <!-- MIYAKO -->
-    <a class="dest-item" onclick="showGallery('japan','miyako')">
-      <span class="dest-thumb">
-        <img src="images/Japan/Miyako/thumbs/GR013070.JPG" loading="lazy" decoding="async"
-             alt="Miyako 宮古島" onerror="this.src='images/Japan/Miyako/GR013070.JPG'">
-      </span>
-      <div class="dest-meta">
-        <span class="dest-title">Miyako</span>
-        <span class="dest-sub">宮古島</span>
-      </div>
-    </a>
-
-    <!-- HOKKAIDO -->
-    <a class="dest-item" onclick="showGallery('japan','hokkaido')">
-      <span class="dest-thumb">
-        <img src="images/Japan/Hokkaido/thumbs/20240908_094407.JPG" loading="lazy" decoding="async"
-             alt="Hokkaido 北海道" onerror="this.src='images/Japan/Hokkaido/20240908_094407.JPG'">
-      </span>
-      <div class="dest-meta">
-        <span class="dest-title">Hokkaido</span>
-        <span class="dest-sub">北海道</span>
-      </div>
-    </a>
-
-    <!-- OKINAWA — unchanged from original -->
-    <a class="dest-item" onclick="showGallery('japan','okinawa')">
-      <span class="dest-thumb">
-        <img src="images/Japan/Okinawa/thumbs/GR012034.JPG" loading="lazy" decoding="async"
-             alt="Okinawa 沖繩" onerror="this.src='images/Japan/Okinawa/GR012034.JPG'">
-      </span>
-      <div class="dest-meta">
-        <span class="dest-title">Okinawa</span>
-        <span class="dest-sub">沖繩</span>
-      </div>
-    </a>
-
+<!-- STEP 2: pick files -->
+<div class="card">
+  <div class="card-title"><span class="step-badge">2</span> 選擇這個分類的照片檔案</div>
+  <div class="drop-zone" id="drop-zone">
+    <input type="file" id="file-input" accept=".jpg,.JPG,.jpeg,.JPEG,.png,.PNG,.webp,.WEBP" multiple>
+    <div class="icon">🖼</div>
+    <p>點擊選取照片 或 拖曳進來</p>
+    <small>可一次多選，支援 JPG · PNG · WebP</small>
   </div>
-  <footer><p>© 2025 · All rights reserved</p></footer>
-</section>
+  <div id="file-count" class="file-count" style="display:none;"></div>
+  <div id="file-preview" class="file-preview" style="display:none;"></div>
 
-<!-- ITALY -->
-<section id="italy">
-  <div class="gallery-header"><h2>Italy</h2></div>
-  <div class="sub-tabs">
-    <button class="active" onclick="switchTab('italy','rome',this)">Rome</button>
-    <button onclick="switchTab('italy','vatican',this)">Vatican</button>
-    <button onclick="switchTab('italy','firenze',this)">Firenze</button>
-    <button onclick="switchTab('italy','napoli',this)">Napoli</button>
+  <div class="btn-row">
+    <button class="btn btn-accent" id="add-btn" onclick="addToQueue()" disabled>加入佇列 ＋</button>
+    <span id="add-msg" style="font-size:.7rem;color:var(--gray);"></span>
   </div>
-  <div id="italy-rome"    class="sub-content active"><div class="gallery-grid" id="gallery-italy-rome"></div></div>
-  <div id="italy-vatican" class="sub-content"><div class="gallery-grid" id="gallery-italy-vatican"></div></div>
-  <div id="italy-firenze" class="sub-content"><div class="gallery-grid" id="gallery-italy-firenze"></div></div>
-  <div id="italy-napoli"  class="sub-content"><div class="gallery-grid" id="gallery-italy-napoli"></div></div>
-  <footer><p>© 2025 · All rights reserved</p></footer>
-</section>
+</div>
 
-<!-- JAPAN -->
-<section id="japan">
-  <div class="gallery-header"><h2>Japan</h2></div>
-  <div class="sub-tabs">
-    <button class="active" onclick="switchTab('japan','miyako',this)">Miyako 宮古島</button>
-    <button onclick="switchTab('japan','hokkaido',this)">Hokkaido 北海道</button>
-    <button onclick="switchTab('japan','okinawa',this)">Okinawa 沖繩</button>
+<!-- STEP 3: queue -->
+<div class="card" id="queue-card" style="display:none;">
+  <div class="card-title"><span class="step-badge">3</span> 待處理佇列 — 可繼續加入其他分類</div>
+  <div id="queue-list"></div>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="generateJSON()">Generate photos.json</button>
+    <button class="btn btn-outline" onclick="resetAll()">全部清除</button>
   </div>
-  <div id="japan-miyako"   class="sub-content active"><div class="gallery-grid" id="gallery-japan-miyako"></div></div>
-  <div id="japan-hokkaido" class="sub-content"><div class="gallery-grid" id="gallery-japan-hokkaido"></div></div>
-  <div id="japan-okinawa"  class="sub-content"><div class="gallery-grid" id="gallery-japan-okinawa"></div></div>
-  <footer><p>© 2025 · All rights reserved</p></footer>
-</section>
+</div>
 
-<!-- ROUTINE -->
-<section id="routine">
-  <div class="gallery-header"><h2>Routine</h2></div>
-  <div class="gallery-grid" id="gallery-routine"></div>
-  <footer><p>© 2025 · All rights reserved</p></footer>
-</section>
-
-<script type="module">
-import PhotoSwipeLightbox from 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.esm.js';
-import PhotoSwipe from 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.esm.js';
-
-const PHOTOS = {"italy":{"rome":[{"src":"images/Italy/Rome/DSC00181.JPG","width":6000,"height":3376,"caption":"Colosseum","thumb":"images/Italy/Rome/thumbs/DSC00181.JPG"},{"src":"images/Italy/Rome/DSC00125.JPG","width":6000,"height":3376,"caption":"Foro Romano (Palatine Hill view)","thumb":"images/Italy/Rome/thumbs/DSC00125.JPG"},{"src":"images/Italy/Rome/DSC00123.JPG","width":6000,"height":3376,"caption":"Foro Romano","thumb":"images/Italy/Rome/thumbs/DSC00123.JPG"},{"src":"images/Italy/Rome/DSC00174.JPG","width":6000,"height":3376,"caption":"Foro Romano","thumb":"images/Italy/Rome/thumbs/DSC00174.JPG"},{"src":"images/Italy/Rome/DSC00145.JPG","width":3376,"height":6000,"caption":"Tempio di Antonino e Faustina","thumb":"images/Italy/Rome/thumbs/DSC00145.JPG"},{"src":"images/Italy/Rome/DSC00146.JPG","width":6000,"height":3376,"caption":"Tempio di Antonino e Faustina","thumb":"images/Italy/Rome/thumbs/DSC00146.JPG"},{"src":"images/Italy/Rome/DSC00194.JPG","width":6000,"height":3376,"caption":"Colosseum","thumb":"images/Italy/Rome/thumbs/DSC00194.JPG"},{"src":"images/Italy/Rome/DSC00186.JPG","width":6000,"height":3376,"caption":"Colosseum","thumb":"images/Italy/Rome/thumbs/DSC00186.JPG"},{"src":"images/Italy/Rome/DSC00135.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC00135.JPG"},{"src":"images/Italy/Rome/DSC00183.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC00183.JPG"},{"src":"images/Italy/Rome/DSC00114.JPG","width":6000,"height":3376,"caption":"Arch of Titus (Menorah)","thumb":"images/Italy/Rome/thumbs/DSC00114.JPG"},{"src":"images/Italy/Rome/DSC09572.JPG","width":6000,"height":3376,"caption":"Aqua Claudia","thumb":"images/Italy/Rome/thumbs/DSC09572.JPG"},{"src":"images/Italy/Rome/DSC09941.JPG","width":6000,"height":3376,"caption":"Pantheon","thumb":"images/Italy/Rome/thumbs/DSC09941.JPG"},{"src":"images/Italy/Rome/DSC09479.JPG","width":6000,"height":3376,"caption":"Pantheon","thumb":"images/Italy/Rome/thumbs/DSC09479.JPG"},{"src":"images/Italy/Rome/DSC09475.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09475.JPG"},{"src":"images/Italy/Rome/DSC00047.JPG","width":6000,"height":3376,"caption":"EUR - Palazzo della Civiltà Italiana","thumb":"images/Italy/Rome/thumbs/DSC00047.JPG"},{"src":"images/Italy/Rome/DSC00051.JPG","width":6000,"height":3376,"caption":"EUR","thumb":"images/Italy/Rome/thumbs/DSC00051.JPG"},{"src":"images/Italy/Rome/DSC00056.JPG","width":6000,"height":3376,"caption":"EUR","thumb":"images/Italy/Rome/thumbs/DSC00056.JPG"},{"src":"images/Italy/Rome/DSC00199.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC00199.JPG"},{"src":"images/Italy/Rome/DSC00200.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC00200.JPG"},{"src":"images/Italy/Rome/DSC09408.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09408.JPG"},{"src":"images/Italy/Rome/DSC09458.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09458.JPG"},{"src":"images/Italy/Rome/DSC09465.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09465.JPG"},{"src":"images/Italy/Rome/DSC09470.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09470.JPG"},{"src":"images/Italy/Rome/DSC09525.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09525.JPG"},{"src":"images/Italy/Rome/DSC09595.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09595.JPG"},{"src":"images/Italy/Rome/DSC09599.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09599.JPG"},{"src":"images/Italy/Rome/DSC09741.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09741.JPG"},{"src":"images/Italy/Rome/DSC09749.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09749.JPG"},{"src":"images/Italy/Rome/DSC09890.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09890.JPG"},{"src":"images/Italy/Rome/DSC09892.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09892.JPG"},{"src":"images/Italy/Rome/DSC09929.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09929.JPG"},{"src":"images/Italy/Rome/DSC09933.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09933.JPG"},{"src":"images/Italy/Rome/DSC09942.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09942.JPG"},{"src":"images/Italy/Rome/DSC09954.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09954.JPG"},{"src":"images/Italy/Rome/DSC09957.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09957.JPG"},{"src":"images/Italy/Rome/DSC09959.JPG","width":6000,"height":3376,"caption":"Pantheon","thumb":"images/Italy/Rome/thumbs/DSC09959.JPG"},{"src":"images/Italy/Rome/DSC09966.JPG","width":3376,"height":6000,"caption":"Pantheon","thumb":"images/Italy/Rome/thumbs/DSC09966.JPG"},{"src":"images/Italy/Rome/DSC09967.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09967.JPG"},{"src":"images/Italy/Rome/DSC09986.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Italy/Rome/thumbs/DSC09986.JPG"}],"vatican":[{"src":"images/Italy/Vatican/DSC09603.JPG","width":6000,"height":3376,"caption":"Vatican Museums","thumb":"images/Italy/Vatican/thumbs/DSC09603.JPG"},{"src":"images/Italy/Vatican/DSC09653.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09653.JPG"},{"src":"images/Italy/Vatican/DSC09668.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09668.JPG"},{"src":"images/Italy/Vatican/DSC09679.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09679.JPG"},{"src":"images/Italy/Vatican/DSC09704.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09704.JPG"},{"src":"images/Italy/Vatican/DSC09710.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09710.JPG"},{"src":"images/Italy/Vatican/DSC09713.JPG","width":6000,"height":3376,"caption":"Angelic Landscape (Salvador Dalí)","thumb":"images/Italy/Vatican/thumbs/DSC09713.JPG"},{"src":"images/Italy/Vatican/DSC09714.JPG","width":3376,"height":6000,"caption":"Study for \"Christ of Saint John of the Cross\"","thumb":"images/Italy/Vatican/thumbs/DSC09714.JPG"},{"src":"images/Italy/Vatican/DSC09750.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09750.JPG"},{"src":"images/Italy/Vatican/DSC09752.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09752.JPG"},{"src":"images/Italy/Vatican/DSC09763.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09763.JPG"},{"src":"images/Italy/Vatican/DSC09778.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09778.JPG"},{"src":"images/Italy/Vatican/DSC09810.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09810.JPG"},{"src":"images/Italy/Vatican/DSC09815.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09815.JPG"},{"src":"images/Italy/Vatican/DSC09840.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09840.JPG"},{"src":"images/Italy/Vatican/DSC09841.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09841.JPG"},{"src":"images/Italy/Vatican/DSC09846.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09846.JPG"},{"src":"images/Italy/Vatican/DSC09877.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Vatican/thumbs/DSC09877.JPG"}],"firenze":[{"src":"images/Italy/Firenze/DSC00239.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00239.JPG"},{"src":"images/Italy/Firenze/DSC00245.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00245.JPG"},{"src":"images/Italy/Firenze/DSC00252.JPG","width":6000,"height":3376,"caption":"Basilica di Santa Maria Novella","thumb":"images/Italy/Firenze/thumbs/DSC00252.JPG"},{"src":"images/Italy/Firenze/DSC00283.JPG","width":6000,"height":3376,"caption":"Battistero di San Giovanni","thumb":"images/Italy/Firenze/thumbs/DSC00283.JPG"},{"src":"images/Italy/Firenze/DSC00294.JPG","width":6000,"height":3376,"caption":"Campanile di Giotto","thumb":"images/Italy/Firenze/thumbs/DSC00294.JPG"},{"src":"images/Italy/Firenze/DSC00301.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00301.JPG"},{"src":"images/Italy/Firenze/DSC00303.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00303.JPG"},{"src":"images/Italy/Firenze/DSC00304.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00304.JPG"},{"src":"images/Italy/Firenze/DSC00305.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00305.JPG"},{"src":"images/Italy/Firenze/DSC00328.JPG","width":6000,"height":3376,"caption":"Brunelleschi","thumb":"images/Italy/Firenze/thumbs/DSC00328.JPG"},{"src":"images/Italy/Firenze/DSC00337.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00337.JPG"},{"src":"images/Italy/Firenze/DSC00338.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00338.JPG"},{"src":"images/Italy/Firenze/DSC00368.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00368.JPG"},{"src":"images/Italy/Firenze/DSC00373.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00373.JPG"},{"src":"images/Italy/Firenze/DSC00374.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00374.JPG"},{"src":"images/Italy/Firenze/DSC00390.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00390.JPG"},{"src":"images/Italy/Firenze/DSC00395.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00395.JPG"},{"src":"images/Italy/Firenze/DSC00436.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00436.JPG"},{"src":"images/Italy/Firenze/DSC00571.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00571.JPG"},{"src":"images/Italy/Firenze/DSC00581.JPG","width":3376,"height":6000,"caption":"Cattedrale di Santa Maria del Fiore","thumb":"images/Italy/Firenze/thumbs/DSC00581.JPG"},{"src":"images/Italy/Firenze/DSC00590.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00590.JPG"},{"src":"images/Italy/Firenze/DSC00594.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Firenze/thumbs/DSC00594.JPG"}],"napoli":[{"src":"images/Italy/Napoli/DSC00636.JPG","width":6000,"height":3376,"caption":"Pompeii - Temple of Jupiter","thumb":"images/Italy/Napoli/thumbs/DSC00636.JPG"},{"src":"images/Italy/Napoli/DSC00646.JPG","width":3376,"height":6000,"caption":"Pompeii - Stone Flour Mill","thumb":"images/Italy/Napoli/thumbs/DSC00646.JPG"},{"src":"images/Italy/Napoli/DSC00647.JPG","width":3376,"height":6000,"caption":"Pompeii - Bread Oven","thumb":"images/Italy/Napoli/thumbs/DSC00647.JPG"},{"src":"images/Italy/Napoli/DSC00655.JPG","width":6000,"height":3376,"caption":"Pompeii - Villa of the Mysteries - Frescoes","thumb":"images/Italy/Napoli/thumbs/DSC00655.JPG"},{"src":"images/Italy/Napoli/DSC00656.JPG","width":6000,"height":3376,"caption":"Pompeii - Villa of the Mysteries - Frescoes","thumb":"images/Italy/Napoli/thumbs/DSC00656.JPG"},{"src":"images/Italy/Napoli/DSC00658.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Napoli/thumbs/DSC00658.JPG"},{"src":"images/Italy/Napoli/DSC00679.JPG","width":6000,"height":3376,"caption":"House of the Vettii - Ixion","thumb":"images/Italy/Napoli/thumbs/DSC00679.JPG"},{"src":"images/Italy/Napoli/DSC00723.JPG","width":6000,"height":3376,"caption":"Amphitheatre of Pompeii","thumb":"images/Italy/Napoli/thumbs/DSC00723.JPG"},{"src":"images/Italy/Napoli/DSC00731.JPG","width":6000,"height":3376,"caption":"Pompeii - Teatro Grande","thumb":"images/Italy/Napoli/thumbs/DSC00731.JPG"},{"src":"images/Italy/Napoli/DSC00801.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Napoli/thumbs/DSC00801.JPG"},{"src":"images/Italy/Napoli/DSC00817.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Italy/Napoli/thumbs/DSC00817.JPG"},{"src":"images/Italy/Napoli/DSC00828.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Napoli/thumbs/DSC00828.JPG"},{"src":"images/Italy/Napoli/DSC00859.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Napoli/thumbs/DSC00859.JPG"},{"src":"images/Italy/Napoli/DSC00863.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Napoli/thumbs/DSC00863.JPG"},{"src":"images/Italy/Napoli/DSC00943.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Napoli/thumbs/DSC00943.JPG"},{"src":"images/Italy/Napoli/DSC00946.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Napoli/thumbs/DSC00946.JPG"},{"src":"images/Italy/Napoli/DSC00948.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Napoli/thumbs/DSC00948.JPG"},{"src":"images/Italy/Napoli/DSC00961.JPG","width":6000,"height":3376,"caption":"Certosa di San Martino","thumb":"images/Italy/Napoli/thumbs/DSC00961.JPG"},{"src":"images/Italy/Napoli/DSC00981.JPG","width":6000,"height":3376,"caption":"Mount Vesuvius - Castel Sant'Elmo","thumb":"images/Italy/Napoli/thumbs/DSC00981.JPG"},{"src":"images/Italy/Napoli/DSC00984.JPG","width":6000,"height":3376,"caption":"","thumb":"images/Italy/Napoli/thumbs/DSC00984.JPG"},{"src":"images/Italy/Napoli/DSC00986.JPG","width":6000,"height":3376,"caption":"Mount Vesuvius","thumb":"images/Italy/Napoli/thumbs/DSC00986.JPG"}]},"japan":{"miyako":[{"src":"images/Japan/Miyako/GR012821.JPG","width":3360,"height":2240,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR012821.JPG"},{"src":"images/Japan/Miyako/GR012831.JPG","width":3200,"height":4800,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR012831.JPG"},{"src":"images/Japan/Miyako/GR012901.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR012901.JPG"},{"src":"images/Japan/Miyako/GR012919.JPG","width":4800,"height":3200,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR012919.JPG"},{"src":"images/Japan/Miyako/GR012922.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR012922.JPG"},{"src":"images/Japan/Miyako/GR012927.JPG","width":4000,"height":6000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR012927.JPG"},{"src":"images/Japan/Miyako/GR012982.JPG","width":4000,"height":6000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR012982.JPG"},{"src":"images/Japan/Miyako/GR013001.JPG","width":3360,"height":2240,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013001.JPG"},{"src":"images/Japan/Miyako/GR013019.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013019.JPG"},{"src":"images/Japan/Miyako/GR013023.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013023.JPG"},{"src":"images/Japan/Miyako/GR013025.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013025.JPG"},{"src":"images/Japan/Miyako/GR013032.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013032.JPG"},{"src":"images/Japan/Miyako/GR013036.JPG","width":3360,"height":2240,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013036.JPG"},{"src":"images/Japan/Miyako/GR013046.JPG","width":4000,"height":6000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013046.JPG"},{"src":"images/Japan/Miyako/GR013065.JPG","width":3360,"height":2240,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013065.JPG"},{"src":"images/Japan/Miyako/GR013067.JPG","width":2240,"height":3360,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013067.JPG"},{"src":"images/Japan/Miyako/GR013070.JPG","width":3360,"height":2240,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013070.JPG"},{"src":"images/Japan/Miyako/GR013071.JPG","width":2240,"height":3360,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013071.JPG"},{"src":"images/Japan/Miyako/GR013075.JPG","width":2240,"height":3360,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013075.JPG"},{"src":"images/Japan/Miyako/GR013086.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013086.JPG"},{"src":"images/Japan/Miyako/GR013093.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013093.JPG"},{"src":"images/Japan/Miyako/GR013125.JPG","width":2240,"height":3360,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013125.JPG"},{"src":"images/Japan/Miyako/GR013128.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013128.JPG"},{"src":"images/Japan/Miyako/GR013133.JPG","width":4800,"height":3200,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013133.JPG"},{"src":"images/Japan/Miyako/GR013134.JPG","width":4800,"height":3200,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013134.JPG"},{"src":"images/Japan/Miyako/GR013142.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013142.JPG"},{"src":"images/Japan/Miyako/GR013143.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013143.JPG"},{"src":"images/Japan/Miyako/GR013144.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013144.JPG"},{"src":"images/Japan/Miyako/GR013157.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013157.JPG"},{"src":"images/Japan/Miyako/GR013162.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013162.JPG"},{"src":"images/Japan/Miyako/GR013163.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013163.JPG"},{"src":"images/Japan/Miyako/GR013185.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013185.JPG"},{"src":"images/Japan/Miyako/GR013186.JPG","width":3360,"height":2240,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013186.JPG"},{"src":"images/Japan/Miyako/GR013248.JPG","width":3360,"height":2240,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013248.JPG"},{"src":"images/Japan/Miyako/GR013254.JPG","width":3360,"height":2240,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013254.JPG"},{"src":"images/Japan/Miyako/GR013257.JPG","width":4800,"height":3200,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013257.JPG"},{"src":"images/Japan/Miyako/GR013262.JPG","width":4800,"height":3200,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013262.JPG"},{"src":"images/Japan/Miyako/GR013272.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Miyako/thumbs/GR013272.JPG"}],"hokkaido":[{"src":"images/Japan/Hokkaido/20240908_094407.JPG","width":3264,"height":1840,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/20240908_094407.JPG"},{"src":"images/Japan/Hokkaido/GR010476.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR010476.JPG"},{"src":"images/Japan/Hokkaido/GR010542.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR010542.JPG"},{"src":"images/Japan/Hokkaido/GR010670.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR010670.JPG"},{"src":"images/Japan/Hokkaido/GR010815.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR010815.JPG"},{"src":"images/Japan/Hokkaido/GR010821.JPG","width":4000,"height":6000,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR010821.JPG"},{"src":"images/Japan/Hokkaido/GR010866.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR010866.JPG"},{"src":"images/Japan/Hokkaido/GR010878.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR010878.JPG"},{"src":"images/Japan/Hokkaido/GR010991.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR010991.JPG"},{"src":"images/Japan/Hokkaido/GR011065.JPG","width":3200,"height":4800,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR011065.JPG"},{"src":"images/Japan/Hokkaido/GR011120.JPG","width":4800,"height":3200,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR011120.JPG"},{"src":"images/Japan/Hokkaido/GR011122.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR011122.JPG"},{"src":"images/Japan/Hokkaido/GR011167.JPG","width":4800,"height":3200,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR011167.JPG"},{"src":"images/Japan/Hokkaido/GR012455.JPG","width":4800,"height":3200,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR012455.JPG"},{"src":"images/Japan/Hokkaido/GR012460.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR012460.JPG"},{"src":"images/Japan/Hokkaido/GR012490.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR012490.JPG"},{"src":"images/Japan/Hokkaido/GR012532.JPG","width":3360,"height":2240,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/GR012532.JPG"},{"src":"images/Japan/Hokkaido/photo_2024-09-18_01-01-23.jpg","width":1280,"height":720,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/photo_2024-09-18_01-01-23.jpg"},{"src":"images/Japan/Hokkaido/photo_2024-09-18_01-06-35.jpg","width":720,"height":1280,"caption":"","thumb":"images/Japan/Hokkaido/thumbs/photo_2024-09-18_01-06-35.jpg"}],"okinawa":[{"src":"images/Japan/Okinawa/20240625_103053.JPG","width":4000,"height":2256,"caption":"","thumb":"images/Japan/Okinawa/thumbs/20240625_103053.JPG"},{"src":"images/Japan/Okinawa/20240625_114908.JPG","width":4000,"height":2256,"caption":"","thumb":"images/Japan/Okinawa/thumbs/20240625_114908.JPG"},{"src":"images/Japan/Okinawa/DSC01184.JPG","width":3376,"height":6000,"caption":"","thumb":"images/Japan/Okinawa/thumbs/DSC01184.JPG"},{"src":"images/Japan/Okinawa/DSC01223.JPG","width":6000,"height":3376,"caption":"座喜味城跡","thumb":"images/Japan/Okinawa/thumbs/DSC01223.JPG"},{"src":"images/Japan/Okinawa/DSC01281.JPG","width":6000,"height":3376,"caption":"和平祈念公園 - 平和之丘","thumb":"images/Japan/Okinawa/thumbs/DSC01281.JPG"},{"src":"images/Japan/Okinawa/DSC01308.JPG","width":6000,"height":3376,"caption":"和平祈念公園 - 平和の礎","thumb":"images/Japan/Okinawa/thumbs/DSC01308.JPG"},{"src":"images/Japan/Okinawa/GR011947.JPG","width":3200,"height":4800,"caption":"","thumb":"images/Japan/Okinawa/thumbs/GR011947.JPG"},{"src":"images/Japan/Okinawa/GR011957.JPG","width":3360,"height":2240,"caption":"","thumb":"images/Japan/Okinawa/thumbs/GR011957.JPG"},{"src":"images/Japan/Okinawa/GR011962.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Okinawa/thumbs/GR011962.JPG"},{"src":"images/Japan/Okinawa/GR011974.JPG","width":3360,"height":2240,"caption":"","thumb":"images/Japan/Okinawa/thumbs/GR011974.JPG"},{"src":"images/Japan/Okinawa/GR012034.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Japan/Okinawa/thumbs/GR012034.JPG"},{"src":"images/Japan/Okinawa/GR012057.JPG","width":2240,"height":3360,"caption":"","thumb":"images/Japan/Okinawa/thumbs/GR012057.JPG"},{"src":"images/Japan/Okinawa/GR012071.JPG","width":3360,"height":2240,"caption":"沖繩美術館","thumb":"images/Japan/Okinawa/thumbs/GR012071.JPG"},{"src":"images/Japan/Okinawa/IMG_0142.JPG","width":4032,"height":3024,"caption":"慶良間","thumb":"images/Japan/Okinawa/thumbs/IMG_0142.JPG"},{"src":"images/Japan/Okinawa/IMG_0464.JPG","width":3876,"height":2376,"caption":"","thumb":"images/Japan/Okinawa/thumbs/IMG_0464.JPG"},{"src":"images/Japan/Okinawa/IMG_0478.JPG","width":4032,"height":3024,"caption":"","thumb":"images/Japan/Okinawa/thumbs/IMG_0478.JPG"}]},"routine":[{"src":"images/Routine/GR010464.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Routine/thumbs/GR010464.JPG"},{"src":"images/Routine/GR011201.JPG","width":3360,"height":2240,"caption":"","thumb":"images/Routine/thumbs/GR011201.JPG"},{"src":"images/Routine/GR011458.JPG","width":4800,"height":3200,"caption":"","thumb":"images/Routine/thumbs/GR011458.JPG"},{"src":"images/Routine/GR011467.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Routine/thumbs/GR011467.JPG"},{"src":"images/Routine/GR011489.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Routine/thumbs/GR011489.JPG"},{"src":"images/Routine/GR011596.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Routine/thumbs/GR011596.JPG"},{"src":"images/Routine/GR012090.JPG","width":6000,"height":4000,"caption":"","thumb":"images/Routine/thumbs/GR012090.JPG"},{"src":"images/Routine/img1664474865535.jpg","width":4000,"height":3000,"caption":"","thumb":"images/Routine/thumbs/img1664474865535.jpg"},{"src":"images/Routine/IMG_5007.JPG","width":3024,"height":4032,"caption":"","thumb":"images/Routine/thumbs/IMG_5007.JPG"},{"src":"images/Routine/IMG_9466.JPG","width":4032,"height":3024,"caption":"","thumb":"images/Routine/thumbs/IMG_9466.JPG"},{"src":"images/Routine/IMG_9762.JPG","width":4032,"height":3024,"caption":"","thumb":"images/Routine/thumbs/IMG_9762.JPG"}]};
-
-const GALLERY_MAP = [
-  {id:'gallery-italy-rome',    keys:['italy','rome'],    cls:'ph-italy'},
-  {id:'gallery-italy-vatican', keys:['italy','vatican'], cls:'ph-italy'},
-  {id:'gallery-italy-firenze', keys:['italy','firenze'], cls:'ph-italy'},
-  {id:'gallery-italy-napoli',  keys:['italy','napoli'],  cls:'ph-italy'},
-  {id:'gallery-japan-miyako',  keys:['japan','miyako'],  cls:'ph-miyako'},
-  {id:'gallery-japan-hokkaido',keys:['japan','hokkaido'],cls:'ph-hok'},
-  {id:'gallery-japan-okinawa', keys:['japan','okinawa'], cls:'ph-oki'},
-  {id:'gallery-routine',       keys:['routine'],         cls:'ph-routine'},
-];
-
-function buildCard(photo, cls) {
-  const a = document.createElement('a');
-  a.className = `photo-card ${cls}`;
-  a.href = photo.src;
-  a.dataset.pswpWidth  = photo.width;
-  a.dataset.pswpHeight = photo.height;
-  if (photo.caption) a.dataset.caption = photo.caption;
-
-  const img = document.createElement('img');
-  img.src      = photo.thumb;
-  img.alt      = photo.caption || '';
-  img.loading  = 'lazy';
-  img.decoding = 'async';
-  img.onerror  = () => { img.src = photo.src; };
-
-  const ph = document.createElement('div');
-  ph.className = 'ph';
-
-  a.appendChild(img);
-  a.appendChild(ph);
-  if (photo.caption) {
-    const ov = document.createElement('div');
-    ov.className = 'overlay';
-    ov.innerHTML = `<p>${photo.caption}</p>`;
-    a.appendChild(ov);
-  }
-  return a;
-}
-
-GALLERY_MAP.forEach(({ id, keys, cls }) => {
-  const grid = document.getElementById(id);
-  if (!grid) return;
-  const photos = keys.length === 2 ? PHOTOS[keys[0]]?.[keys[1]] : PHOTOS[keys[0]];
-  if (!photos?.length) return;
-  photos.forEach(p => grid.appendChild(buildCard(p, cls)));
-});
-
-const lightbox = new PhotoSwipeLightbox({ pswpModule: PhotoSwipe });
-
-lightbox.on('uiRegister', () => {
-  lightbox.pswp.ui.registerElement({
-    name: 'custom-caption', order: 9, isButton: false, appendTo: 'root', html: '',
-    onInit: (el, pswp) => {
-      pswp.on('change', () => {
-        const cap = pswp.currSlide?.data?.element?.dataset?.caption || '';
-        el.innerHTML = cap ? `<div class="pswp__custom-caption">${cap}</div>` : '';
-      });
-    }
-  });
-});
-
-lightbox.init();
-
-document.addEventListener('click', e => {
-  const card = e.target.closest('a.photo-card[data-pswp-width]');
-  if (!card) return;
-  e.preventDefault();
-  const grid  = card.closest('.gallery-grid');
-  if (!grid) return;
-  const cards = Array.from(grid.querySelectorAll('a.photo-card[data-pswp-width]'));
-  const index = cards.indexOf(card);
-  if (index < 0) return;
-  const dataSource = cards.map(c => ({
-    src:     c.getAttribute('href'),
-    w:       parseInt(c.dataset.pswpWidth)  || 1600,
-    h:       parseInt(c.dataset.pswpHeight) || 1067,
-    element: c,
-  }));
-  lightbox.loadAndOpen(index, dataSource);
-});
-</script>
+<!-- STEP 4: download -->
+<div class="card" id="output-card" style="display:none;">
+  <div class="card-title"><span class="step-badge">4</span> 下載 photos.json</div>
+  <textarea id="json-out" readonly></textarea>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="downloadJSON()">Download photos.json</button>
+    <button class="btn btn-outline" onclick="copyJSON()">Copy</button>
+    <span id="dl-ok" style="display:none;" class="msg-ok">✓ 下載完成</span>
+  </div>
+  <div class="note">
+    <strong>接下來：</strong><br>
+    1. 把下載的 <code>photos.json</code> 取代網站資料夾內的舊檔案<br>
+    2. 打開 <code>admin.html</code> → 拖曳排序照片 + 加 description<br>
+    3. 再次 Download photos.json，取代舊檔<br>
+    4. GitHub Desktop → <strong>Commit</strong> → <strong>Push</strong> → 上線 ✓
+  </div>
+</div>
 
 <script>
-function showSection(id) {
-  closeAllDropdowns();
-  document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-item > a').forEach(a => a.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  const nav = document.getElementById('nav-' + id);
-  if (nav) nav.classList.add('active');
-  window.scrollTo(0, 0);
+// ── STATE ──
+let selectedSec = '';
+let selectedTab = '';
+let selectedFiles = [];
+
+// queue: [{ sec, tab, label, files: [{src, caption}] }]
+let queue = [];
+
+const FOLDER_PREFIX = 'images/';
+
+// ── STEP 1: select category ──
+function selectCat(btn) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedSec = btn.dataset.sec;
+  selectedTab = btn.dataset.tab;
+  document.getElementById('cat-msg').style.display = 'none';
+  tryEnableAdd();
 }
-function showGallery(sec, tab) {
-  showSection(sec);
-  document.querySelectorAll('#' + sec + ' .sub-tabs button').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('#' + sec + ' .sub-tabs button').forEach(b => {
-    if (b.getAttribute('onclick')?.includes("'" + tab + "'")) b.classList.add('active');
-  });
-  document.querySelectorAll('#' + sec + ' .sub-content').forEach(c => c.classList.remove('active'));
-  const t = document.getElementById(sec + '-' + tab);
-  if (t) t.classList.add('active');
-}
-function switchTab(sec, tab, btn) {
-  document.querySelectorAll('#' + sec + ' .sub-tabs button').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('#' + sec + ' .sub-content').forEach(c => c.classList.remove('active'));
-  const t = document.getElementById(sec + '-' + tab);
-  if (t) t.classList.add('active');
-}
-function closeAllDropdowns() {
-  document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
-}
-['italy','japan'].forEach(id => {
-  const item = document.getElementById('item-' + id);
-  const dd   = document.getElementById('dd-'   + id);
-  if (!item || !dd) return;
-  let t;
-  item.addEventListener('mouseenter', () => { clearTimeout(t); closeAllDropdowns(); dd.classList.add('open'); });
-  item.addEventListener('mouseleave', () => { t = setTimeout(() => dd.classList.remove('open'), 120); });
-  dd.addEventListener('mouseenter',   () => clearTimeout(t));
-  dd.addEventListener('mouseleave',   () => { t = setTimeout(() => dd.classList.remove('open'), 120); });
-});
-document.addEventListener('click', e => {
-  if (!e.target.closest('.nav-item')) closeAllDropdowns();
+
+// ── STEP 2: file input ──
+document.getElementById('file-input').addEventListener('change', function(e) {
+  selectedFiles = Array.from(e.target.files).filter(f => /\.(jpe?g|png|webp)$/i.test(f.name));
+  renderFilePreview();
+  tryEnableAdd();
 });
 
-const slides = document.querySelectorAll('.slide');
-const dotsEl = document.getElementById('dots');
-let cur = 0, timer;
-slides.forEach((_, i) => {
-  const d = document.createElement('button');
-  d.className = 'dot' + (i === 0 ? ' active' : '');
-  d.setAttribute('aria-label', 'Slide ' + (i+1));
-  d.onclick = () => goTo(i);
-  dotsEl.appendChild(d);
+// drag & drop
+const dz = document.getElementById('drop-zone');
+dz.addEventListener('dragover',  e => { e.preventDefault(); dz.classList.add('drag-active'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('drag-active'));
+dz.addEventListener('drop', e => {
+  e.preventDefault(); dz.classList.remove('drag-active');
+  selectedFiles = Array.from(e.dataTransfer.files).filter(f => /\.(jpe?g|png|webp)$/i.test(f.name));
+  renderFilePreview();
+  tryEnableAdd();
 });
-function goTo(n) {
-  slides[cur].classList.remove('active');
-  dotsEl.children[cur].classList.remove('active');
-  cur = (n + slides.length) % slides.length;
-  slides[cur].classList.add('active');
-  dotsEl.children[cur].classList.add('active');
-  clearInterval(timer);
-  timer = setInterval(() => goTo(cur + 1), 4500);
+
+function renderFilePreview() {
+  const countEl   = document.getElementById('file-count');
+  const previewEl = document.getElementById('file-preview');
+  if (!selectedFiles.length) {
+    countEl.style.display = 'none';
+    previewEl.style.display = 'none';
+    return;
+  }
+  // sort by filename (camera order)
+  selectedFiles.sort((a,b) => a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1);
+
+  countEl.style.display = 'block';
+  countEl.textContent = `${selectedFiles.length} 張照片已選取，將按檔名排序`;
+
+  previewEl.style.display = 'block';
+  previewEl.innerHTML = selectedFiles.map(f =>
+    `<div class="file-row">
+      <span class="fname">${f.name}</span>
+      <span class="fsize">${(f.size/1024).toFixed(0)} KB</span>
+    </div>`
+  ).join('');
 }
-timer = setInterval(() => goTo(cur + 1), 4500);
+
+function tryEnableAdd() {
+  document.getElementById('add-btn').disabled = !(selectedSec && selectedFiles.length);
+}
+
+// ── STEP 3: add to queue ──
+function addToQueue() {
+  if (!selectedSec || !selectedFiles.length) return;
+
+  // check for duplicate category in queue
+  const existing = queue.findIndex(q => q.sec === selectedSec && q.tab === selectedTab);
+  if (existing >= 0) {
+    // merge — append new files, deduplicate by name
+    const existingNames = new Set(queue[existing].files.map(f => f.name));
+    selectedFiles.forEach(f => {
+      if (!existingNames.has(f.name)) {
+        queue[existing].files.push(f);
+        existingNames.add(f.name);
+      }
+    });
+    queue[existing].files.sort((a,b) => a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1);
+  } else {
+    const sorted = [...selectedFiles].sort((a,b) => a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1);
+    const label  = selectedTab
+      ? selectedSec.charAt(0).toUpperCase()+selectedSec.slice(1) + ' · ' + selectedTab.charAt(0).toUpperCase()+selectedTab.slice(1)
+      : 'Routine';
+    queue.push({ sec: selectedSec, tab: selectedTab, label, files: sorted });
+  }
+
+  renderQueue();
+
+  // reset file input & selection for next folder
+  selectedFiles = [];
+  document.getElementById('file-input').value = '';
+  document.getElementById('file-count').style.display = 'none';
+  document.getElementById('file-preview').style.display = 'none';
+  document.getElementById('add-btn').disabled = true;
+  document.getElementById('add-msg').textContent = '✓ 已加入 — 可繼續選下一個分類';
+  setTimeout(() => document.getElementById('add-msg').textContent = '', 3000);
+}
+
+function renderQueue() {
+  const card = document.getElementById('queue-card');
+  const list = document.getElementById('queue-list');
+  card.style.display = 'block';
+
+  list.innerHTML = queue.map((q, i) =>
+    `<div class="queue-item">
+      <span class="badge">${q.label}</span>
+      <span class="qname">${q.files.length} 張照片</span>
+      <span class="qcount">${q.files.map(f=>f.name).slice(0,3).join(', ')}${q.files.length>3?'…':''}</span>
+      <button class="qdel" onclick="removeQueue(${i})" title="移除">×</button>
+    </div>`
+  ).join('');
+}
+
+function removeQueue(i) {
+  queue.splice(i, 1);
+  if (queue.length === 0) document.getElementById('queue-card').style.display = 'none';
+  else renderQueue();
+}
+
+function resetAll() {
+  queue = [];
+  selectedFiles = [];
+  selectedSec = '';
+  selectedTab = '';
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('file-input').value = '';
+  document.getElementById('file-count').style.display = 'none';
+  document.getElementById('file-preview').style.display = 'none';
+  document.getElementById('add-btn').disabled = true;
+  document.getElementById('queue-card').style.display = 'none';
+  document.getElementById('output-card').style.display = 'none';
+}
+
+// ── STEP 4: generate JSON (with thumb + real dimensions) ──
+function generateJSON() {
+  if (!queue.length) return;
+
+  const FOLDER_MAP = {
+    'italy/rome':     'Italy/Rome',
+    'italy/vatican':  'Italy/Vatican',
+    'italy/firenze':  'Italy/Firenze',
+    'italy/napoli':   'Italy/Napoli',
+    'japan/miyako':   'Japan/Miyako',
+    'japan/hokkaido': 'Japan/Hokkaido',
+    'japan/okinawa':  'Japan/Okinawa',
+    'routine/':       'Routine',
+  };
+
+  // Build src path from file
+  function buildSrc(f, sec, tab) {
+    if (f.webkitRelativePath && f.webkitRelativePath.includes('/')) {
+      const parts = f.webkitRelativePath.split('/');
+      return 'images/' + parts.join('/');
+    }
+    const key = sec + '/' + tab;
+    const folder = FOLDER_MAP[key] || (sec + '/' + tab);
+    return `images/${folder}/${f.name}`;
+  }
+
+  // thumb path = same folder + /thumbs/ + filename
+  function buildThumb(src) {
+    const slash = src.lastIndexOf('/');
+    return src.slice(0, slash) + '/thumbs/' + src.slice(slash + 1);
+  }
+
+  // Read real pixel dimensions from a File via a temporary object URL
+  function getDimensions(file) {
+    return new Promise(resolve => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload  = () => { resolve({ w: img.naturalWidth, h: img.naturalHeight }); URL.revokeObjectURL(url); };
+      img.onerror = () => { resolve({ w: 0, h: 0 }); URL.revokeObjectURL(url); };
+      img.src = url;
+    });
+  }
+
+  // Collect all files with their sec/tab
+  const tasks = [];
+  queue.forEach(({ sec, tab, files }) => {
+    files.forEach(f => tasks.push({ f, sec, tab }));
+  });
+
+  // Show progress
+  const btn = document.querySelector('[onclick="generateJSON()"]');
+  if (btn) { btn.disabled = true; btn.textContent = '讀取尺寸中…'; }
+
+  Promise.all(tasks.map(({ f, sec, tab }) =>
+    getDimensions(f).then(({ w, h }) => ({ f, sec, tab, w, h }))
+  )).then(results => {
+    let data = loadCachedData();
+
+    // Group back by sec/tab
+    const grouped = {};
+    results.forEach(({ f, sec, tab, w, h }) => {
+      const key = sec + '|' + tab;
+      if (!grouped[key]) grouped[key] = { sec, tab, entries: [] };
+      const src   = buildSrc(f, sec, tab);
+      const thumb = buildThumb(src);
+      grouped[key].entries.push({ src, width: w, height: h, caption: '', thumb });
+    });
+
+    Object.values(grouped).forEach(({ sec, tab, entries }) => {
+      if (sec === 'routine') {
+        data.routine = entries;
+      } else {
+        if (!data[sec]) data[sec] = {};
+        data[sec][tab] = entries;
+      }
+    });
+
+    const json = JSON.stringify(data, null, 2);
+    document.getElementById('json-out').value = json;
+    document.getElementById('output-card').style.display = 'block';
+    document.getElementById('output-card').scrollIntoView({ behavior:'smooth' });
+    try { localStorage.setItem('photos_json_cache', json); } catch(e) {}
+
+    if (btn) { btn.disabled = false; btn.textContent = 'Generate photos.json'; }
+  });
+}
+
+function loadCachedData() {
+  // Start with a clean structure, then overlay any cached data
+  const base = {
+    italy:   { rome:[], vatican:[], firenze:[], napoli:[] },
+    japan:   { miyako:[], hokkaido:[], okinawa:[] },
+    routine: []
+  };
+  try {
+    const cached = localStorage.getItem('photos_json_cache');
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      // deep merge
+      ['italy','japan'].forEach(sec => {
+        if (parsed[sec]) Object.assign(base[sec], parsed[sec]);
+      });
+      if (parsed.routine) base.routine = parsed.routine;
+    }
+  } catch(e) {}
+  return base;
+}
+
+function downloadJSON() {
+  const json = document.getElementById('json-out').value;
+  const blob = new Blob([json], { type:'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = 'photos.json'; a.click();
+  URL.revokeObjectURL(url);
+  const ok = document.getElementById('dl-ok');
+  ok.style.display = 'inline';
+  setTimeout(() => ok.style.display = 'none', 3000);
+}
+
+function copyJSON() {
+  const ta = document.getElementById('json-out');
+  ta.select(); document.execCommand('copy');
+}
 </script>
 </body>
 </html>

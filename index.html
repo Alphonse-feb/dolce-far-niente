@@ -6,73 +6,6 @@
 <title>Dolce far niente</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
 <style>
-/* ===== PhotoSwipe 5 Core CSS (inlined to avoid CDN issues) ===== */
-.pswp{--pswp-bg:#000;--pswp-placeholder-bg:#222;--pswp-root-z-index:100000;--pswp-preloader-color:rgba(79,79,79,.4);--pswp-preloader-color-secondary:rgba(255,255,255,.9);--pswp-icon-color:#fff;--pswp-icon-color-secondary:#4f4f4f;--pswp-icon-stroke-color:#4f4f4f;--pswp-icon-stroke-width:2px;--pswp-error-text-color:var(--pswp-icon-color)}
-.pswp{position:fixed;top:0;left:0;width:100%;height:100%;z-index:var(--pswp-root-z-index);display:none;touch-action:none;outline:0;-ms-content-zooming:none;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:rgba(0,0,0,0)}
-.pswp *{box-sizing:border-box}
-.pswp img{max-width:none}
-.pswp--open{display:block}
-.pswp,
-.pswp__bg{transform:translateZ(0);will-change:opacity}
-.pswp__bg{opacity:.005;background:var(--pswp-bg)}
-.pswp,
-.pswp__scroll-wrap{overflow:hidden}
-.pswp__scroll-wrap,
-.pswp__bg,
-.pswp__container,
-.pswp__item,
-.pswp__content,
-.pswp__img,
-.pswp__zoom-wrap{position:absolute;top:0;left:0;width:100%;height:100%}
-.pswp__img,
-.pswp__zoom-wrap{width:auto;height:auto}
-.pswp--click-to-zoom.pswp--zoom-allowed .pswp__img{cursor:-webkit-zoom-in;cursor:-moz-zoom-in;cursor:zoom-in}
-.pswp--click-to-zoom.pswp--zoomed-in .pswp__img{cursor:move;cursor:-webkit-grab;cursor:-moz-grab;cursor:grab}
-.pswp--click-to-zoom.pswp--zoomed-in .pswp__img:active{cursor:-webkit-grabbing;cursor:-moz-grabbing;cursor:grabbing}
-.pswp--no-mouse-drag.pswp--zoomed-in .pswp__img,
-.pswp--no-mouse-drag.pswp--zoomed-in .pswp__img:active,
-.pswp__img{cursor:-webkit-grab;cursor:-moz-grab;cursor:grab}
-.pswp__container,
-.pswp__img{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
-.pswp__item{overflow:hidden}
-.pswp__item,
-.pswp__zoom-wrap{display:flex;align-items:center;justify-content:center}
-.pswp__img{width:auto;height:auto;max-width:none}
-.pswp__img--placeholder{object-fit:contain}
-.pswp__img--with-bg{background:var(--pswp-placeholder-bg)}
-.pswp__placeholder{pointer-events:none}
-.pswp__hide-on-close{opacity:.005;will-change:opacity;transition:opacity var(--pswp-transition-duration) cubic-bezier(.4,0,.22,1);z-index:10;pointer-events:none}
-.pswp--ui-visible .pswp__hide-on-close{opacity:1;pointer-events:auto}
-.pswp__button{position:relative;display:block;width:50px;height:60px;padding:0;margin:0;overflow:hidden;cursor:pointer;background:0 0;border:0;box-shadow:none;opacity:.85;-webkit-appearance:none;-webkit-touch-callout:none}
-.pswp__button:hover,.pswp__button:active,.pswp__button:focus{transition:none;padding:0;background:0 0;border:0;box-shadow:none;opacity:1}
-.pswp__button:disabled{opacity:.3;cursor:auto}
-.pswp__icn{fill:var(--pswp-icon-color);color:var(--pswp-icon-color-secondary)}
-.pswp__icn{position:absolute;top:14px;left:9px;width:32px;height:32px;overflow:hidden;pointer-events:none}
-.pswp__icn-shadow{stroke:var(--pswp-icon-stroke-color);stroke-width:var(--pswp-icon-stroke-width);fill:none}
-.pswp__icn:focus{outline:0}
-button.pswp__button--arrow{position:absolute;top:0;width:75px;height:100px;top:50%;margin-top:-50px}
-.pswp__button--arrow{background:0 0;cursor:pointer}
-.pswp__button--arrow .pswp__icn{top:50%;margin-top:-30px;width:60px;height:60px;background:0 0;border-radius:0}
-.pswp--one-slide .pswp__button--arrow{display:none}
-.pswp__button--arrow--prev{left:0}
-.pswp__button--arrow--next{right:0}
-.pswp__button--arrow--next .pswp__icn{left:auto;right:14px;transform:scale(-1,1)}
-.pswp__button--zoom{display:none}
-.pswp--click-to-zoom .pswp__button--zoom{display:block}
-.pswp--zoomed-in .pswp__button--zoom .pswp__icn--zoom-in{display:none}
-.pswp:not(.pswp--zoomed-in) .pswp__button--zoom .pswp__icn--zoom-out{display:none}
-.pswp__button--close{margin-right:6px}
-.pswp__top-bar{position:absolute;left:0;top:0;width:100%;display:flex;flex-direction:row;justify-content:flex-end;z-index:10;pointer-events:none!important}
-.pswp__top-bar>*{pointer-events:auto;will-change:opacity}
-.pswp__preloader{position:relative;overflow:hidden;width:50px;height:60px;margin-right:auto}
-.pswp__preloader .pswp__icn{opacity:0;transition:opacity .2s linear;animation:pswp-clockwise 600ms linear infinite}
-.pswp__preloader--active .pswp__icn{opacity:.85}
-@keyframes pswp-clockwise{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
-.pswp__counter{height:30px;margin-top:15px;margin-inline-start:20px;font-size:14px;line-height:30px;color:var(--pswp-icon-color);text-shadow:1px 1px 3px var(--pswp-icon-color-secondary);opacity:.85}
-.pswp--one-slide .pswp__counter{display:none}
-/* ===== End PhotoSwipe CSS ===== */
-</style>
-<style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--black:#111;--white:#f8f6f2;--gray:#888;--accent:#c8b89a}
 body{font-family:'Jost',sans-serif;font-weight:300;background:var(--white);color:var(--black);letter-spacing:.05em}
@@ -184,9 +117,21 @@ section.active{display:block}
 footer{padding:2rem 3rem;border-top:1px solid rgba(0,0,0,0.07);display:flex;justify-content:center}
 footer p{font-size:.66rem;letter-spacing:.12em;color:var(--gray)}
 
-.pswp__bg{background:#0c0c0c}
-.pswp{--pswp-root-z-index:500}
-.pswp__custom-caption{position:absolute;bottom:0;left:0;right:0;padding:.75rem 1.5rem;background:linear-gradient(transparent,rgba(0,0,0,0.6));color:rgba(255,255,255,0.9);font-family:'Jost',sans-serif;font-size:.78rem;font-weight:300;letter-spacing:.08em;text-align:center;pointer-events:none}
+/* LIGHTBOX */
+.lightbox-overlay{position:fixed;inset:0;z-index:9999;background:rgba(12,12,12,0.95);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s ease;pointer-events:none}
+.lightbox-overlay.active{opacity:1;pointer-events:auto}
+.lightbox-img-wrap{position:relative;max-width:calc(100% - 120px);max-height:calc(100% - 100px);display:flex;align-items:center;justify-content:center}
+.lightbox-img-wrap img{max-width:100%;max-height:calc(100vh - 100px);object-fit:contain;border-radius:2px;opacity:0;transition:opacity .3s ease}
+.lightbox-img-wrap img.loaded{opacity:1}
+.lightbox-spinner{position:absolute;width:32px;height:32px;border:2px solid rgba(255,255,255,.15);border-top-color:rgba(255,255,255,.7);border-radius:50%;animation:lb-spin .7s linear infinite}
+@keyframes lb-spin{to{transform:rotate(360deg)}}
+.lightbox-btn{position:fixed;z-index:10000;background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;transition:color .2s;padding:0;line-height:1}
+.lightbox-btn:hover{color:#fff}
+.lightbox-close{top:16px;right:20px;font-size:2.2rem}
+.lightbox-prev{left:16px;top:50%;transform:translateY(-50%);font-size:2.4rem}
+.lightbox-next{right:16px;top:50%;transform:translateY(-50%);font-size:2.4rem}
+.lightbox-caption{position:fixed;bottom:0;left:0;right:0;padding:.75rem 1.5rem;background:linear-gradient(transparent,rgba(0,0,0,0.6));color:rgba(255,255,255,0.9);font-family:'Jost',sans-serif;font-size:.78rem;font-weight:300;letter-spacing:.08em;text-align:center;z-index:10000;pointer-events:none}
+.lightbox-counter{position:fixed;top:20px;left:20px;color:rgba(255,255,255,.65);font-size:.75rem;letter-spacing:.1em;z-index:10000}
 
 @media(max-width:768px){
   nav{padding:0 1rem}
@@ -230,7 +175,7 @@ footer p{font-size:.66rem;letter-spacing:.12em;color:var(--gray)}
   <!-- Hero slideshow — unchanged -->
   <div class="hero">
     <div class="slides">
-      <div class="slide active"><img src="images/Japan/Okinawa/GR011957.JPG" fetchpriority="high" alt=""></div>
+      <div class="slide active"><img src="images/Japan/Okinawa/GR011957.JPG" fetchpriority="high" alt="" style="filter:brightness(1.2)"></div>
       <div class="slide"><img src="images/Italy/Rome/DSC09929.JPG" loading="lazy" alt=""></div>
       <div class="slide"><img src="images/Routine/img1664474865535.jpg" loading="lazy" alt=""></div>
       <div class="slide"><img src="images/Japan/Hokkaido/GR010670.JPG" loading="lazy" alt=""></div>
@@ -349,8 +294,6 @@ function buildCard(photo, cls) {
   const a = document.createElement('a');
   a.className = 'photo-card ' + cls;
   a.href = photo.src;
-  a.setAttribute('data-pswp-width',  photo.width);
-  a.setAttribute('data-pswp-height', photo.height);
   if (photo.caption) a.setAttribute('data-caption', photo.caption);
 
   const img = document.createElement('img');
@@ -387,43 +330,144 @@ GALLERY_MAP.forEach(function(item) {
 });
 </script>
 
-<script type="module">
-import PhotoSwipeLightbox from 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.esm.js';
-import PhotoSwipe from 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.esm.js';
+<!-- Lightbox overlay -->
+<div class="lightbox-overlay" id="lightbox">
+  <button class="lightbox-btn lightbox-close" id="lb-close" aria-label="Close">×</button>
+  <button class="lightbox-btn lightbox-prev" id="lb-prev" aria-label="Previous">‹</button>
+  <button class="lightbox-btn lightbox-next" id="lb-next" aria-label="Next">›</button>
+  <div class="lightbox-img-wrap"><div class="lightbox-spinner" id="lb-spinner"></div><img id="lb-img" src="" alt=""></div>
+  <div class="lightbox-caption" id="lb-caption"></div>
+  <div class="lightbox-counter" id="lb-counter"></div>
+</div>
 
-/* 為每個 gallery-grid 建立獨立的 lightbox 實例，
-   避免 display:none 導致跨 gallery 索引錯亂 */
-document.querySelectorAll('.gallery-grid').forEach(grid => {
-  const lightbox = new PhotoSwipeLightbox({
-    gallery: '#' + grid.id,
-    children: 'a.photo-card',
-    pswpModule: PhotoSwipe,
-    showHideAnimationType: 'fade',
-    bgOpacity: 0.95,
-    loop: true,
-    allowPanToNext: true,
-    pinchToClose: true,
-    closeOnVerticalDrag: true,
-    tapAction: 'toggle-controls',
-    doubleTapAction: 'zoom',
-    arrowKeys: true,
-    padding: { top:20, bottom:60, left:60, right:60 },
-  });
+<script>
+/* ── Custom Lightbox (zero dependencies) ── */
+(function() {
+  const overlay  = document.getElementById('lightbox');
+  const imgEl    = document.getElementById('lb-img');
+  const caption  = document.getElementById('lb-caption');
+  const counter  = document.getElementById('lb-counter');
+  const spinner  = document.getElementById('lb-spinner');
+  let items = [], idx = 0;
+  const preloadCache = {};
 
-  lightbox.on('uiRegister', () => {
-    lightbox.pswp.ui.registerElement({
-      name: 'custom-caption', order: 9, isButton: false, appendTo: 'root', html: '',
-      onInit: (el, pswp) => {
-        pswp.on('change', () => {
-          const cap = pswp.currSlide?.data?.element?.getAttribute('data-caption') || '';
-          el.innerHTML = cap ? '<div class="pswp__custom-caption">' + cap + '</div>' : '';
-        });
-      }
+  /* Collect photos from the currently visible gallery */
+  function getVisibleItems(clickedLink) {
+    const grid = clickedLink.closest('.gallery-grid');
+    if (!grid) return [];
+    return Array.from(grid.querySelectorAll('a.photo-card'));
+  }
+
+  /* Preload an image and cache the promise */
+  function preload(src) {
+    if (!preloadCache[src]) {
+      preloadCache[src] = new Promise(function(resolve) {
+        const img = new Image();
+        img.onload = img.onerror = function() { resolve(src); };
+        img.src = src;
+      });
+    }
+    return preloadCache[src];
+  }
+
+  /* Preload adjacent images (prev + next 2) */
+  function preloadNearby() {
+    for (var d = 1; d <= 2; d++) {
+      var next = items[(idx + d) % items.length];
+      var prev = items[(idx - d + items.length) % items.length];
+      if (next) preload(next.href);
+      if (prev) preload(prev.href);
+    }
+  }
+
+  function show(i) {
+    idx = (i + items.length) % items.length;
+    var a = items[idx];
+    var src = a.href;
+    var cap = a.getAttribute('data-caption') || '';
+    var thumbSrc = a.querySelector('img')?.src || '';
+
+    /* Step 1: instantly show thumbnail as placeholder */
+    imgEl.classList.remove('loaded');
+    if (thumbSrc && !preloadCache[src]) {
+      imgEl.src = thumbSrc;
+      imgEl.classList.add('loaded');
+      spinner.style.display = 'block';
+    } else {
+      spinner.style.display = 'block';
+    }
+
+    /* Step 2: load full-res, swap when ready */
+    preload(src).then(function() {
+      imgEl.src = src;
+      imgEl.alt = cap;
+      spinner.style.display = 'none';
+      requestAnimationFrame(function() { imgEl.classList.add('loaded'); });
     });
+
+    caption.textContent = cap;
+    caption.style.display = cap ? '' : 'none';
+    counter.textContent = (idx + 1) + ' / ' + items.length;
+
+    /* Step 3: preload nearby images in background */
+    preloadNearby();
+  }
+
+  function open(link) {
+    items = getVisibleItems(link);
+    idx = items.indexOf(link);
+    if (idx === -1) idx = 0;
+    document.body.style.overflow = 'hidden';
+    overlay.classList.add('active');
+    show(idx);
+  }
+
+  function close() {
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+    imgEl.src = '';
+  }
+
+  /* Event: click on any photo-card */
+  document.addEventListener('click', function(e) {
+    const link = e.target.closest('a.photo-card');
+    if (link) {
+      e.preventDefault();
+      open(link);
+    }
   });
 
-  lightbox.init();
-});
+  document.getElementById('lb-close').onclick = close;
+  document.getElementById('lb-prev').onclick  = function() { show(idx - 1); };
+  document.getElementById('lb-next').onclick  = function() { show(idx + 1); };
+
+  /* Click on backdrop to close */
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay || e.target.closest('.lightbox-img-wrap') === e.target) close();
+  });
+
+  /* Keyboard navigation */
+  document.addEventListener('keydown', function(e) {
+    if (!overlay.classList.contains('active')) return;
+    if (e.key === 'Escape')                    close();
+    else if (e.key === 'ArrowLeft')            show(idx - 1);
+    else if (e.key === 'ArrowRight')           show(idx + 1);
+  });
+
+  /* Swipe support for touch devices */
+  let touchStartX = 0, touchStartY = 0;
+  overlay.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+  }, { passive: true });
+  overlay.addEventListener('touchend', function(e) {
+    const dx = e.changedTouches[0].screenX - touchStartX;
+    const dy = e.changedTouches[0].screenY - touchStartY;
+    if (Math.abs(dx) < 50) return; /* ignore short swipes */
+    if (Math.abs(dy) > Math.abs(dx)) return; /* ignore vertical swipes */
+    if (dx > 0) show(idx - 1); else show(idx + 1);
+  }, { passive: true });
+})();
 </script>
 
 <script>

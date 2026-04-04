@@ -3,420 +3,436 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Scan Folders — Dolce far niente</title>
+<title>Admin — Dolce far niente</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Jost:wght@300;400&display=swap" rel="stylesheet">
 <style>
 * { box-sizing:border-box; margin:0; padding:0; }
 :root { --bg:#f8f6f2; --surface:#fff; --black:#111; --gray:#888; --border:rgba(0,0,0,0.09); --accent:#c8b89a; --success:#2e7d52; --danger:#c0392b; }
-body { font-family:'Jost',sans-serif; font-weight:300; background:var(--bg); color:var(--black); min-height:100vh; padding:2.5rem 2rem 4rem; max-width:860px; margin:0 auto; }
+body { font-family:'Jost',sans-serif; font-weight:300; background:var(--bg); color:var(--black); min-height:100vh; padding:2rem 1.5rem 4rem; max-width:1100px; margin:0 auto; }
 
 h1 { font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:300; font-size:2rem; letter-spacing:.04em; margin-bottom:.3rem; }
-.subtitle { font-size:.68rem; letter-spacing:.18em; text-transform:uppercase; color:var(--gray); margin-bottom:2.5rem; }
+.subtitle { font-size:.68rem; letter-spacing:.18em; text-transform:uppercase; color:var(--gray); margin-bottom:2rem; }
 
-.card { background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:1.6rem 1.8rem; margin-bottom:1.2rem; }
-.card-title { font-size:.68rem; letter-spacing:.2em; text-transform:uppercase; color:var(--gray); margin-bottom:1.2rem; display:flex; align-items:center; gap:.6rem; }
-.step-badge { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; background:var(--accent); color:#fff; font-size:.62rem; flex-shrink:0; }
+/* Tab bar */
+.tab-bar { display:flex; gap:0; border-bottom:1px solid var(--border); margin-bottom:1.5rem; flex-wrap:wrap; }
+.tab-btn { background:none; border:none; border-bottom:2px solid transparent; padding:.6rem 1.2rem; font-family:'Jost',sans-serif; font-size:.68rem; font-weight:300; letter-spacing:.18em; text-transform:uppercase; color:var(--gray); cursor:pointer; transition:all .2s; }
+.tab-btn:hover { color:var(--black); }
+.tab-btn.active { color:var(--black); border-bottom-color:var(--black); }
+.tab-count { font-size:.58rem; color:var(--accent); margin-left:.3rem; }
 
-/* category selector */
-.cat-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(160px,1fr)); gap:.5rem; margin-bottom:1.2rem; }
-.cat-btn {
-  padding:.55rem .8rem; border:1px solid var(--border); border-radius:2px;
-  background:none; font-family:'Jost',sans-serif; font-size:.72rem; font-weight:300;
-  letter-spacing:.08em; color:var(--black); cursor:pointer; text-align:left;
-  transition:all .15s;
-}
-.cat-btn:hover { border-color:var(--accent); }
-.cat-btn.selected { background:var(--accent); border-color:var(--accent); color:#fff; }
+/* Photo grid — admin style */
+.admin-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:12px; margin-bottom:1.5rem; min-height:100px; }
+.admin-card { position:relative; background:var(--surface); border:1px solid var(--border); border-radius:3px; overflow:hidden; cursor:grab; transition:box-shadow .2s, transform .15s; }
+.admin-card:active { cursor:grabbing; }
+.admin-card.dragging { opacity:.4; transform:scale(.95); }
+.admin-card.drag-over { box-shadow:0 0 0 2px var(--accent); }
+.admin-card img { width:100%; aspect-ratio:3/2; object-fit:cover; display:block; pointer-events:none; }
+.admin-card .card-info { padding:.5rem .6rem; }
+.admin-card .card-filename { font-size:.6rem; color:var(--gray); letter-spacing:.05em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:.3rem; }
+.admin-card .card-caption { width:100%; border:1px solid var(--border); border-radius:2px; padding:.3rem .4rem; font-family:'Jost',sans-serif; font-size:.7rem; font-weight:300; outline:none; background:transparent; }
+.admin-card .card-caption:focus { border-color:var(--accent); }
+.admin-card .card-caption::placeholder { color:#ccc; }
+.admin-card .card-del { position:absolute; top:4px; right:4px; width:22px; height:22px; border-radius:50%; background:rgba(0,0,0,0.5); color:#fff; border:none; cursor:pointer; font-size:.8rem; line-height:22px; text-align:center; opacity:0; transition:opacity .2s; }
+.admin-card:hover .card-del { opacity:1; }
+.admin-card .card-del:hover { background:var(--danger); }
+.admin-card .card-num { position:absolute; top:4px; left:4px; min-width:20px; height:20px; border-radius:10px; background:rgba(0,0,0,0.45); color:#fff; font-size:.55rem; line-height:20px; text-align:center; padding:0 5px; pointer-events:none; }
 
-/* file drop zone */
-.drop-zone {
-  border:1.5px dashed var(--accent); border-radius:3px; padding:1.8rem;
-  text-align:center; cursor:pointer; transition:background .2s; position:relative;
-  margin-bottom:1rem;
-}
-.drop-zone:hover, .drop-zone.drag-active { background:rgba(200,184,154,0.07); }
-.drop-zone input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
-.drop-zone .icon { font-size:1.5rem; opacity:.35; margin-bottom:.5rem; }
-.drop-zone p { font-size:.85rem; color:var(--black); margin-bottom:.2rem; }
-.drop-zone small { font-size:.68rem; color:var(--gray); }
+/* Add photos area */
+.add-area { border:1.5px dashed var(--accent); border-radius:3px; padding:1.5rem; text-align:center; cursor:pointer; transition:background .2s; position:relative; margin-bottom:1.5rem; }
+.add-area:hover { background:rgba(200,184,154,0.07); }
+.add-area input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+.add-area p { font-size:.8rem; color:var(--gray); }
 
-/* file list preview */
-.file-preview { max-height:220px; overflow-y:auto; border:1px solid var(--border); border-radius:2px; margin-bottom:1rem; }
-.file-row { display:flex; align-items:center; gap:10px; padding:.45rem .8rem; font-size:.72rem; border-bottom:1px solid rgba(0,0,0,0.04); }
-.file-row:last-child { border-bottom:none; }
-.file-row .fname { flex:1; color:var(--black); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.file-row .fsize { color:var(--gray); flex-shrink:0; font-size:.65rem; }
-.file-count { font-size:.72rem; color:var(--gray); margin-bottom:.8rem; }
-
-/* queue */
-.queue-item {
-  display:flex; align-items:center; gap:12px; padding:.65rem .9rem;
-  background:var(--bg); border-radius:2px; margin-bottom:.4rem; font-size:.75rem;
-}
-.queue-item .badge {
-  padding:.2rem .6rem; border-radius:2px; font-size:.6rem; letter-spacing:.1em;
-  text-transform:uppercase; background:rgba(200,184,154,0.25); color:#6b5a3e; flex-shrink:0;
-}
-.queue-item .qname { flex:1; color:var(--black); }
-.queue-item .qcount { color:var(--gray); flex-shrink:0; }
-.queue-item .qdel { background:none; border:none; color:var(--gray); cursor:pointer; font-size:1rem; padding:0 .2rem; }
-.queue-item .qdel:hover { color:var(--danger); }
-
-/* buttons */
-.btn-row { display:flex; gap:.8rem; flex-wrap:wrap; align-items:center; margin-top:1rem; }
-.btn {
-  padding:.55rem 1.5rem; font-family:'Jost',sans-serif; font-size:.65rem; font-weight:300;
-  letter-spacing:.2em; text-transform:uppercase; border-radius:2px; cursor:pointer; transition:all .2s;
-}
+/* Action bar */
+.action-bar { display:flex; gap:.8rem; flex-wrap:wrap; align-items:center; padding:1rem 0; border-top:1px solid var(--border); position:sticky; bottom:0; background:var(--bg); z-index:10; }
+.btn { padding:.55rem 1.5rem; font-family:'Jost',sans-serif; font-size:.65rem; font-weight:300; letter-spacing:.2em; text-transform:uppercase; border-radius:2px; cursor:pointer; transition:all .2s; }
 .btn-primary { background:var(--black); color:#fff; border:1px solid var(--black); }
 .btn-primary:hover { background:#333; }
-.btn-accent  { background:var(--accent); color:#fff; border:1px solid var(--accent); }
-.btn-accent:hover  { background:#b8a48a; }
+.btn-accent { background:var(--accent); color:#fff; border:1px solid var(--accent); }
+.btn-accent:hover { background:#b8a48a; }
 .btn-outline { background:none; color:var(--black); border:1px solid var(--border); }
 .btn-outline:hover { border-color:var(--black); }
-.btn:disabled { opacity:.35; cursor:not-allowed; }
+.btn-danger { background:none; color:var(--danger); border:1px solid var(--danger); }
+.btn-danger:hover { background:var(--danger); color:#fff; }
 
-/* json output */
-textarea { width:100%; height:160px; padding:.8rem; border:1px solid var(--border); border-radius:2px; font-family:'Courier New',monospace; font-size:.7rem; line-height:1.6; background:#fafaf8; resize:vertical; outline:none; margin-top:1rem; }
+.status { font-size:.72rem; color:var(--success); margin-left:.5rem; }
+.status.warn { color:var(--danger); }
 
-.note { font-size:.72rem; line-height:1.9; color:var(--gray); margin-top:1rem; padding:1rem 1.2rem; background:#fffdf8; border-left:3px solid var(--accent); border-radius:2px; }
-.note strong { color:var(--black); }
-.note code { background:#f0ede8; padding:.1rem .35rem; border-radius:2px; font-size:.68rem; }
+/* Loading */
+.loading { text-align:center; padding:3rem; color:var(--gray); font-size:.8rem; }
 
-.msg-ok   { color:var(--success); font-size:.72rem; }
-.msg-warn { color:var(--danger);  font-size:.72rem; }
+/* Empty state */
+.empty { text-align:center; padding:2rem; color:var(--gray); font-size:.75rem; }
 </style>
 </head>
 <body>
 
-<h1>Scan Folders</h1>
-<p class="subtitle">Generate photos.json — one folder at a time</p>
+<h1>Photo Manager</h1>
+<p class="subtitle">Drag to reorder · Click caption to edit · Download updated JSON</p>
 
-<!-- STEP 1: pick category -->
-<div class="card">
-  <div class="card-title"><span class="step-badge">1</span> 選擇分類 — 這批照片屬於哪裡？</div>
-  <div class="cat-grid" id="cat-grid">
-    <!-- Italy -->
-    <button class="cat-btn" data-sec="italy"   data-tab="rome"    onclick="selectCat(this)">Italy · Rome</button>
-    <button class="cat-btn" data-sec="italy"   data-tab="vatican" onclick="selectCat(this)">Italy · Vatican</button>
-    <button class="cat-btn" data-sec="italy"   data-tab="firenze" onclick="selectCat(this)">Italy · Firenze</button>
-    <button class="cat-btn" data-sec="italy"   data-tab="napoli"  onclick="selectCat(this)">Italy · Napoli</button>
-    <!-- Japan -->
-    <button class="cat-btn" data-sec="japan"   data-tab="miyako"   onclick="selectCat(this)">Japan · Miyako</button>
-    <button class="cat-btn" data-sec="japan"   data-tab="hokkaido" onclick="selectCat(this)">Japan · Hokkaido</button>
-    <button class="cat-btn" data-sec="japan"   data-tab="okinawa"  onclick="selectCat(this)">Japan · Okinawa</button>
-    <!-- Routine -->
-    <button class="cat-btn" data-sec="routine" data-tab=""         onclick="selectCat(this)">Routine</button>
+<div id="loading" class="loading">Loading photos.json…</div>
+<div id="main" style="display:none;">
+  <div class="tab-bar" id="tab-bar"></div>
+  <div id="grid-wrap">
+    <div class="admin-grid" id="admin-grid"></div>
   </div>
-  <p id="cat-msg" class="msg-warn" style="display:none;">請先選擇分類</p>
-</div>
-
-<!-- STEP 2: pick files -->
-<div class="card">
-  <div class="card-title"><span class="step-badge">2</span> 選擇這個分類的照片檔案</div>
-  <div class="drop-zone" id="drop-zone">
-    <input type="file" id="file-input" accept=".jpg,.JPG,.jpeg,.JPEG,.png,.PNG,.webp,.WEBP" multiple>
-    <div class="icon">🖼</div>
-    <p>點擊選取照片 或 拖曳進來</p>
-    <small>可一次多選，支援 JPG · PNG · WebP</small>
+  <div class="add-area" id="add-area">
+    <input type="file" id="add-input" accept=".jpg,.JPG,.jpeg,.JPEG,.png,.PNG,.webp,.WEBP" multiple>
+    <p>＋ 點擊或拖曳新增照片到目前分類</p>
   </div>
-  <div id="file-count" class="file-count" style="display:none;"></div>
-  <div id="file-preview" class="file-preview" style="display:none;"></div>
-
-  <div class="btn-row">
-    <button class="btn btn-accent" id="add-btn" onclick="addToQueue()" disabled>加入佇列 ＋</button>
-    <span id="add-msg" style="font-size:.7rem;color:var(--gray);"></span>
-  </div>
-</div>
-
-<!-- STEP 3: queue -->
-<div class="card" id="queue-card" style="display:none;">
-  <div class="card-title"><span class="step-badge">3</span> 待處理佇列 — 可繼續加入其他分類</div>
-  <div id="queue-list"></div>
-  <div class="btn-row">
-    <button class="btn btn-primary" onclick="generateJSON()">Generate photos.json</button>
-    <button class="btn btn-outline" onclick="resetAll()">全部清除</button>
-  </div>
-</div>
-
-<!-- STEP 4: download -->
-<div class="card" id="output-card" style="display:none;">
-  <div class="card-title"><span class="step-badge">4</span> 下載 photos.json</div>
-  <textarea id="json-out" readonly></textarea>
-  <div class="btn-row">
+  <div class="action-bar">
     <button class="btn btn-primary" onclick="downloadJSON()">Download photos.json</button>
-    <button class="btn btn-outline" onclick="copyJSON()">Copy</button>
-    <span id="dl-ok" style="display:none;" class="msg-ok">✓ 下載完成</span>
-  </div>
-  <div class="note">
-    <strong>接下來：</strong><br>
-    1. 把下載的 <code>photos.json</code> 取代網站資料夾內的舊檔案<br>
-    2. 打開 <code>admin.html</code> → 拖曳排序照片 + 加 description<br>
-    3. 再次 Download photos.json，取代舊檔<br>
-    4. GitHub Desktop → <strong>Commit</strong> → <strong>Push</strong> → 上線 ✓
+    <button class="btn btn-outline" onclick="copyJSON()">Copy JSON</button>
+    <button class="btn btn-outline" onclick="reloadFromFile()">Reload from file</button>
+    <button class="btn btn-danger" onclick="undoChanges()">Undo All</button>
+    <span id="status" class="status"></span>
   </div>
 </div>
 
 <script>
-// ── STATE ──
-let selectedSec = '';
-let selectedTab = '';
-let selectedFiles = [];
+/* ── STATE ── */
+let DATA = null;        // the full photos.json object
+let DATA_ORIG = null;   // backup for undo
+let currentKey = '';    // e.g. 'italy.rome' or 'routine'
 
-// queue: [{ sec, tab, label, files: [{src, caption}] }]
-let queue = [];
+const FOLDER_MAP = {
+  'italy.rome':     'Italy/Rome',
+  'italy.vatican':  'Italy/Vatican',
+  'italy.firenze':  'Italy/Firenze',
+  'italy.napoli':   'Italy/Napoli',
+  'japan.miyako':   'Japan/Miyako',
+  'japan.hokkaido': 'Japan/Hokkaido',
+  'japan.okinawa':  'Japan/Okinawa',
+  'routine':        'Routine',
+};
 
-const FOLDER_PREFIX = 'images/';
+const TAB_LABELS = {
+  'italy.rome':     'Italy · Rome',
+  'italy.vatican':  'Italy · Vatican',
+  'italy.firenze':  'Italy · Firenze',
+  'italy.napoli':   'Italy · Napoli',
+  'japan.miyako':   'Japan · Miyako',
+  'japan.hokkaido': 'Japan · Hokkaido',
+  'japan.okinawa':  'Japan · Okinawa',
+  'routine':        'Routine',
+};
 
-// ── STEP 1: select category ──
-function selectCat(btn) {
-  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  selectedSec = btn.dataset.sec;
-  selectedTab = btn.dataset.tab;
-  document.getElementById('cat-msg').style.display = 'none';
-  tryEnableAdd();
+/* ── HELPERS ── */
+function getPhotos(key) {
+  if (!DATA) return [];
+  const parts = key.split('.');
+  if (parts.length === 2) return (DATA[parts[0]] || {})[parts[1]] || [];
+  return DATA[key] || [];
 }
 
-// ── STEP 2: file input ──
-document.getElementById('file-input').addEventListener('change', function(e) {
-  selectedFiles = Array.from(e.target.files).filter(f => /\.(jpe?g|png|webp)$/i.test(f.name));
-  renderFilePreview();
-  tryEnableAdd();
-});
+function setPhotos(key, arr) {
+  const parts = key.split('.');
+  if (parts.length === 2) {
+    if (!DATA[parts[0]]) DATA[parts[0]] = {};
+    DATA[parts[0]][parts[1]] = arr;
+  } else {
+    DATA[key] = arr;
+  }
+  autoSave();
+}
 
-// drag & drop
-const dz = document.getElementById('drop-zone');
-dz.addEventListener('dragover',  e => { e.preventDefault(); dz.classList.add('drag-active'); });
-dz.addEventListener('dragleave', () => dz.classList.remove('drag-active'));
-dz.addEventListener('drop', e => {
-  e.preventDefault(); dz.classList.remove('drag-active');
-  selectedFiles = Array.from(e.dataTransfer.files).filter(f => /\.(jpe?g|png|webp)$/i.test(f.name));
-  renderFilePreview();
-  tryEnableAdd();
-});
+/* Auto-save to localStorage on every change */
+function autoSave() {
+  try { localStorage.setItem('photos_admin_draft', JSON.stringify(DATA)); } catch(e) {}
+}
 
-function renderFilePreview() {
-  const countEl   = document.getElementById('file-count');
-  const previewEl = document.getElementById('file-preview');
-  if (!selectedFiles.length) {
-    countEl.style.display = 'none';
-    previewEl.style.display = 'none';
+/* ── LOAD ── */
+/* Priority: localStorage draft > photos.json */
+function initApp(data, source) {
+  DATA = data;
+  DATA_ORIG = JSON.parse(JSON.stringify(data));
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('main').style.display = '';
+  buildTabs();
+  const firstKey = Object.keys(TAB_LABELS)[0];
+  switchTo(firstKey);
+  if (source === 'draft') showStatus('📌 已載入上次未儲存的草稿');
+}
+
+(function loadData() {
+  // Check if there's a saved draft
+  let draft = null;
+  try {
+    const raw = localStorage.getItem('photos_admin_draft');
+    if (raw) draft = JSON.parse(raw);
+  } catch(e) {}
+
+  // Always fetch photos.json as baseline
+  fetch('photos.json')
+    .then(r => r.json())
+    .then(fileData => {
+      if (draft) {
+        // Show option to choose draft or fresh
+        DATA_ORIG = JSON.parse(JSON.stringify(fileData));
+        initApp(draft, 'draft');
+      } else {
+        initApp(fileData, 'file');
+      }
+    })
+    .catch(err => {
+      // If fetch fails but draft exists, use draft
+      if (draft) {
+        initApp(draft, 'draft');
+      } else {
+        document.getElementById('loading').innerHTML =
+          '<span class="status warn">❌ 無法載入 photos.json — 請確認檔案存在於同一目錄</span>';
+        console.error(err);
+      }
+    });
+})();
+
+/* ── TABS ── */
+function buildTabs() {
+  const bar = document.getElementById('tab-bar');
+  bar.innerHTML = '';
+  Object.entries(TAB_LABELS).forEach(([key, label]) => {
+    const btn = document.createElement('button');
+    btn.className = 'tab-btn';
+    btn.dataset.key = key;
+    const count = getPhotos(key).length;
+    btn.innerHTML = label + '<span class="tab-count">' + count + '</span>';
+    btn.onclick = () => switchTo(key);
+    bar.appendChild(btn);
+  });
+}
+
+function switchTo(key) {
+  currentKey = key;
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.key === key);
+  });
+  renderGrid();
+}
+
+/* ── RENDER GRID ── */
+function renderGrid() {
+  const grid = document.getElementById('admin-grid');
+  const photos = getPhotos(currentKey);
+
+  if (!photos.length) {
+    grid.innerHTML = '<div class="empty">此分類尚無照片</div>';
     return;
   }
-  // sort by filename (camera order)
-  selectedFiles.sort((a,b) => a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1);
 
-  countEl.style.display = 'block';
-  countEl.textContent = `${selectedFiles.length} 張照片已選取，將按檔名排序`;
+  grid.innerHTML = '';
+  photos.forEach((photo, i) => {
+    const card = document.createElement('div');
+    card.className = 'admin-card';
+    card.draggable = true;
+    card.dataset.index = i;
 
-  previewEl.style.display = 'block';
-  previewEl.innerHTML = selectedFiles.map(f =>
-    `<div class="file-row">
-      <span class="fname">${f.name}</span>
-      <span class="fsize">${(f.size/1024).toFixed(0)} KB</span>
-    </div>`
-  ).join('');
+    const filename = photo.src.split('/').pop();
+
+    card.innerHTML =
+      '<span class="card-num">' + (i + 1) + '</span>' +
+      '<button class="card-del" title="刪除" data-i="' + i + '">×</button>' +
+      '<img src="' + (photo.thumb || photo.src) + '" alt="" loading="lazy" onerror="this.src=\'' + photo.src + '\'">' +
+      '<div class="card-info">' +
+        '<div class="card-filename">' + filename + '</div>' +
+        '<input class="card-caption" type="text" placeholder="Caption…" value="' + escHtml(photo.caption || '') + '" data-i="' + i + '">' +
+      '</div>';
+
+    grid.appendChild(card);
+  });
+
+  // Attach events
+  attachDragEvents();
+  attachCaptionEvents();
+  attachDeleteEvents();
+  updateTabCounts();
 }
 
-function tryEnableAdd() {
-  document.getElementById('add-btn').disabled = !(selectedSec && selectedFiles.length);
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-// ── STEP 3: add to queue ──
-function addToQueue() {
-  if (!selectedSec || !selectedFiles.length) return;
+/* ── DRAG & DROP SORT ── */
+let dragIdx = null;
 
-  // check for duplicate category in queue
-  const existing = queue.findIndex(q => q.sec === selectedSec && q.tab === selectedTab);
-  if (existing >= 0) {
-    // merge — append new files, deduplicate by name
-    const existingNames = new Set(queue[existing].files.map(f => f.name));
-    selectedFiles.forEach(f => {
-      if (!existingNames.has(f.name)) {
-        queue[existing].files.push(f);
-        existingNames.add(f.name);
+function attachDragEvents() {
+  const grid = document.getElementById('admin-grid');
+  const cards = grid.querySelectorAll('.admin-card');
+
+  cards.forEach(card => {
+    card.addEventListener('dragstart', e => {
+      dragIdx = +card.dataset.index;
+      card.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      document.querySelectorAll('.drag-over').forEach(c => c.classList.remove('drag-over'));
+      dragIdx = null;
+    });
+    card.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      card.classList.add('drag-over');
+    });
+    card.addEventListener('dragleave', () => {
+      card.classList.remove('drag-over');
+    });
+    card.addEventListener('drop', e => {
+      e.preventDefault();
+      card.classList.remove('drag-over');
+      const dropIdx = +card.dataset.index;
+      if (dragIdx === null || dragIdx === dropIdx) return;
+
+      const photos = getPhotos(currentKey);
+      const moved = photos.splice(dragIdx, 1)[0];
+      photos.splice(dropIdx, 0, moved);
+      setPhotos(currentKey, photos);
+
+      renderGrid();
+      showStatus('排序已更新');
+    });
+  });
+}
+
+/* ── CAPTION EDIT ── */
+function attachCaptionEvents() {
+  document.querySelectorAll('.card-caption').forEach(input => {
+    input.addEventListener('change', function() {
+      const i = +this.dataset.i;
+      const photos = getPhotos(currentKey);
+      if (photos[i]) {
+        photos[i].caption = this.value.trim();
+        autoSave();
+        showStatus('Caption 已更新');
       }
     });
-    queue[existing].files.sort((a,b) => a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1);
-  } else {
-    const sorted = [...selectedFiles].sort((a,b) => a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1);
-    const label  = selectedTab
-      ? selectedSec.charAt(0).toUpperCase()+selectedSec.slice(1) + ' · ' + selectedTab.charAt(0).toUpperCase()+selectedTab.slice(1)
-      : 'Routine';
-    queue.push({ sec: selectedSec, tab: selectedTab, label, files: sorted });
-  }
-
-  renderQueue();
-
-  // reset file input & selection for next folder
-  selectedFiles = [];
-  document.getElementById('file-input').value = '';
-  document.getElementById('file-count').style.display = 'none';
-  document.getElementById('file-preview').style.display = 'none';
-  document.getElementById('add-btn').disabled = true;
-  document.getElementById('add-msg').textContent = '✓ 已加入 — 可繼續選下一個分類';
-  setTimeout(() => document.getElementById('add-msg').textContent = '', 3000);
+  });
 }
 
-function renderQueue() {
-  const card = document.getElementById('queue-card');
-  const list = document.getElementById('queue-list');
-  card.style.display = 'block';
-
-  list.innerHTML = queue.map((q, i) =>
-    `<div class="queue-item">
-      <span class="badge">${q.label}</span>
-      <span class="qname">${q.files.length} 張照片</span>
-      <span class="qcount">${q.files.map(f=>f.name).slice(0,3).join(', ')}${q.files.length>3?'…':''}</span>
-      <button class="qdel" onclick="removeQueue(${i})" title="移除">×</button>
-    </div>`
-  ).join('');
-}
-
-function removeQueue(i) {
-  queue.splice(i, 1);
-  if (queue.length === 0) document.getElementById('queue-card').style.display = 'none';
-  else renderQueue();
-}
-
-function resetAll() {
-  queue = [];
-  selectedFiles = [];
-  selectedSec = '';
-  selectedTab = '';
-  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
-  document.getElementById('file-input').value = '';
-  document.getElementById('file-count').style.display = 'none';
-  document.getElementById('file-preview').style.display = 'none';
-  document.getElementById('add-btn').disabled = true;
-  document.getElementById('queue-card').style.display = 'none';
-  document.getElementById('output-card').style.display = 'none';
-}
-
-// ── STEP 4: generate JSON (with thumb + real dimensions) ──
-function generateJSON() {
-  if (!queue.length) return;
-
-  const FOLDER_MAP = {
-    'italy/rome':     'Italy/Rome',
-    'italy/vatican':  'Italy/Vatican',
-    'italy/firenze':  'Italy/Firenze',
-    'italy/napoli':   'Italy/Napoli',
-    'japan/miyako':   'Japan/Miyako',
-    'japan/hokkaido': 'Japan/Hokkaido',
-    'japan/okinawa':  'Japan/Okinawa',
-    'routine/':       'Routine',
-  };
-
-  // Build src path from file
-  function buildSrc(f, sec, tab) {
-    if (f.webkitRelativePath && f.webkitRelativePath.includes('/')) {
-      const parts = f.webkitRelativePath.split('/');
-      return 'images/' + parts.join('/');
-    }
-    const key = sec + '/' + tab;
-    const folder = FOLDER_MAP[key] || (sec + '/' + tab);
-    return `images/${folder}/${f.name}`;
-  }
-
-  // thumb path = same folder + /thumbs/ + filename
-  function buildThumb(src) {
-    const slash = src.lastIndexOf('/');
-    return src.slice(0, slash) + '/thumbs/' + src.slice(slash + 1);
-  }
-
-  // Read real pixel dimensions from a File via a temporary object URL
-  function getDimensions(file) {
-    return new Promise(resolve => {
-      const url = URL.createObjectURL(file);
-      const img = new Image();
-      img.onload  = () => { resolve({ w: img.naturalWidth, h: img.naturalHeight }); URL.revokeObjectURL(url); };
-      img.onerror = () => { resolve({ w: 0, h: 0 }); URL.revokeObjectURL(url); };
-      img.src = url;
+/* ── DELETE ── */
+function attachDeleteEvents() {
+  document.querySelectorAll('.card-del').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const i = +this.dataset.i;
+      const photos = getPhotos(currentKey);
+      const filename = photos[i]?.src.split('/').pop() || '';
+      if (!confirm('刪除 ' + filename + '？')) return;
+      photos.splice(i, 1);
+      setPhotos(currentKey, photos);
+      renderGrid();
+      showStatus('已刪除 ' + filename);
     });
-  }
+  });
+}
 
-  // Collect all files with their sec/tab
+/* ── ADD PHOTOS ── */
+document.getElementById('add-input').addEventListener('change', function(e) {
+  const files = Array.from(e.target.files).filter(f => /\.(jpe?g|png|webp)$/i.test(f.name));
+  if (!files.length) return;
+
+  const folder = FOLDER_MAP[currentKey] || '';
+  const photos = getPhotos(currentKey);
+
+  let added = 0;
+  const existingNames = new Set(photos.map(p => p.src.split('/').pop()));
   const tasks = [];
-  queue.forEach(({ sec, tab, files }) => {
-    files.forEach(f => tasks.push({ f, sec, tab }));
+
+  files.forEach(f => {
+    if (existingNames.has(f.name)) return; // skip duplicates
+    tasks.push(getDimensions(f).then(({w, h}) => {
+      const src = 'images/' + folder + '/' + f.name;
+      const thumb = 'images/' + folder + '/thumbs/' + f.name;
+      photos.push({ src, width: w, height: h, caption: '', thumb });
+      added++;
+    }));
   });
 
-  // Show progress
-  const btn = document.querySelector('[onclick="generateJSON()"]');
-  if (btn) { btn.disabled = true; btn.textContent = '讀取尺寸中…'; }
+  Promise.all(tasks).then(() => {
+    setPhotos(currentKey, photos);
+    renderGrid();
+    showStatus('新增 ' + added + ' 張照片');
+    // reset input
+    e.target.value = '';
+  });
+});
 
-  Promise.all(tasks.map(({ f, sec, tab }) =>
-    getDimensions(f).then(({ w, h }) => ({ f, sec, tab, w, h }))
-  )).then(results => {
-    let data = loadCachedData();
-
-    // Group back by sec/tab
-    const grouped = {};
-    results.forEach(({ f, sec, tab, w, h }) => {
-      const key = sec + '|' + tab;
-      if (!grouped[key]) grouped[key] = { sec, tab, entries: [] };
-      const src   = buildSrc(f, sec, tab);
-      const thumb = buildThumb(src);
-      grouped[key].entries.push({ src, width: w, height: h, caption: '', thumb });
-    });
-
-    Object.values(grouped).forEach(({ sec, tab, entries }) => {
-      if (sec === 'routine') {
-        data.routine = entries;
-      } else {
-        if (!data[sec]) data[sec] = {};
-        data[sec][tab] = entries;
-      }
-    });
-
-    const json = JSON.stringify(data, null, 2);
-    document.getElementById('json-out').value = json;
-    document.getElementById('output-card').style.display = 'block';
-    document.getElementById('output-card').scrollIntoView({ behavior:'smooth' });
-    try { localStorage.setItem('photos_json_cache', json); } catch(e) {}
-
-    if (btn) { btn.disabled = false; btn.textContent = 'Generate photos.json'; }
+function getDimensions(file) {
+  return new Promise(resolve => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload  = () => { resolve({ w: img.naturalWidth, h: img.naturalHeight }); URL.revokeObjectURL(url); };
+    img.onerror = () => { resolve({ w: 0, h: 0 }); URL.revokeObjectURL(url); };
+    img.src = url;
   });
 }
 
-function loadCachedData() {
-  // Start with a clean structure, then overlay any cached data
-  const base = {
-    italy:   { rome:[], vatican:[], firenze:[], napoli:[] },
-    japan:   { miyako:[], hokkaido:[], okinawa:[] },
-    routine: []
-  };
-  try {
-    const cached = localStorage.getItem('photos_json_cache');
-    if (cached) {
-      const parsed = JSON.parse(cached);
-      // deep merge
-      ['italy','japan'].forEach(sec => {
-        if (parsed[sec]) Object.assign(base[sec], parsed[sec]);
-      });
-      if (parsed.routine) base.routine = parsed.routine;
-    }
-  } catch(e) {}
-  return base;
-}
-
+/* ── EXPORT ── */
 function downloadJSON() {
-  const json = document.getElementById('json-out').value;
-  const blob = new Blob([json], { type:'application/json' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
+  const json = JSON.stringify(DATA, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
   a.href = url; a.download = 'photos.json'; a.click();
   URL.revokeObjectURL(url);
-  const ok = document.getElementById('dl-ok');
-  ok.style.display = 'inline';
-  setTimeout(() => ok.style.display = 'none', 3000);
+  // Update baseline and clear draft
+  DATA_ORIG = JSON.parse(JSON.stringify(DATA));
+  try { localStorage.removeItem('photos_admin_draft'); } catch(e) {}
+  showStatus('✓ photos.json 已下載 — 請取代舊檔後 push');
 }
 
 function copyJSON() {
-  const ta = document.getElementById('json-out');
-  ta.select(); document.execCommand('copy');
+  const json = JSON.stringify(DATA, null, 2);
+  navigator.clipboard.writeText(json).then(() => {
+    showStatus('✓ 已複製到剪貼簿');
+  }).catch(() => {
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = json;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showStatus('✓ 已複製到剪貼簿');
+  });
+}
+
+function undoChanges() {
+  if (!confirm('還原所有變更？（會清除未儲存的草稿）')) return;
+  DATA = JSON.parse(JSON.stringify(DATA_ORIG));
+  try { localStorage.removeItem('photos_admin_draft'); } catch(e) {}
+  renderGrid();
+  buildTabs();
+  document.querySelector('.tab-btn[data-key="' + currentKey + '"]')?.classList.add('active');
+  showStatus('已還原至 photos.json 原始狀態');
+}
+
+function reloadFromFile() {
+  if (!confirm('從 photos.json 重新載入？（會捨棄所有未下載的變更）')) return;
+  try { localStorage.removeItem('photos_admin_draft'); } catch(e) {}
+  fetch('photos.json?t=' + Date.now())
+    .then(r => r.json())
+    .then(data => {
+      initApp(data, 'file');
+      showStatus('✓ 已從 photos.json 重新載入');
+    })
+    .catch(err => showStatus('❌ 載入失敗'));
+}
+
+/* ── UI HELPERS ── */
+function updateTabCounts() {
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    const key = btn.dataset.key;
+    const count = getPhotos(key).length;
+    btn.querySelector('.tab-count').textContent = count;
+  });
+}
+
+function showStatus(msg) {
+  const el = document.getElementById('status');
+  el.textContent = msg;
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.textContent = '', 3000);
 }
 </script>
 </body>

@@ -9,26 +9,33 @@
 * { box-sizing:border-box; margin:0; padding:0; }
 :root { --bg:#f8f6f2; --surface:#fff; --black:#111; --gray:#888; --border:rgba(0,0,0,0.09); --accent:#c8b89a; --success:#2e7d52; --danger:#c0392b; }
 body { font-family:'Jost',sans-serif; font-weight:300; background:var(--bg); color:var(--black); min-height:100vh; padding:2rem 1.5rem 4rem; max-width:1100px; margin:0 auto; }
-
 h1 { font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:300; font-size:2rem; letter-spacing:.04em; margin-bottom:.3rem; }
-.subtitle { font-size:.68rem; letter-spacing:.18em; text-transform:uppercase; color:var(--gray); margin-bottom:2rem; }
+.subtitle { font-size:.68rem; letter-spacing:.18em; text-transform:uppercase; color:var(--gray); margin-bottom:1.2rem; }
 
-/* Tab bar */
+.gh-bar { display:flex; gap:.6rem; align-items:center; flex-wrap:wrap; margin-bottom:1.5rem; padding:.8rem 1rem; background:var(--surface); border:1px solid var(--border); border-radius:3px; }
+.gh-bar label { font-size:.62rem; letter-spacing:.15em; text-transform:uppercase; color:var(--gray); white-space:nowrap; }
+.gh-bar input { flex:1; min-width:140px; border:1px solid var(--border); border-radius:2px; padding:.35rem .5rem; font-family:'Jost',sans-serif; font-size:.72rem; font-weight:300; outline:none; background:transparent; }
+.gh-bar input:focus { border-color:var(--accent); }
+.gh-bar input[type="password"] { max-width:260px; }
+.gh-bar .gh-status { font-size:.65rem; color:var(--success); margin-left:.3rem; }
+.gh-bar .gh-status.err { color:var(--danger); }
+
 .tab-bar { display:flex; gap:0; border-bottom:1px solid var(--border); margin-bottom:1.5rem; flex-wrap:wrap; }
 .tab-btn { background:none; border:none; border-bottom:2px solid transparent; padding:.6rem 1.2rem; font-family:'Jost',sans-serif; font-size:.68rem; font-weight:300; letter-spacing:.18em; text-transform:uppercase; color:var(--gray); cursor:pointer; transition:all .2s; }
 .tab-btn:hover { color:var(--black); }
 .tab-btn.active { color:var(--black); border-bottom-color:var(--black); }
 .tab-count { font-size:.58rem; color:var(--accent); margin-left:.3rem; }
+.tab-btn.tab-special { color:var(--accent); }
+.tab-btn.tab-special.active { color:var(--black); border-bottom-color:var(--accent); }
 
-/* Photo grid — admin style */
-.admin-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:12px; margin-bottom:1.5rem; min-height:100px; }
-.admin-card { position:relative; background:var(--surface); border:1px solid var(--border); border-radius:3px; overflow:hidden; cursor:grab; transition:box-shadow .2s, transform .15s; }
+.admin-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(165px,1fr)); gap:10px; margin-bottom:1.5rem; min-height:100px; }
+.admin-card { position:relative; background:var(--surface); border:1px solid var(--border); border-radius:3px; overflow:hidden; cursor:grab; transition:transform .25s cubic-bezier(.2,.8,.32,1), box-shadow .25s ease; user-select:none; -webkit-user-select:none; }
 .admin-card:active { cursor:grabbing; }
-.admin-card.dragging { opacity:.4; transform:scale(.95); }
-.admin-card.drag-over { box-shadow:0 0 0 2px var(--accent); }
+.admin-card.is-dragging { position:fixed; z-index:9999; pointer-events:none; box-shadow:0 18px 50px rgba(0,0,0,0.22); transform:scale(1.05) rotate(1.5deg); opacity:.92; border:2px solid var(--accent); }
+.drag-placeholder { border:2px dashed var(--accent); border-radius:3px; background:rgba(200,184,154,0.08); min-height:80px; }
 .admin-card img { width:100%; aspect-ratio:3/2; object-fit:cover; display:block; pointer-events:none; }
 .admin-card .card-info { padding:.5rem .6rem; }
-.admin-card .card-filename { font-size:.6rem; color:var(--gray); letter-spacing:.05em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:.3rem; }
+.admin-card .card-filename { font-size:.58rem; color:var(--gray); letter-spacing:.05em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:.3rem; }
 .admin-card .card-caption { width:100%; border:1px solid var(--border); border-radius:2px; padding:.3rem .4rem; font-family:'Jost',sans-serif; font-size:.7rem; font-weight:300; outline:none; background:transparent; }
 .admin-card .card-caption:focus { border-color:var(--accent); }
 .admin-card .card-caption::placeholder { color:#ccc; }
@@ -37,403 +44,443 @@ h1 { font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:300;
 .admin-card .card-del:hover { background:var(--danger); }
 .admin-card .card-num { position:absolute; top:4px; left:4px; min-width:20px; height:20px; border-radius:10px; background:rgba(0,0,0,0.45); color:#fff; font-size:.55rem; line-height:20px; text-align:center; padding:0 5px; pointer-events:none; }
 
-/* Add photos area */
+/* HERO */
+.hero-section h2 { font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:300; font-size:1.4rem; margin-bottom:.8rem; }
+.hero-current { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:1.2rem; min-height:80px; }
+.hero-card { position:relative; width:200px; border-radius:3px; overflow:hidden; border:2px solid var(--accent); cursor:grab; user-select:none; -webkit-user-select:none; transition:transform .2s, box-shadow .2s; }
+.hero-card:hover { transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,0.1); }
+.hero-card.is-dragging { position:fixed; z-index:9999; pointer-events:none; box-shadow:0 18px 50px rgba(0,0,0,0.22); transform:scale(1.05) rotate(1.5deg); opacity:.92; }
+.hero-card img { width:100%; aspect-ratio:16/9; object-fit:cover; display:block; pointer-events:none; }
+.hero-card .hero-label { padding:.3rem .5rem; font-size:.58rem; color:var(--gray); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; background:var(--surface); }
+.hero-card .hero-remove { position:absolute; top:4px; right:4px; width:20px; height:20px; border-radius:50%; background:rgba(0,0,0,0.6); color:#fff; border:none; cursor:pointer; font-size:.7rem; line-height:20px; text-align:center; opacity:0; transition:opacity .2s; }
+.hero-card:hover .hero-remove { opacity:1; }
+.hero-card .hero-remove:hover { background:var(--danger); }
+.hero-card .hero-order { position:absolute; top:4px; left:4px; min-width:18px; height:18px; border-radius:9px; background:var(--accent); color:#fff; font-size:.5rem; line-height:18px; text-align:center; padding:0 4px; pointer-events:none; }
+.hero-drag-placeholder { width:200px; border:2px dashed var(--accent); border-radius:3px; background:rgba(200,184,154,0.08); min-height:80px; flex-shrink:0; }
+.hero-brightness { display:flex; align-items:center; gap:.5rem; padding:.2rem .5rem; background:var(--surface); }
+.hero-brightness label { font-size:.55rem; color:var(--gray); letter-spacing:.1em; text-transform:uppercase; }
+.hero-brightness input[type="range"] { width:80px; accent-color:var(--accent); }
+.hero-brightness .bval { font-size:.6rem; color:var(--black); min-width:2em; }
+
+/* Hero upload area */
+.hero-upload { border:1.5px dashed var(--accent); border-radius:3px; padding:1.2rem; text-align:center; cursor:pointer; transition:background .2s; position:relative; margin-bottom:1rem; }
+.hero-upload:hover { background:rgba(200,184,154,0.07); }
+.hero-upload input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+.hero-upload p { font-size:.75rem; color:var(--gray); }
+.hero-upload .hint { font-size:.6rem; color:var(--accent); margin-top:.3rem; }
+
+/* SETTINGS */
+.settings-section h2 { font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:300; font-size:1.4rem; margin-bottom:.8rem; }
+.setting-row { display:flex; align-items:center; gap:1rem; margin-bottom:1rem; padding:.8rem 1rem; background:var(--surface); border:1px solid var(--border); border-radius:3px; flex-wrap:wrap; }
+.setting-label { font-size:.68rem; letter-spacing:.15em; text-transform:uppercase; color:var(--gray); min-width:130px; }
+.setting-row input[type="range"] { flex:1; max-width:300px; accent-color:var(--accent); }
+.setting-value { font-size:.8rem; font-weight:400; min-width:40px; }
+.setting-hint { font-size:.6rem; color:var(--gray); margin-left:.5rem; }
+
 .add-area { border:1.5px dashed var(--accent); border-radius:3px; padding:1.5rem; text-align:center; cursor:pointer; transition:background .2s; position:relative; margin-bottom:1.5rem; }
 .add-area:hover { background:rgba(200,184,154,0.07); }
 .add-area input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
 .add-area p { font-size:.8rem; color:var(--gray); }
 
-/* Action bar */
 .action-bar { display:flex; gap:.8rem; flex-wrap:wrap; align-items:center; padding:1rem 0; border-top:1px solid var(--border); position:sticky; bottom:0; background:var(--bg); z-index:10; }
 .btn { padding:.55rem 1.5rem; font-family:'Jost',sans-serif; font-size:.65rem; font-weight:300; letter-spacing:.2em; text-transform:uppercase; border-radius:2px; cursor:pointer; transition:all .2s; }
 .btn-primary { background:var(--black); color:#fff; border:1px solid var(--black); }
 .btn-primary:hover { background:#333; }
-.btn-accent { background:var(--accent); color:#fff; border:1px solid var(--accent); }
-.btn-accent:hover { background:#b8a48a; }
 .btn-outline { background:none; color:var(--black); border:1px solid var(--border); }
 .btn-outline:hover { border-color:var(--black); }
 .btn-danger { background:none; color:var(--danger); border:1px solid var(--danger); }
 .btn-danger:hover { background:var(--danger); color:#fff; }
-
+.btn:disabled { opacity:.4; pointer-events:none; }
 .status { font-size:.72rem; color:var(--success); margin-left:.5rem; }
 .status.warn { color:var(--danger); }
-
-/* Loading */
 .loading { text-align:center; padding:3rem; color:var(--gray); font-size:.8rem; }
-
-/* Empty state */
 .empty { text-align:center; padding:2rem; color:var(--gray); font-size:.75rem; }
+.unsaved-dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--danger); margin-left:.4rem; vertical-align:middle; animation:pulse-dot 1.5s ease infinite; }
+@keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.3} }
+.spinner-sm { display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:sp .6s linear infinite; vertical-align:middle; margin-right:.4rem; }
+@keyframes sp { to{transform:rotate(360deg)} }
+.panel { display:none; }
+.panel.active { display:block; }
 </style>
 </head>
 <body>
 
 <h1>Photo Manager</h1>
-<p class="subtitle">Drag to reorder · Click caption to edit · Download updated JSON</p>
+<p class="subtitle">Drag to reorder · Click caption to edit · Publish to GitHub</p>
 
-<div id="loading" class="loading">Loading photos.json…</div>
+<div class="gh-bar">
+  <label>Owner/Repo</label>
+  <input type="text" id="gh-repo" placeholder="alphonse-feb/dolce-far-niente">
+  <label>Token</label>
+  <input type="password" id="gh-token" placeholder="ghp_xxxx…">
+  <button class="btn btn-outline" onclick="connectGitHub()">Connect</button>
+  <span class="gh-status" id="gh-status"></span>
+</div>
+
+<div id="loading" class="loading">Connecting…</div>
 <div id="main" style="display:none;">
   <div class="tab-bar" id="tab-bar"></div>
-  <div id="grid-wrap">
+
+  <!-- HERO PANEL -->
+  <div id="panel-hero" class="panel">
+    <div class="hero-section">
+      <h2>Hero 幻燈片</h2>
+      <p style="font-size:.7rem;color:var(--gray);margin-bottom:1rem;">直接上傳已壓縮的 WebP 到 images/hero/ · 拖曳調整順序 · 建議 3-6 張</p>
+      <div class="hero-current" id="hero-current"></div>
+      <div class="hero-upload">
+        <input type="file" id="hero-upload-input" accept=".webp,.WEBP" multiple>
+        <p>＋ 上傳 WebP 照片到 Hero 幻燈片</p>
+        <div class="hint">只接受 .webp 格式 · 建議先用 convert_hero.py 壓縮</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS PANEL -->
+  <div id="panel-settings" class="panel">
+    <div class="settings-section">
+      <h2>WebP 壓縮設定</h2>
+      <p style="font-size:.7rem;color:var(--gray);margin-bottom:1.2rem;">設定會存入 JSON，供 convert_webp.py 腳本讀取</p>
+      <div class="setting-row">
+        <span class="setting-label">WebP Quality</span>
+        <input type="range" id="set-quality" min="50" max="100" step="1" value="82">
+        <span class="setting-value" id="set-quality-val">82</span>
+        <span class="setting-hint">75＝小檔案 · 82＝攝影推薦 · 90+＝接近無損</span>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">Gallery 最大寬度</span>
+        <input type="range" id="set-gallery-w" min="1200" max="4000" step="100" value="2400">
+        <span class="setting-value" id="set-gallery-w-val">2400px</span>
+        <span class="setting-hint">Lightbox 大圖，建議 2000-2800</span>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">Hero 最大寬度</span>
+        <input type="range" id="set-hero-w" min="1280" max="2560" step="80" value="1920">
+        <span class="setting-value" id="set-hero-w-val">1920px</span>
+        <span class="setting-hint">幻燈片用，建議 1920</span>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">Thumb 最大寬度</span>
+        <input type="range" id="set-thumb-w" min="300" max="800" step="50" value="600">
+        <span class="setting-value" id="set-thumb-w-val">600px</span>
+        <span class="setting-hint">縮圖用，建議 400-600</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- GALLERY PANEL -->
+  <div id="panel-gallery" class="panel">
     <div class="admin-grid" id="admin-grid"></div>
+    <div class="add-area">
+      <input type="file" id="add-input" accept=".jpg,.JPG,.jpeg,.JPEG,.png,.PNG,.webp,.WEBP" multiple>
+      <p>＋ 點擊或拖曳新增照片到目前分類</p>
+    </div>
   </div>
-  <div class="add-area" id="add-area">
-    <input type="file" id="add-input" accept=".jpg,.JPG,.jpeg,.JPEG,.png,.PNG,.webp,.WEBP" multiple>
-    <p>＋ 點擊或拖曳新增照片到目前分類</p>
-  </div>
+
   <div class="action-bar">
-    <button class="btn btn-primary" onclick="downloadJSON()">Download photos.json</button>
-    <button class="btn btn-outline" onclick="copyJSON()">Copy JSON</button>
-    <button class="btn btn-outline" onclick="reloadFromFile()">Reload from file</button>
+    <button class="btn btn-primary" onclick="publishToGitHub()" id="btn-publish">Publish to GitHub</button>
+    <button class="btn btn-outline" onclick="downloadJSON()">Download JSON</button>
     <button class="btn btn-danger" onclick="undoChanges()">Undo All</button>
     <span id="status" class="status"></span>
+    <span id="unsaved" style="display:none;font-size:.68rem;color:var(--danger);margin-left:auto;">未發布的變更 <span class="unsaved-dot"></span></span>
   </div>
 </div>
 
 <script>
-/* ── STATE ── */
-let DATA = null;        // the full photos.json object
-let DATA_ORIG = null;   // backup for undo
-let currentKey = '';    // e.g. 'italy.rome' or 'routine'
+const JSON_FILE = 'photos.json';
+let DATA = null, DATA_ORIG = null, currentKey = '', currentPanel = '', ghSHA = '', dirty = false;
 
 const FOLDER_MAP = {
-  'italy.rome':     'Italy/Rome',
-  'italy.vatican':  'Italy/Vatican',
-  'italy.firenze':  'Italy/Firenze',
-  'italy.napoli':   'Italy/Napoli',
-  'japan.miyako':   'Japan/Miyako',
-  'japan.hokkaido': 'Japan/Hokkaido',
-  'japan.okinawa':  'Japan/Okinawa',
-  'routine':        'Routine',
+  'italy.rome':'Italy/Rome','italy.vatican':'Italy/Vatican','italy.firenze':'Italy/Firenze','italy.napoli':'Italy/Napoli',
+  'japan.miyako':'Japan/Miyako','japan.hokkaido':'Japan/Hokkaido','japan.okinawa':'Japan/Okinawa','routine':'Routine',
 };
-
 const TAB_LABELS = {
-  'italy.rome':     'Italy · Rome',
-  'italy.vatican':  'Italy · Vatican',
-  'italy.firenze':  'Italy · Firenze',
-  'italy.napoli':   'Italy · Napoli',
-  'japan.miyako':   'Japan · Miyako',
-  'japan.hokkaido': 'Japan · Hokkaido',
-  'japan.okinawa':  'Japan · Okinawa',
-  'routine':        'Routine',
+  'italy.rome':'Italy · Rome','italy.vatican':'Italy · Vatican','italy.firenze':'Italy · Firenze','italy.napoli':'Italy · Napoli',
+  'japan.miyako':'Japan · Miyako','japan.hokkaido':'Japan · Hokkaido','japan.okinawa':'Japan · Okinawa','routine':'Routine',
 };
 
-/* ── HELPERS ── */
-function getPhotos(key) {
-  if (!DATA) return [];
-  const parts = key.split('.');
-  if (parts.length === 2) return (DATA[parts[0]] || {})[parts[1]] || [];
-  return DATA[key] || [];
+function getPhotos(key){if(!DATA)return[];const p=key.split('.');return p.length===2?((DATA[p[0]]||{})[p[1]]||[]):(DATA[key]||[]);}
+function setPhotos(key,arr){const p=key.split('.');if(p.length===2){if(!DATA[p[0]])DATA[p[0]]={};DATA[p[0]][p[1]]=arr;}else DATA[key]=arr;markDirty();}
+function markDirty(){dirty=true;document.getElementById('unsaved').style.display='';}
+function markClean(){dirty=false;document.getElementById('unsaved').style.display='none';}
+
+/* ── GITHUB API ── */
+function ghRepo(){return document.getElementById('gh-repo').value.trim();}
+function ghToken(){return document.getElementById('gh-token').value.trim();}
+function saveConfig(){try{localStorage.setItem('gh_repo',ghRepo());localStorage.setItem('gh_token',ghToken());}catch(e){}}
+function loadConfig(){try{const r=localStorage.getItem('gh_repo');if(r)document.getElementById('gh-repo').value=r;const t=localStorage.getItem('gh_token');if(t)document.getElementById('gh-token').value=t;}catch(e){}}
+
+async function ghFetch(path,opts={}){
+  const repo=ghRepo(),token=ghToken();
+  if(!repo||!token) throw new Error('請填寫 Repo 和 Token');
+  const headers={'Authorization':`token ${token}`,'Accept':'application/vnd.github.v3+json'};
+  if(opts.body) headers['Content-Type']='application/json';
+  const res=await fetch(`https://api.github.com/repos/${repo}/contents/${path}`,{...opts,headers:{...headers,...(opts.headers||{})}});
+  if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err.message||`GitHub API ${res.status}`);}
+  return res.json();
 }
 
-function setPhotos(key, arr) {
-  const parts = key.split('.');
-  if (parts.length === 2) {
-    if (!DATA[parts[0]]) DATA[parts[0]] = {};
-    DATA[parts[0]][parts[1]] = arr;
-  } else {
-    DATA[key] = arr;
+async function connectGitHub(){
+  const st=document.getElementById('gh-status');
+  st.className='gh-status';st.textContent='連線中…';
+  try{saveConfig();const data=await ghFetch(JSON_FILE);ghSHA=data.sha;
+    const json=JSON.parse(atob(data.content.replace(/\n/g,'')));initApp(json,'github');st.textContent='✓ 已連線';
+  }catch(e){st.className='gh-status err';st.textContent='✗ '+e.message;
+    try{const r=await fetch(JSON_FILE);const json=await r.json();initApp(json,'local');st.textContent='⚠ 使用本地 JSON';}
+    catch(e2){document.getElementById('loading').innerHTML='<span class="status warn">❌ 無法載入 JSON</span>';}
   }
-  autoSave();
 }
 
-/* Auto-save to localStorage on every change */
-function autoSave() {
-  try { localStorage.setItem('photos_admin_draft', JSON.stringify(DATA)); } catch(e) {}
+async function publishToGitHub(){
+  const btn=document.getElementById('btn-publish');
+  if(!ghRepo()||!ghToken()){showStatus('請先連線 GitHub',true);return;}
+  btn.disabled=true;btn.innerHTML='<span class="spinner-sm"></span>Publishing…';
+  try{
+    const content=btoa(unescape(encodeURIComponent(JSON.stringify(DATA,null,2))));
+    const result=await ghFetch(JSON_FILE,{method:'PUT',body:JSON.stringify({message:'Update '+JSON_FILE+' via admin',content,sha:ghSHA})});
+    ghSHA=result.content.sha;DATA_ORIG=JSON.parse(JSON.stringify(DATA));markClean();
+    showStatus('✓ 已發布到 GitHub');
+  }catch(e){showStatus('✗ '+e.message,true);}
+  finally{btn.disabled=false;btn.innerHTML='Publish to GitHub';}
 }
 
-/* ── LOAD ── */
-/* Priority: localStorage draft > photos.json */
-function initApp(data, source) {
-  DATA = data;
-  DATA_ORIG = JSON.parse(JSON.stringify(data));
-  document.getElementById('loading').style.display = 'none';
-  document.getElementById('main').style.display = '';
-  buildTabs();
-  const firstKey = Object.keys(TAB_LABELS)[0];
-  switchTo(firstKey);
-  if (source === 'draft') showStatus('📌 已載入上次未儲存的草稿');
+/* ── INIT ── */
+function initApp(data,source){
+  if(!data.hero) data.hero=[];
+  if(!data.settings) data.settings={quality:82,gallery_max_w:2400,hero_max_w:1920,thumb_max_w:600};
+  DATA=data;DATA_ORIG=JSON.parse(JSON.stringify(data));
+  document.getElementById('loading').style.display='none';
+  document.getElementById('main').style.display='';
+  buildTabs();switchTo('__hero__');loadSettings();markClean();
 }
-
-(function loadData() {
-  // Check if there's a saved draft
-  let draft = null;
-  try {
-    const raw = localStorage.getItem('photos_admin_draft');
-    if (raw) draft = JSON.parse(raw);
-  } catch(e) {}
-
-  // Always fetch photos.json as baseline
-  fetch('photos.json')
-    .then(r => r.json())
-    .then(fileData => {
-      if (draft) {
-        // Show option to choose draft or fresh
-        DATA_ORIG = JSON.parse(JSON.stringify(fileData));
-        initApp(draft, 'draft');
-      } else {
-        initApp(fileData, 'file');
-      }
-    })
-    .catch(err => {
-      // If fetch fails but draft exists, use draft
-      if (draft) {
-        initApp(draft, 'draft');
-      } else {
-        document.getElementById('loading').innerHTML =
-          '<span class="status warn">❌ 無法載入 photos.json — 請確認檔案存在於同一目錄</span>';
-        console.error(err);
-      }
-    });
-})();
+loadConfig();
+if(ghRepo()&&ghToken()){connectGitHub();}
+else{fetch(JSON_FILE).then(r=>r.json()).then(d=>initApp(d,'local')).catch(()=>{document.getElementById('loading').innerHTML='請填寫 GitHub 設定或確認 '+JSON_FILE+' 存在';});}
 
 /* ── TABS ── */
-function buildTabs() {
-  const bar = document.getElementById('tab-bar');
-  bar.innerHTML = '';
-  Object.entries(TAB_LABELS).forEach(([key, label]) => {
-    const btn = document.createElement('button');
-    btn.className = 'tab-btn';
-    btn.dataset.key = key;
-    const count = getPhotos(key).length;
-    btn.innerHTML = label + '<span class="tab-count">' + count + '</span>';
-    btn.onclick = () => switchTo(key);
-    bar.appendChild(btn);
+function buildTabs(){
+  const bar=document.getElementById('tab-bar');bar.innerHTML='';
+  const hb=document.createElement('button');hb.className='tab-btn tab-special';hb.dataset.key='__hero__';
+  hb.innerHTML='⬡ Hero<span class="tab-count">'+(DATA.hero||[]).length+'</span>';hb.onclick=()=>switchTo('__hero__');bar.appendChild(hb);
+  Object.entries(TAB_LABELS).forEach(([key,label])=>{
+    const b=document.createElement('button');b.className='tab-btn';b.dataset.key=key;
+    b.innerHTML=label+'<span class="tab-count">'+getPhotos(key).length+'</span>';b.onclick=()=>switchTo(key);bar.appendChild(b);
+  });
+  const sb=document.createElement('button');sb.className='tab-btn tab-special';sb.dataset.key='__settings__';
+  sb.innerHTML='⚙ Settings';sb.onclick=()=>switchTo('__settings__');bar.appendChild(sb);
+}
+function switchTo(key){
+  currentPanel=key;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.key===key));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  if(key==='__hero__'){document.getElementById('panel-hero').classList.add('active');renderHero();}
+  else if(key==='__settings__'){document.getElementById('panel-settings').classList.add('active');}
+  else{currentKey=key;document.getElementById('panel-gallery').classList.add('active');renderGrid();}
+}
+function updateTabCounts(){
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    const k=btn.dataset.key;if(k==='__settings__')return;
+    const c=btn.querySelector('.tab-count');if(!c)return;
+    if(k==='__hero__')c.textContent=(DATA.hero||[]).length;
+    else c.textContent=getPhotos(k).length;
   });
 }
 
-function switchTo(key) {
-  currentKey = key;
-  document.querySelectorAll('.tab-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.key === key);
-  });
-  renderGrid();
-}
-
-/* ── RENDER GRID ── */
-function renderGrid() {
-  const grid = document.getElementById('admin-grid');
-  const photos = getPhotos(currentKey);
-
-  if (!photos.length) {
-    grid.innerHTML = '<div class="empty">此分類尚無照片</div>';
-    return;
-  }
-
-  grid.innerHTML = '';
-  photos.forEach((photo, i) => {
-    const card = document.createElement('div');
-    card.className = 'admin-card';
-    card.draggable = true;
-    card.dataset.index = i;
-
-    const filename = photo.src.split('/').pop();
-
-    card.innerHTML =
-      '<span class="card-num">' + (i + 1) + '</span>' +
-      '<button class="card-del" title="刪除" data-i="' + i + '">×</button>' +
-      '<img src="' + (photo.thumb || photo.src) + '" alt="" loading="lazy" onerror="this.src=\'' + photo.src + '\'">' +
-      '<div class="card-info">' +
-        '<div class="card-filename">' + filename + '</div>' +
-        '<input class="card-caption" type="text" placeholder="Caption…" value="' + escHtml(photo.caption || '') + '" data-i="' + i + '">' +
+/* ══════════════════════════════════════
+   HERO — DIRECT WEBP UPLOAD
+   ══════════════════════════════════════ */
+function renderHero(){
+  const ct=document.getElementById('hero-current');
+  const hero=DATA.hero||[];
+  if(!hero.length){ct.innerHTML='<div class="empty" style="width:100%">尚未加入幻燈片照片，從下方上傳 WebP</div>';return;}
+  ct.innerHTML='';
+  hero.forEach((h,i)=>{
+    const card=document.createElement('div');card.className='hero-card';card.dataset.index=i;
+    const filename=h.src.split('/').pop();
+    card.innerHTML=
+      '<span class="hero-order">'+(i+1)+'</span>'+
+      '<button class="hero-remove" data-i="'+i+'" title="移除">×</button>'+
+      '<img src="'+h.src+'" alt="" loading="lazy">'+
+      '<div class="hero-label">'+escHtml(filename)+'</div>'+
+      '<div class="hero-brightness">'+
+        '<label>亮度</label>'+
+        '<input type="range" min="0.6" max="1.5" step="0.05" value="'+(h.brightness||1.0)+'" data-i="'+i+'">'+
+        '<span class="bval">'+(h.brightness||1.0)+'</span>'+
       '</div>';
-
-    grid.appendChild(card);
+    ct.appendChild(card);
   });
-
-  // Attach events
-  attachDragEvents();
-  attachCaptionEvents();
-  attachDeleteEvents();
-  updateTabCounts();
+  ct.querySelectorAll('.hero-brightness input').forEach(inp=>{
+    inp.addEventListener('input',function(){const i=+this.dataset.i,v=parseFloat(this.value);this.nextElementSibling.textContent=v;DATA.hero[i].brightness=v;markDirty();});
+  });
+  ct.querySelectorAll('.hero-remove').forEach(btn=>{
+    btn.addEventListener('click',function(e){e.stopPropagation();const i=+this.dataset.i;const fn=DATA.hero[i].src.split('/').pop();
+      if(!confirm('從幻燈片移除 '+fn+'？\n（images/hero/ 裡的檔案不會被刪除）'))return;
+      DATA.hero.splice(i,1);markDirty();renderHero();updateTabCounts();showStatus('已移除 '+fn);});
+  });
+  initHeroDrag();
 }
 
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+/* Hero upload — adds entry to JSON pointing to images/hero/filename.webp */
+document.getElementById('hero-upload-input').addEventListener('change',function(e){
+  const files=Array.from(e.target.files).filter(f=>/\.webp$/i.test(f.name));
+  if(!files.length){showStatus('請選擇 .webp 檔案',true);return;}
+  const existing=new Set((DATA.hero||[]).map(h=>h.src));
+  let added=0;
+  files.forEach(f=>{
+    const src='images/hero/'+f.name;
+    if(existing.has(src))return;
+    DATA.hero.push({src:src, brightness:1.0});
+    existing.add(src);
+    added++;
+  });
+  if(added){markDirty();renderHero();updateTabCounts();showStatus('已加入 '+added+' 張到幻燈片（請確認 WebP 已放在 images/hero/）');}
+  else{showStatus('檔案已存在，跳過');}
+  e.target.value='';
+});
+
+function initHeroDrag(){
+  const ct=document.getElementById('hero-current');
+  let dragging=null,dragIdx=-1,ph=null,ox=0,oy=0,cw=0;
+  function onDown(e){
+    const card=e.target.closest('.hero-card');
+    if(!card||e.target.closest('.hero-remove')||e.target.closest('.hero-brightness'))return;
+    e.preventDefault();dragIdx=+card.dataset.index;
+    const r=card.getBoundingClientRect();cw=r.width;ox=e.clientX-r.left;oy=e.clientY-r.top;
+    dragging=card;dragging.classList.add('is-dragging');dragging.style.width=cw+'px';
+    dragging.style.left=(e.clientX-ox)+'px';dragging.style.top=(e.clientY-oy)+'px';
+    ph=document.createElement('div');ph.className='hero-drag-placeholder';
+    card.parentNode.insertBefore(ph,card.nextSibling);
+    document.addEventListener('pointermove',onMove);document.addEventListener('pointerup',onUp);
+  }
+  function onMove(e){
+    if(!dragging)return;e.preventDefault();
+    dragging.style.left=(e.clientX-ox)+'px';dragging.style.top=(e.clientY-oy)+'px';
+    const cards=Array.from(ct.querySelectorAll('.hero-card:not(.is-dragging)'));
+    for(const c of cards){const r=c.getBoundingClientRect();if(e.clientX>r.left&&e.clientX<r.right){
+      if(e.clientX<r.left+r.width/2)ct.insertBefore(ph,c);else ct.insertBefore(ph,c.nextSibling);break;}}
+  }
+  function onUp(){
+    if(!dragging)return;
+    document.removeEventListener('pointermove',onMove);document.removeEventListener('pointerup',onUp);
+    const children=Array.from(ct.children).filter(c=>!c.classList.contains('is-dragging'));
+    let dropIdx=0;for(const ch of children){if(ch===ph)break;if(ch.classList.contains('hero-card'))dropIdx++;}
+    dragging.classList.remove('is-dragging');dragging.style.cssText='';
+    if(ph&&ph.parentNode)ph.parentNode.removeChild(ph);dragging=null;ph=null;
+    if(dropIdx!==dragIdx){const m=DATA.hero.splice(dragIdx,1)[0];DATA.hero.splice(dropIdx>dragIdx?dropIdx-1:dropIdx,0,m);markDirty();}
+    renderHero();
+  }
+  ct.addEventListener('pointerdown',onDown);ct.addEventListener('dragstart',e=>e.preventDefault());
 }
 
-/* ── DRAG & DROP SORT ── */
-let dragIdx = null;
-
-function attachDragEvents() {
-  const grid = document.getElementById('admin-grid');
-  const cards = grid.querySelectorAll('.admin-card');
-
-  cards.forEach(card => {
-    card.addEventListener('dragstart', e => {
-      dragIdx = +card.dataset.index;
-      card.classList.add('dragging');
-      e.dataTransfer.effectAllowed = 'move';
-    });
-    card.addEventListener('dragend', () => {
-      card.classList.remove('dragging');
-      document.querySelectorAll('.drag-over').forEach(c => c.classList.remove('drag-over'));
-      dragIdx = null;
-    });
-    card.addEventListener('dragover', e => {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-      card.classList.add('drag-over');
-    });
-    card.addEventListener('dragleave', () => {
-      card.classList.remove('drag-over');
-    });
-    card.addEventListener('drop', e => {
-      e.preventDefault();
-      card.classList.remove('drag-over');
-      const dropIdx = +card.dataset.index;
-      if (dragIdx === null || dragIdx === dropIdx) return;
-
-      const photos = getPhotos(currentKey);
-      const moved = photos.splice(dragIdx, 1)[0];
-      photos.splice(dropIdx, 0, moved);
-      setPhotos(currentKey, photos);
-
-      renderGrid();
-      showStatus('排序已更新');
-    });
-  });
+/* ── SETTINGS ── */
+function loadSettings(){
+  const s=DATA.settings||{};
+  document.getElementById('set-quality').value=s.quality||82;
+  document.getElementById('set-quality-val').textContent=s.quality||82;
+  document.getElementById('set-gallery-w').value=s.gallery_max_w||2400;
+  document.getElementById('set-gallery-w-val').textContent=(s.gallery_max_w||2400)+'px';
+  document.getElementById('set-hero-w').value=s.hero_max_w||1920;
+  document.getElementById('set-hero-w-val').textContent=(s.hero_max_w||1920)+'px';
+  document.getElementById('set-thumb-w').value=s.thumb_max_w||600;
+  document.getElementById('set-thumb-w-val').textContent=(s.thumb_max_w||600)+'px';
 }
-
-/* ── CAPTION EDIT ── */
-function attachCaptionEvents() {
-  document.querySelectorAll('.card-caption').forEach(input => {
-    input.addEventListener('change', function() {
-      const i = +this.dataset.i;
-      const photos = getPhotos(currentKey);
-      if (photos[i]) {
-        photos[i].caption = this.value.trim();
-        autoSave();
-        showStatus('Caption 已更新');
-      }
-    });
-  });
-}
-
-/* ── DELETE ── */
-function attachDeleteEvents() {
-  document.querySelectorAll('.card-del').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      const i = +this.dataset.i;
-      const photos = getPhotos(currentKey);
-      const filename = photos[i]?.src.split('/').pop() || '';
-      if (!confirm('刪除 ' + filename + '？')) return;
-      photos.splice(i, 1);
-      setPhotos(currentKey, photos);
-      renderGrid();
-      showStatus('已刪除 ' + filename);
-    });
-  });
-}
-
-/* ── ADD PHOTOS ── */
-document.getElementById('add-input').addEventListener('change', function(e) {
-  const files = Array.from(e.target.files).filter(f => /\.(jpe?g|png|webp)$/i.test(f.name));
-  if (!files.length) return;
-
-  const folder = FOLDER_MAP[currentKey] || '';
-  const photos = getPhotos(currentKey);
-
-  let added = 0;
-  const existingNames = new Set(photos.map(p => p.src.split('/').pop()));
-  const tasks = [];
-
-  files.forEach(f => {
-    if (existingNames.has(f.name)) return; // skip duplicates
-    tasks.push(getDimensions(f).then(({w, h}) => {
-      const src = 'images/' + folder + '/' + f.name;
-      const thumb = 'images/' + folder + '/thumbs/' + f.name;
-      photos.push({ src, width: w, height: h, caption: '', thumb });
-      added++;
-    }));
-  });
-
-  Promise.all(tasks).then(() => {
-    setPhotos(currentKey, photos);
-    renderGrid();
-    showStatus('新增 ' + added + ' 張照片');
-    // reset input
-    e.target.value = '';
+['quality','gallery-w','hero-w','thumb-w'].forEach(id=>{
+  const el=document.getElementById('set-'+id);if(!el)return;
+  el.addEventListener('input',function(){
+    const v=+this.value;document.getElementById('set-'+id+'-val').textContent=id==='quality'?v:v+'px';
+    if(!DATA.settings)DATA.settings={};
+    if(id==='quality')DATA.settings.quality=v;
+    else if(id==='gallery-w')DATA.settings.gallery_max_w=v;
+    else if(id==='hero-w')DATA.settings.hero_max_w=v;
+    else if(id==='thumb-w')DATA.settings.thumb_max_w=v;
+    markDirty();
   });
 });
 
-function getDimensions(file) {
-  return new Promise(resolve => {
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload  = () => { resolve({ w: img.naturalWidth, h: img.naturalHeight }); URL.revokeObjectURL(url); };
-    img.onerror = () => { resolve({ w: 0, h: 0 }); URL.revokeObjectURL(url); };
-    img.src = url;
+/* ── GALLERY ── */
+function renderGrid(){
+  const grid=document.getElementById('admin-grid'),photos=getPhotos(currentKey);
+  if(!photos.length){grid.innerHTML='<div class="empty">此分類尚無照片</div>';return;}
+  grid.innerHTML='';
+  photos.forEach((photo,i)=>{
+    const card=document.createElement('div');card.className='admin-card';card.dataset.index=i;
+    const fn=photo.src.split('/').pop();
+    card.innerHTML='<span class="card-num">'+(i+1)+'</span><button class="card-del" title="刪除" data-i="'+i+'">×</button>'+
+      '<img src="'+(photo.thumb||photo.src)+'" alt="" loading="lazy" onerror="this.src=\''+photo.src+'\'">'+
+      '<div class="card-info"><div class="card-filename">'+escHtml(fn)+'</div>'+
+      '<input class="card-caption" type="text" placeholder="Caption…" value="'+escHtml(photo.caption||'')+'" data-i="'+i+'"></div>';
+    grid.appendChild(card);
   });
+  attachCaptionEvents();attachDeleteEvents();updateTabCounts();
 }
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* ── FLICKR DRAG (GALLERY) ── */
+(function(){
+  const grid=document.getElementById('admin-grid');
+  let dragging=null,dragIdx=-1,ph=null,ox=0,oy=0,cw=0,ch=0,last=-1;
+  function getAt(x,y){
+    const els=grid.querySelectorAll('.admin-card:not(.is-dragging)');
+    for(const el of els){const r=el.getBoundingClientRect();if(x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom)return +el.dataset.index;}
+    let best=-1,bd=Infinity;
+    for(const el of els){const r=el.getBoundingClientRect();const d=Math.hypot(x-(r.left+r.width/2),y-(r.top+r.height/2));if(d<bd){bd=d;best=+el.dataset.index;}}
+    return best;
+  }
+  function onDown(e){
+    const card=e.target.closest('.admin-card');
+    if(!card||e.target.closest('.card-del')||e.target.closest('.card-caption'))return;
+    e.preventDefault();dragIdx=+card.dataset.index;
+    const r=card.getBoundingClientRect();cw=r.width;ch=r.height;ox=e.clientX-r.left;oy=e.clientY-r.top;
+    dragging=card;dragging.classList.add('is-dragging');dragging.style.width=cw+'px';
+    dragging.style.left=(e.clientX-ox)+'px';dragging.style.top=(e.clientY-oy)+'px';
+    ph=document.createElement('div');ph.className='drag-placeholder';ph.style.width=cw+'px';ph.style.height=ch+'px';
+    card.parentNode.insertBefore(ph,card.nextSibling);last=dragIdx;
+    document.addEventListener('pointermove',onMove);document.addEventListener('pointerup',onUp);
+  }
+  function onMove(e){
+    if(!dragging)return;e.preventDefault();
+    dragging.style.left=(e.clientX-ox)+'px';dragging.style.top=(e.clientY-oy)+'px';
+    if(e.clientY<60)window.scrollBy(0,-8);else if(e.clientY>window.innerHeight-60)window.scrollBy(0,8);
+    const ti=getAt(e.clientX,e.clientY);
+    if(ti>=0&&ti!==last){last=ti;
+      const cards=Array.from(grid.querySelectorAll('.admin-card:not(.is-dragging)'));
+      const tc=cards.find(c=>+c.dataset.index===ti);
+      if(tc){const r=tc.getBoundingClientRect();if(e.clientX<r.left+r.width/2)grid.insertBefore(ph,tc);else grid.insertBefore(ph,tc.nextSibling);}
+    }
+  }
+  function onUp(){
+    if(!dragging)return;
+    document.removeEventListener('pointermove',onMove);document.removeEventListener('pointerup',onUp);
+    const children=Array.from(grid.children).filter(c=>!c.classList.contains('is-dragging'));
+    let ai=0;for(const c of children){if(c===ph)break;if(c.classList.contains('admin-card'))ai++;}
+    dragging.classList.remove('is-dragging');dragging.style.cssText='';
+    if(ph&&ph.parentNode)ph.parentNode.removeChild(ph);dragging=null;ph=null;
+    if(ai!==dragIdx){const photos=getPhotos(currentKey);const m=photos.splice(dragIdx,1)[0];
+      photos.splice(ai>dragIdx?ai-1:ai,0,m);setPhotos(currentKey,photos);showStatus('排序已更新');}
+    renderGrid();
+  }
+  grid.addEventListener('pointerdown',onDown);grid.addEventListener('dragstart',e=>e.preventDefault());
+})();
+
+/* ── CAPTION / DELETE / ADD ── */
+function attachCaptionEvents(){document.querySelectorAll('.card-caption').forEach(inp=>{inp.addEventListener('change',function(){const i=+this.dataset.i,p=getPhotos(currentKey);if(p[i]){p[i].caption=this.value.trim();markDirty();showStatus('Caption 已更新');}});});}
+function attachDeleteEvents(){document.querySelectorAll('.card-del').forEach(btn=>{btn.addEventListener('click',function(e){e.stopPropagation();const i=+this.dataset.i,p=getPhotos(currentKey),fn=p[i]?.src.split('/').pop()||'';if(!confirm('刪除 '+fn+'？'))return;p.splice(i,1);setPhotos(currentKey,p);renderGrid();showStatus('已刪除 '+fn);});});}
+
+document.getElementById('add-input').addEventListener('change',function(e){
+  const files=Array.from(e.target.files).filter(f=>/\.(jpe?g|png|webp)$/i.test(f.name));if(!files.length)return;
+  const folder=FOLDER_MAP[currentKey]||'',photos=getPhotos(currentKey);let added=0;
+  const existing=new Set(photos.map(p=>p.src.split('/').pop()));const tasks=[];
+  files.forEach(f=>{if(existing.has(f.name))return;
+    tasks.push(getDimensions(f).then(({w,h})=>{photos.push({src:'images/'+folder+'/'+f.name,width:w,height:h,caption:'',thumb:'images/'+folder+'/thumbs/'+f.name});added++;}));
+  });
+  Promise.all(tasks).then(()=>{setPhotos(currentKey,photos);renderGrid();showStatus('新增 '+added+' 張照片');e.target.value='';});
+});
+function getDimensions(file){return new Promise(r=>{const u=URL.createObjectURL(file),img=new Image();img.onload=()=>{r({w:img.naturalWidth,h:img.naturalHeight});URL.revokeObjectURL(u);};img.onerror=()=>{r({w:0,h:0});URL.revokeObjectURL(u);};img.src=u;});}
 
 /* ── EXPORT ── */
-function downloadJSON() {
-  const json = JSON.stringify(DATA, null, 2);
-  const blob = new Blob([json], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'photos.json'; a.click();
-  URL.revokeObjectURL(url);
-  // Update baseline and clear draft
-  DATA_ORIG = JSON.parse(JSON.stringify(DATA));
-  try { localStorage.removeItem('photos_admin_draft'); } catch(e) {}
-  showStatus('✓ photos.json 已下載 — 請取代舊檔後 push');
-}
-
-function copyJSON() {
-  const json = JSON.stringify(DATA, null, 2);
-  navigator.clipboard.writeText(json).then(() => {
-    showStatus('✓ 已複製到剪貼簿');
-  }).catch(() => {
-    // fallback
-    const ta = document.createElement('textarea');
-    ta.value = json;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    showStatus('✓ 已複製到剪貼簿');
-  });
-}
-
-function undoChanges() {
-  if (!confirm('還原所有變更？（會清除未儲存的草稿）')) return;
-  DATA = JSON.parse(JSON.stringify(DATA_ORIG));
-  try { localStorage.removeItem('photos_admin_draft'); } catch(e) {}
-  renderGrid();
-  buildTabs();
-  document.querySelector('.tab-btn[data-key="' + currentKey + '"]')?.classList.add('active');
-  showStatus('已還原至 photos.json 原始狀態');
-}
-
-function reloadFromFile() {
-  if (!confirm('從 photos.json 重新載入？（會捨棄所有未下載的變更）')) return;
-  try { localStorage.removeItem('photos_admin_draft'); } catch(e) {}
-  fetch('photos.json?t=' + Date.now())
-    .then(r => r.json())
-    .then(data => {
-      initApp(data, 'file');
-      showStatus('✓ 已從 photos.json 重新載入');
-    })
-    .catch(err => showStatus('❌ 載入失敗'));
-}
-
-/* ── UI HELPERS ── */
-function updateTabCounts() {
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    const key = btn.dataset.key;
-    const count = getPhotos(key).length;
-    btn.querySelector('.tab-count').textContent = count;
-  });
-}
-
-function showStatus(msg) {
-  const el = document.getElementById('status');
-  el.textContent = msg;
-  clearTimeout(el._t);
-  el._t = setTimeout(() => el.textContent = '', 3000);
-}
+function downloadJSON(){const j=JSON.stringify(DATA,null,2);const b=new Blob([j],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=JSON_FILE;a.click();URL.revokeObjectURL(u);showStatus('✓ '+JSON_FILE+' 已下載');}
+function undoChanges(){if(!confirm('還原所有變更？'))return;DATA=JSON.parse(JSON.stringify(DATA_ORIG));markClean();buildTabs();loadSettings();
+  if(currentPanel==='__hero__')switchTo('__hero__');else if(currentPanel==='__settings__')switchTo('__settings__');else switchTo(currentKey);showStatus('已還原');}
+function showStatus(msg,isErr){const el=document.getElementById('status');el.textContent=msg;el.className=isErr?'status warn':'status';clearTimeout(el._t);el._t=setTimeout(()=>el.textContent='',4000);}
 </script>
 </body>
 </html>

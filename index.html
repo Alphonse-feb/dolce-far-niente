@@ -38,58 +38,14 @@ section{display:none;animation:fadeIn .35s ease}
 section.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 
-/* ── HOME DESTINATION GRID (booooooom style) ──
-   White background, generous padding, image above text,
-   2×2 layout, consistent square-ish thumbnails            */
-.dest-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:3.5rem 4rem;
-  padding:5rem 8vw 5rem;
-  background:var(--white);
-}
-.dest-item{
-  display:block;
-  text-decoration:none;
-  cursor:pointer;
-}
-/* thumbnail wrapper — fixed aspect, no overflow text */
-.dest-thumb{
-  display:block;
-  aspect-ratio:4/3;
-  overflow:hidden;
-  background:#e8e5e0;
-  margin-bottom:1.1rem;
-}
-.dest-thumb img{
-  width:100%;height:100%;
-  object-fit:cover;display:block;
-  transition:transform .6s ease, filter .4s ease;
-}
+.dest-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:3.5rem 4rem;padding:5rem 8vw 5rem;background:var(--white)}
+.dest-item{display:block;text-decoration:none;cursor:pointer}
+.dest-thumb{display:block;aspect-ratio:4/3;overflow:hidden;background:#e8e5e0;margin-bottom:1.1rem}
+.dest-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease, filter .4s ease}
 .dest-item:hover .dest-thumb img{transform:scale(1.04);filter:brightness(.92)}
-
-/* text below image */
 .dest-meta{padding:0 .1rem}
-.dest-title{
-  font-family:'Jost',sans-serif;
-  font-size:.7rem;
-  font-weight:300;
-  letter-spacing:.22em;
-  text-transform:uppercase;
-  color:var(--black);       /* same as nav links */
-  display:block;
-  margin-bottom:.3rem;
-  line-height:1.4;
-}
-.dest-sub{
-  font-family:'Jost',sans-serif;
-  font-size:.62rem;
-  font-weight:300;
-  letter-spacing:.18em;
-  text-transform:uppercase;
-  color:var(--gray);
-  display:block;
-}
+.dest-title{font-family:'Jost',sans-serif;font-size:.7rem;font-weight:300;letter-spacing:.22em;text-transform:uppercase;color:var(--black);display:block;margin-bottom:.3rem;line-height:1.4}
+.dest-sub{font-family:'Jost',sans-serif;font-size:.62rem;font-weight:300;letter-spacing:.18em;text-transform:uppercase;color:var(--gray);display:block}
 .dest-item:hover .dest-title{color:var(--accent)}
 
 /* GALLERY CARDS */
@@ -172,71 +128,54 @@ footer p{font-size:.66rem;letter-spacing:.12em;color:var(--gray)}
 
 <!-- HOME -->
 <section id="home" class="active">
-  <!-- Hero slideshow — unchanged -->
   <div class="hero">
-    <div class="slides">
-      <div class="slide active"><img src="images/Japan/Okinawa/GR011957.JPG" fetchpriority="high" alt="" style="filter:brightness(1.2)"></div>
-      <div class="slide"><img src="images/Italy/Rome/DSC09929.JPG" loading="lazy" alt=""></div>
-      <div class="slide"><img src="images/Routine/img1664474865535.jpg" loading="lazy" alt=""></div>
-      <div class="slide"><img src="images/Japan/Hokkaido/GR010670.JPG" loading="lazy" alt=""></div>
-      <div class="slide"><img src="images/Italy/Firenze/DSC00436.JPG" loading="lazy" alt=""></div>
-    </div>
+    <div class="slides" id="hero-slides"></div>
     <div class="slide-dots" id="dots"></div>
   </div>
 
-  <!-- Destination grid — booooooom style: 2×2, image + text below -->
   <div class="dest-grid">
-
-    <!-- ITALY -->
     <a class="dest-item" onclick="showGallery('italy','rome')">
       <span class="dest-thumb">
-        <img src="images/Italy/Rome/thumbs/DSC09959.JPG" loading="lazy" decoding="async"
-             alt="Italy" onerror="this.src='images/Italy/Rome/DSC09959.JPG'">
+        <img src="images/Italy/Rome/thumbs/DSC09959.webp" loading="lazy" decoding="async"
+             alt="Italy" onerror="this.src='images/Italy/Rome/thumbs/DSC09959.JPG'">
       </span>
       <div class="dest-meta">
         <span class="dest-title">Italy</span>
         <span class="dest-sub">Rome · Vatican · Firenze · Napoli</span>
       </div>
     </a>
-
-    <!-- MIYAKO -->
     <a class="dest-item" onclick="showGallery('japan','miyako')">
       <span class="dest-thumb">
-        <img src="images/Japan/Miyako/thumbs/GR013070.JPG" loading="lazy" decoding="async"
-             alt="Miyako 宮古島" onerror="this.src='images/Japan/Miyako/GR013070.JPG'">
+        <img src="images/Japan/Miyako/thumbs/GR013070.webp" loading="lazy" decoding="async"
+             alt="Miyako 宮古島" onerror="this.src='images/Japan/Miyako/thumbs/GR013070.JPG'">
       </span>
       <div class="dest-meta">
         <span class="dest-title">Miyako</span>
         <span class="dest-sub">宮古島</span>
       </div>
     </a>
-
-    <!-- HOKKAIDO -->
     <a class="dest-item" onclick="showGallery('japan','hokkaido')">
       <span class="dest-thumb">
-        <img src="images/Japan/Hokkaido/thumbs/20240908_094407.JPG" loading="lazy" decoding="async"
-             alt="Hokkaido 北海道" onerror="this.src='images/Japan/Hokkaido/20240908_094407.JPG'">
+        <img src="images/Japan/Hokkaido/thumbs/20240908_094407.webp" loading="lazy" decoding="async"
+             alt="Hokkaido 北海道" onerror="this.src='images/Japan/Hokkaido/thumbs/20240908_094407.JPG'">
       </span>
       <div class="dest-meta">
         <span class="dest-title">Hokkaido</span>
         <span class="dest-sub">北海道</span>
       </div>
     </a>
-
-    <!-- OKINAWA — unchanged from original -->
     <a class="dest-item" onclick="showGallery('japan','okinawa')">
       <span class="dest-thumb">
-        <img src="images/Japan/Okinawa/thumbs/GR012034.JPG" loading="lazy" decoding="async"
-             alt="Okinawa 沖繩" onerror="this.src='images/Japan/Okinawa/GR012034.JPG'">
+        <img src="images/Japan/Okinawa/thumbs/GR012034.webp" loading="lazy" decoding="async"
+             alt="Okinawa 沖繩" onerror="this.src='images/Japan/Okinawa/thumbs/GR012034.JPG'">
       </span>
       <div class="dest-meta">
         <span class="dest-title">Okinawa</span>
         <span class="dest-sub">沖繩</span>
       </div>
     </a>
-
   </div>
-  <footer><p>© 2025 · All rights reserved</p></footer>
+  <footer><p>&copy; 2025 · All rights reserved</p></footer>
 </section>
 
 <!-- ITALY -->
@@ -252,7 +191,7 @@ footer p{font-size:.66rem;letter-spacing:.12em;color:var(--gray)}
   <div id="italy-vatican" class="sub-content"><div class="gallery-grid" id="gallery-italy-vatican"></div></div>
   <div id="italy-firenze" class="sub-content"><div class="gallery-grid" id="gallery-italy-firenze"></div></div>
   <div id="italy-napoli"  class="sub-content"><div class="gallery-grid" id="gallery-italy-napoli"></div></div>
-  <footer><p>© 2025 · All rights reserved</p></footer>
+  <footer><p>&copy; 2025 · All rights reserved</p></footer>
 </section>
 
 <!-- JAPAN -->
@@ -266,14 +205,14 @@ footer p{font-size:.66rem;letter-spacing:.12em;color:var(--gray)}
   <div id="japan-miyako"   class="sub-content active"><div class="gallery-grid" id="gallery-japan-miyako"></div></div>
   <div id="japan-hokkaido" class="sub-content"><div class="gallery-grid" id="gallery-japan-hokkaido"></div></div>
   <div id="japan-okinawa"  class="sub-content"><div class="gallery-grid" id="gallery-japan-okinawa"></div></div>
-  <footer><p>© 2025 · All rights reserved</p></footer>
+  <footer><p>&copy; 2025 · All rights reserved</p></footer>
 </section>
 
 <!-- ROUTINE -->
 <section id="routine">
   <div class="gallery-header"><h2>Routine</h2></div>
   <div class="gallery-grid" id="gallery-routine"></div>
-  <footer><p>© 2025 · All rights reserved</p></footer>
+  <footer><p>&copy; 2025 · All rights reserved</p></footer>
 </section>
 
 <script>
@@ -293,19 +232,16 @@ function buildCard(photo, cls) {
   a.className = 'photo-card ' + cls;
   a.href = photo.src;
   if (photo.caption) a.setAttribute('data-caption', photo.caption);
-
   const img = document.createElement('img');
   img.src      = photo.thumb;
   img.alt      = photo.caption || '';
   img.loading  = 'lazy';
   img.decoding = 'async';
   img.onerror  = function() { this.src = photo.src; };
-
   const ph = document.createElement('div');
   ph.className = 'ph';
   a.appendChild(img);
   a.appendChild(ph);
-
   if (photo.caption) {
     const ov = document.createElement('div');
     ov.className = 'overlay';
@@ -328,25 +264,74 @@ function renderGalleries(PHOTOS) {
   });
 }
 
-/* Load photos.json dynamically */
+/* ── Load JSON and build everything ── */
+let heroSlideTimer;
 fetch('photos.json')
   .then(function(r) { return r.json(); })
-  .then(function(data) { renderGalleries(data); })
-  .catch(function(err) { console.error('Failed to load photos.json:', err); });
+  .then(function(data) {
+    renderGalleries(data);
+    buildHeroSlides(data.hero || []);
+  })
+  .catch(function(err) { console.error('Failed to load JSON:', err); });
+
+/* ── Hero slideshow — reads WebP directly from images/hero/ ── */
+function buildHeroSlides(heroArr) {
+  var container = document.getElementById('hero-slides');
+  var dotsEl = document.getElementById('dots');
+  if (!heroArr.length) return;
+  container.innerHTML = '';
+  dotsEl.innerHTML = '';
+
+  heroArr.forEach(function(h, i) {
+    var slide = document.createElement('div');
+    slide.className = 'slide' + (i === 0 ? ' active' : '');
+    var img = document.createElement('img');
+    img.src = h.src;           /* e.g. images/hero/GR011957.webp */
+    img.alt = '';
+    img.width = 1920;
+    img.height = 1080;
+    if (i === 0) img.fetchPriority = 'high';
+    else img.loading = 'lazy';
+    if (h.brightness && h.brightness !== 1) img.style.filter = 'brightness(' + h.brightness + ')';
+    slide.appendChild(img);
+    container.appendChild(slide);
+
+    var d = document.createElement('button');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.setAttribute('aria-label', 'Slide ' + (i + 1));
+    d.onclick = (function(n) { return function() { heroGoTo(n); }; })(i);
+    dotsEl.appendChild(d);
+  });
+
+  heroSlideTimer = setInterval(function() { heroGoTo(heroCur + 1); }, 4500);
+}
+
+var heroCur = 0;
+function heroGoTo(n) {
+  var slides = document.querySelectorAll('#hero-slides .slide');
+  var dots = document.querySelectorAll('#dots .dot');
+  if (!slides.length) return;
+  slides[heroCur].classList.remove('active');
+  if (dots[heroCur]) dots[heroCur].classList.remove('active');
+  heroCur = (n + slides.length) % slides.length;
+  slides[heroCur].classList.add('active');
+  if (dots[heroCur]) dots[heroCur].classList.add('active');
+  clearInterval(heroSlideTimer);
+  heroSlideTimer = setInterval(function() { heroGoTo(heroCur + 1); }, 4500);
+}
 </script>
 
-<!-- Lightbox overlay -->
+<!-- Lightbox -->
 <div class="lightbox-overlay" id="lightbox">
-  <button class="lightbox-btn lightbox-close" id="lb-close" aria-label="Close">×</button>
-  <button class="lightbox-btn lightbox-prev" id="lb-prev" aria-label="Previous">‹</button>
-  <button class="lightbox-btn lightbox-next" id="lb-next" aria-label="Next">›</button>
+  <button class="lightbox-btn lightbox-close" id="lb-close" aria-label="Close">&times;</button>
+  <button class="lightbox-btn lightbox-prev" id="lb-prev" aria-label="Previous">&lsaquo;</button>
+  <button class="lightbox-btn lightbox-next" id="lb-next" aria-label="Next">&rsaquo;</button>
   <div class="lightbox-img-wrap"><div class="lightbox-spinner" id="lb-spinner"></div><img id="lb-img" src="" alt=""></div>
   <div class="lightbox-caption" id="lb-caption"></div>
   <div class="lightbox-counter" id="lb-counter"></div>
 </div>
 
 <script>
-/* ── Custom Lightbox (zero dependencies) ── */
 (function() {
   const overlay  = document.getElementById('lightbox');
   const imgEl    = document.getElementById('lb-img');
@@ -356,14 +341,12 @@ fetch('photos.json')
   let items = [], idx = 0;
   const preloadCache = {};
 
-  /* Collect photos from the currently visible gallery */
   function getVisibleItems(clickedLink) {
     const grid = clickedLink.closest('.gallery-grid');
     if (!grid) return [];
     return Array.from(grid.querySelectorAll('a.photo-card'));
   }
 
-  /* Preload an image and cache the promise */
   function preload(src) {
     if (!preloadCache[src]) {
       preloadCache[src] = new Promise(function(resolve) {
@@ -375,7 +358,6 @@ fetch('photos.json')
     return preloadCache[src];
   }
 
-  /* Preload adjacent images (prev + next 2) */
   function preloadNearby() {
     for (var d = 1; d <= 2; d++) {
       var next = items[(idx + d) % items.length];
@@ -391,8 +373,6 @@ fetch('photos.json')
     var src = a.href;
     var cap = a.getAttribute('data-caption') || '';
     var thumbSrc = a.querySelector('img')?.src || '';
-
-    /* Step 1: instantly show thumbnail as placeholder */
     imgEl.classList.remove('loaded');
     if (thumbSrc && !preloadCache[src]) {
       imgEl.src = thumbSrc;
@@ -401,20 +381,15 @@ fetch('photos.json')
     } else {
       spinner.style.display = 'block';
     }
-
-    /* Step 2: load full-res, swap when ready */
     preload(src).then(function() {
       imgEl.src = src;
       imgEl.alt = cap;
       spinner.style.display = 'none';
       requestAnimationFrame(function() { imgEl.classList.add('loaded'); });
     });
-
     caption.textContent = cap;
     caption.style.display = cap ? '' : 'none';
     counter.textContent = (idx + 1) + ' / ' + items.length;
-
-    /* Step 3: preload nearby images in background */
     preloadNearby();
   }
 
@@ -433,43 +408,29 @@ fetch('photos.json')
     imgEl.src = '';
   }
 
-  /* Event: click on any photo-card */
   document.addEventListener('click', function(e) {
     const link = e.target.closest('a.photo-card');
-    if (link) {
-      e.preventDefault();
-      open(link);
-    }
+    if (link) { e.preventDefault(); open(link); }
   });
-
   document.getElementById('lb-close').onclick = close;
   document.getElementById('lb-prev').onclick  = function() { show(idx - 1); };
   document.getElementById('lb-next').onclick  = function() { show(idx + 1); };
-
-  /* Click on backdrop to close */
   overlay.addEventListener('click', function(e) {
     if (e.target === overlay || e.target.closest('.lightbox-img-wrap') === e.target) close();
   });
-
-  /* Keyboard navigation */
   document.addEventListener('keydown', function(e) {
     if (!overlay.classList.contains('active')) return;
-    if (e.key === 'Escape')                    close();
-    else if (e.key === 'ArrowLeft')            show(idx - 1);
-    else if (e.key === 'ArrowRight')           show(idx + 1);
+    if (e.key === 'Escape') close();
+    else if (e.key === 'ArrowLeft') show(idx - 1);
+    else if (e.key === 'ArrowRight') show(idx + 1);
   });
-
-  /* Swipe support for touch devices */
   let touchStartX = 0, touchStartY = 0;
-  overlay.addEventListener('touchstart', function(e) {
-    touchStartX = e.changedTouches[0].screenX;
-    touchStartY = e.changedTouches[0].screenY;
-  }, { passive: true });
+  overlay.addEventListener('touchstart', function(e) { touchStartX = e.changedTouches[0].screenX; touchStartY = e.changedTouches[0].screenY; }, { passive: true });
   overlay.addEventListener('touchend', function(e) {
     const dx = e.changedTouches[0].screenX - touchStartX;
     const dy = e.changedTouches[0].screenY - touchStartY;
-    if (Math.abs(dx) < 50) return; /* ignore short swipes */
-    if (Math.abs(dy) > Math.abs(dx)) return; /* ignore vertical swipes */
+    if (Math.abs(dx) < 50) return;
+    if (Math.abs(dy) > Math.abs(dx)) return;
     if (dx > 0) show(idx - 1); else show(idx + 1);
   }, { passive: true });
 })();
@@ -515,30 +476,7 @@ function closeAllDropdowns() {
   dd.addEventListener('mouseenter',   () => clearTimeout(t));
   dd.addEventListener('mouseleave',   () => { t = setTimeout(() => dd.classList.remove('open'), 120); });
 });
-document.addEventListener('click', e => {
-  if (!e.target.closest('.nav-item')) closeAllDropdowns();
-});
-
-const slides = document.querySelectorAll('.slide');
-const dotsEl = document.getElementById('dots');
-let cur = 0, timer;
-slides.forEach((_, i) => {
-  const d = document.createElement('button');
-  d.className = 'dot' + (i === 0 ? ' active' : '');
-  d.setAttribute('aria-label', 'Slide ' + (i+1));
-  d.onclick = () => goTo(i);
-  dotsEl.appendChild(d);
-});
-function goTo(n) {
-  slides[cur].classList.remove('active');
-  dotsEl.children[cur].classList.remove('active');
-  cur = (n + slides.length) % slides.length;
-  slides[cur].classList.add('active');
-  dotsEl.children[cur].classList.add('active');
-  clearInterval(timer);
-  timer = setInterval(() => goTo(cur + 1), 4500);
-}
-timer = setInterval(() => goTo(cur + 1), 4500);
+document.addEventListener('click', e => { if (!e.target.closest('.nav-item')) closeAllDropdowns(); });
 </script>
 </body>
 </html>
